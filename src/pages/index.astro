@@ -35,28 +35,32 @@ const featuredProjects = [
   {
     slug: "seismic-inpainting",
     title: "Seismic Inpainting with Deep Priors",
-    tagline: "Reconstructing missing seismic traces using U-Net + implicit neural representations for subsurface imaging.",
+    tagline:
+      "Reconstructing missing seismic traces using U-Net + implicit neural representations for subsurface imaging.",
     tags: ["PyTorch", "U-Net", "INR", "NumPy"],
     featured: true,
   },
   {
     slug: "hybrid-rag-pipeline",
     title: "Hybrid RAG Pipeline for Enterprise Docs",
-    tagline: "Combining dense retrieval and keyword search with an LLM reranker to answer questions over large document corpora.",
+    tagline:
+      "Combining dense retrieval and keyword search with an LLM reranker to answer questions over large document corpora.",
     tags: ["LangChain", "FAISS", "OpenAI", "FastAPI"],
     featured: false,
   },
   {
     slug: "anomaly-detection-oilfield",
     title: "Oilfield Anomaly Detection System",
-    tagline: "Real-time multivariate anomaly detection on SCADA sensor streams using Isolation Forest + LSTM autoencoders.",
+    tagline:
+      "Real-time multivariate anomaly detection on SCADA sensor streams using Isolation Forest + LSTM autoencoders.",
     tags: ["scikit-learn", "LSTM", "Kafka", "Grafana"],
     featured: false,
   },
   {
     slug: "llm-benchmark-suite",
     title: "LLM Evaluation Benchmark Suite",
-    tagline: "Automated benchmark suite for evaluating instruction-tuned LLMs on domain-specific scientific reasoning tasks.",
+    tagline:
+      "Automated benchmark suite for evaluating instruction-tuned LLMs on domain-specific scientific reasoning tasks.",
     tags: ["Python", "HuggingFace", "Pandas", "Weights & Biases"],
     featured: false,
   },
@@ -66,22 +70,26 @@ const featuredProjects = [
 const capabilities = [
   {
     headline: "ML Research & Modelling",
-    description: "Designing and training deep learning models for scientific and industrial applications — from seismic signal processing to NLP. Publication-grade rigour with production feasibility in mind.",
+    description:
+      "Designing and training deep learning models for scientific and industrial applications — from seismic signal processing to NLP. Publication-grade rigour with production feasibility in mind.",
     tags: ["PyTorch", "JAX", "scikit-learn", "CUDA"],
   },
   {
     headline: "RAG & LLM Systems",
-    description: "Building retrieval-augmented generation pipelines that go beyond naive chunking. Dense + sparse hybrid retrieval, reranking, and evaluation harnesses for enterprise document Q&A.",
+    description:
+      "Building retrieval-augmented generation pipelines that go beyond naive chunking. Dense + sparse hybrid retrieval, reranking, and evaluation harnesses for enterprise document Q&A.",
     tags: ["LangChain", "LlamaIndex", "FAISS", "pgvector"],
   },
   {
     headline: "MLOps & Infrastructure",
-    description: "Taking models from Jupyter notebooks to reliable, monitored production systems. Experiment tracking, CI/CD for ML, model registries, and inference optimisation.",
+    description:
+      "Taking models from Jupyter notebooks to reliable, monitored production systems. Experiment tracking, CI/CD for ML, model registries, and inference optimisation.",
     tags: ["MLflow", "DVC", "Docker", "FastAPI"],
   },
   {
     headline: "Data Engineering",
-    description: "Designing and implementing data pipelines that feed ML systems with clean, well-labelled data — including streaming sensor data, geospatial datasets, and scientific corpora.",
+    description:
+      "Designing and implementing data pipelines that feed ML systems with clean, well-labelled data — including streaming sensor data, geospatial datasets, and scientific corpora.",
     tags: ["Spark", "dbt", "Airflow", "Kafka"],
   },
 ];
@@ -92,7 +100,8 @@ const timelineEntries = [
     year: "2023–now",
     title: "AI/ML Researcher",
     organisation: "Universiti Teknologi PETRONAS (UTP)",
-    description: "Leading research on seismic inpainting with deep generative priors. Collaborating with PETRONAS on subsurface imaging pipelines.",
+    description:
+      "Leading research on seismic inpainting with deep generative priors. Collaborating with PETRONAS on subsurface imaging pipelines.",
     type: "work" as const,
     href: "https://www.utp.edu.my",
   },
@@ -100,28 +109,32 @@ const timelineEntries = [
     year: "2022–2023",
     title: "MEXT Research Scholar",
     organisation: "Japanese Government Scholarship",
-    description: "Government-funded research fellowship supporting AI/ML work in energy-domain applications.",
+    description:
+      "Government-funded research fellowship supporting AI/ML work in energy-domain applications.",
     type: "award" as const,
   },
   {
     year: "2021–2023",
     title: "M.Sc. Electrical & Electronic Engineering",
     organisation: "Universiti Teknologi PETRONAS (UTP)",
-    description: "Thesis: Seismic trace reconstruction using implicit neural representations and energy-based priors.",
+    description:
+      "Thesis: Seismic trace reconstruction using implicit neural representations and energy-based priors.",
     type: "education" as const,
   },
   {
     year: "2020–2021",
     title: "ML Engineer (Intern)",
     organisation: "PETRONAS Digital",
-    description: "Built anomaly detection prototypes for oilfield SCADA data. Introduced MLflow experiment tracking to the team.",
+    description:
+      "Built anomaly detection prototypes for oilfield SCADA data. Introduced MLflow experiment tracking to the team.",
     type: "work" as const,
   },
   {
     year: "2017–2021",
     title: "B.Eng. Electrical & Electronic Engineering",
     organisation: "Universiti Teknologi PETRONAS (UTP)",
-    description: "First-class honours. Final year project on signal reconstruction with compressed sensing.",
+    description:
+      "First-class honours. Final year project on signal reconstruction with compressed sensing.",
     type: "education" as const,
   },
 ];
@@ -129,21 +142,25 @@ const timelineEntries = [
 // ── Publications data ──
 const publications = [
   {
-    title: "Deep Prior-Based Seismic Trace Inpainting Using Implicit Neural Representations",
+    title:
+      "Deep Prior-Based Seismic Trace Inpainting Using Implicit Neural Representations",
     venue: "IEEE Transactions on Geoscience and Remote Sensing",
     year: 2024,
     authors: ["Ridhwan Amin", "Mohd. Hafiz Hashim", "Ahmad Fadzil M. Hani"],
-    abstract: "We propose a method combining implicit neural representations (INRs) with energy-based deep priors to reconstruct missing seismic traces without requiring labelled training data. Our approach achieves 3.2 dB PSNR improvement over conventional interpolation baselines on the SEAM Phase I dataset.",
+    abstract:
+      "We propose a method combining implicit neural representations (INRs) with energy-based deep priors to reconstruct missing seismic traces without requiring labelled training data. Our approach achieves 3.2 dB PSNR improvement over conventional interpolation baselines on the SEAM Phase I dataset.",
     doi: "10.1109/TGRS.2024.XXXXXXX",
     doiUrl: "https://doi.org/10.1109/TGRS.2024.XXXXXXX",
     badges: ["Accepted — pending publication"],
   },
   {
-    title: "Hybrid Retrieval-Augmented Generation for Scientific Literature: A Domain Adaptation Study",
+    title:
+      "Hybrid Retrieval-Augmented Generation for Scientific Literature: A Domain Adaptation Study",
     venue: "IEEE Access",
     year: 2023,
     authors: ["Ridhwan Amin", "Nurfadzilah Ahmad"],
-    abstract: "This paper evaluates hybrid retrieval strategies — combining dense embeddings with BM25 keyword retrieval — for question-answering over petroleum engineering literature, demonstrating a 12% improvement in answer faithfulness over dense-only baselines.",
+    abstract:
+      "This paper evaluates hybrid retrieval strategies — combining dense embeddings with BM25 keyword retrieval — for question-answering over petroleum engineering literature, demonstrating a 12% improvement in answer faithfulness over dense-only baselines.",
     doi: "10.1109/ACCESS.2023.XXXXXXX",
     doiUrl: "https://doi.org/10.1109/ACCESS.2023.XXXXXXX",
     badges: [],
@@ -154,23 +171,28 @@ const publications = [
 const faqItems = [
   {
     question: "What types of projects do you take on?",
-    answer: "I focus on ML/AI projects in the scientific and industrial domain — seismic signal processing, NLP/RAG pipelines, anomaly detection, and MLOps. I'm most useful when there's a real research problem to solve, not just a model to fine-tune. See the Services page for pricing tiers.",
+    answer:
+      "I focus on ML/AI projects in the scientific and industrial domain — seismic signal processing, NLP/RAG pipelines, anomaly detection, and MLOps. I'm most useful when there's a real research problem to solve, not just a model to fine-tune. See the Services page for pricing tiers.",
   },
   {
     question: "Are you available for full-time roles?",
-    answer: "I'm currently based at UTP as a researcher, so I take on consulting and part-time advisory engagements rather than full-time roles. If you have something compelling, reach out and we can discuss.",
+    answer:
+      "I'm currently based at UTP as a researcher, so I take on consulting and part-time advisory engagements rather than full-time roles. If you have something compelling, reach out and we can discuss.",
   },
   {
     question: "How do you handle NDA / confidential research data?",
-    answer: "I sign NDAs as standard for consulting work. For sensitive datasets, I can work in a sandboxed environment you provide, or on anonymised/synthetic data. We discuss data handling in the initial scoping call.",
+    answer:
+      "I sign NDAs as standard for consulting work. For sensitive datasets, I can work in a sandboxed environment you provide, or on anonymised/synthetic data. We discuss data handling in the initial scoping call.",
   },
   {
     question: "What does a typical engagement look like?",
-    answer: "It starts with a free 30-minute scoping call. I then send a written proposal with scope, deliverables, timeline, and fixed price. Work proceeds in 2-week sprints with a check-in call each cycle. Final deliverables include code (well-documented), a technical report, and a handover session.",
+    answer:
+      "It starts with a free 30-minute scoping call. I then send a written proposal with scope, deliverables, timeline, and fixed price. Work proceeds in 2-week sprints with a check-in call each cycle. Final deliverables include code (well-documented), a technical report, and a handover session.",
   },
   {
     question: "Do you collaborate with other researchers or co-author papers?",
-    answer: "Yes — I'm open to research collaborations, co-authoring, and advisory roles on ML-heavy research projects. Drop me an email with the research question and your institution.",
+    answer:
+      "Yes — I'm open to research collaborations, co-authoring, and advisory roles on ML-heavy research projects. Drop me an email with the research question and your institution.",
   },
 ];
 ---
@@ -187,10 +209,18 @@ const faqItems = [
     data-reveal="section"
   >
     <div class="app-layout">
-      <div class="mb-10 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between" data-reveal="fade-up">
+      <div
+        class="mb-10 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"
+        data-reveal="fade-up"
+      >
         <div>
-          <p class="mb-1 font-mono text-sm text-[var(--color-teal)]">01 / Projects</p>
-          <h2 id="projects-heading" class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl">
+          <p class="mb-1 font-mono text-sm text-[var(--color-teal)]">
+            01 / Projects
+          </p>
+          <h2
+            id="projects-heading"
+            class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+          >
             Featured work
           </h2>
         </div>
@@ -200,21 +230,30 @@ const faqItems = [
           aria-label="See all projects"
         >
           See all projects
-          <Icon name="lucide:arrow-right" class="h-4 w-4 transition-transform duration-150 group-hover:translate-x-1" aria-hidden="true" />
+          <Icon
+            name="lucide:arrow-right"
+            class="h-4 w-4 transition-transform duration-150 group-hover:translate-x-1"
+            aria-hidden="true"
+          />
         </a>
       </div>
 
       <!-- 4-card grid -->
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4" data-reveal="stagger">
-        {featuredProjects.map(p => (
-          <ProjectCard
-            slug={p.slug}
-            title={p.title}
-            tagline={p.tagline}
-            tags={p.tags}
-            featured={p.featured}
-          />
-        ))}
+      <div
+        class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        data-reveal="stagger"
+      >
+        {
+          featuredProjects.map(p => (
+            <ProjectCard
+              slug={p.slug}
+              title={p.title}
+              tagline={p.tagline}
+              tags={p.tags}
+              featured={p.featured}
+            />
+          ))
+        }
       </div>
     </div>
   </section>
@@ -230,9 +269,10 @@ const faqItems = [
       class="pointer-events-none absolute inset-0"
       style="background: radial-gradient(ellipse 60% 50% at 10% 50%, rgba(239,159,39,0.05) 0%, transparent 60%);"
       aria-hidden="true"
-    ></div>
+    >
+    </div>
 
-    <div class="app-layout relative z-10">
+    <div class="relative z-10 app-layout">
       <div class="mb-3" data-reveal="fade-up">
         <p class="font-mono text-sm text-[var(--color-teal)]">02 / About</p>
       </div>
@@ -262,39 +302,92 @@ const faqItems = [
           </div>
 
           <!-- Credential pills -->
-          <div class="flex flex-wrap gap-2" role="list" aria-label="Credentials and affiliations">
-            <div role="listitem"><CredentialPill label="MEXT Scholar 2022" icon="lucide:award" variant="amber" /></div>
-            <div role="listitem"><CredentialPill label="IEEE Member" icon="lucide:cpu" variant="teal" /></div>
-            <div role="listitem"><CredentialPill label="UTP Researcher" icon="lucide:flask-conical" variant="muted" /></div>
-            <div role="listitem"><CredentialPill label="M.Sc. EEE" icon="lucide:graduation-cap" variant="muted" /></div>
-            <div role="listitem"><CredentialPill label="PETRONAS Digital Alumni" icon="lucide:building-2" variant="muted" /></div>
+          <div
+            class="flex flex-wrap gap-2"
+            role="list"
+            aria-label="Credentials and affiliations"
+          >
+            <div role="listitem">
+              <CredentialPill
+                label="MEXT Scholar 2022"
+                icon="lucide:award"
+                variant="amber"
+              />
+            </div>
+            <div role="listitem">
+              <CredentialPill
+                label="IEEE Member"
+                icon="lucide:cpu"
+                variant="teal"
+              />
+            </div>
+            <div role="listitem">
+              <CredentialPill
+                label="UTP Researcher"
+                icon="lucide:flask-conical"
+                variant="muted"
+              />
+            </div>
+            <div role="listitem">
+              <CredentialPill
+                label="M.Sc. EEE"
+                icon="lucide:graduation-cap"
+                variant="muted"
+              />
+            </div>
+            <div role="listitem">
+              <CredentialPill
+                label="PETRONAS Digital Alumni"
+                icon="lucide:building-2"
+                variant="muted"
+              />
+            </div>
           </div>
         </div>
 
         <!-- Right: bio text -->
         <div class="flex flex-col justify-center gap-5" data-reveal="fade-up">
-          <h2 id="about-heading" class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl">
+          <h2
+            id="about-heading"
+            class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+          >
             About me
           </h2>
 
-          <div class="space-y-4 text-[var(--color-text-secondary)] leading-relaxed">
+          <div
+            class="space-y-4 leading-relaxed text-[var(--color-text-secondary)]"
+          >
             <p>
-              I'm Ridhwan Amin, an AI/ML researcher at Universiti Teknologi PETRONAS (UTP) in Malaysia.
-              My research sits at the intersection of <strong class="text-[var(--color-text-primary)]">deep learning</strong> and
-              <strong class="text-[var(--color-text-primary)]">geophysical signal processing</strong> — specifically,
-              using implicit neural representations and generative priors to reconstruct missing seismic data.
+              I'm Ridhwan Amin, an AI/ML researcher at Universiti Teknologi
+              PETRONAS (UTP) in Malaysia. My research sits at the intersection
+              of <strong class="text-[var(--color-text-primary)]"
+                >deep learning</strong
+              > and
+              <strong class="text-[var(--color-text-primary)]"
+                >geophysical signal processing</strong
+              > — specifically, using implicit neural representations and generative
+              priors to reconstruct missing seismic data.
             </p>
             <p>
-              Beyond research, I consult with teams that need <strong class="text-[var(--color-text-primary)]">production-ready ML infrastructure</strong> —
-              RAG pipelines that actually retrieve the right things, anomaly detection systems that don't cry wolf,
-              and MLOps setups that let your team iterate without fear.
+              Beyond research, I consult with teams that need <strong
+                class="text-[var(--color-text-primary)]"
+                >production-ready ML infrastructure</strong
+              > — RAG pipelines that actually retrieve the right things, anomaly detection
+              systems that don't cry wolf, and MLOps setups that let your team iterate
+              without fear.
             </p>
             <p>
-              I received a <strong class="text-[var(--color-teal)]">MEXT scholarship</strong> from the Japanese government
-              and am a member of IEEE. I also write about ML, research craft, and working in energy-domain AI on my
-              <a href="https://ridhwanamin.substack.com" target="_blank" rel="noopener noreferrer"
+              I received a <strong class="text-[var(--color-teal)]"
+                >MEXT scholarship</strong
+              > from the Japanese government and am a member of IEEE. I also write
+              about ML, research craft, and working in energy-domain AI on my
+              <a
+                href="https://ridhwanamin.substack.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 class="text-[var(--color-substack)] underline decoration-dashed underline-offset-2 hover:decoration-solid"
-                aria-label="Ridhwan's Substack (opens in new tab)">
+                aria-label="Ridhwan's Substack (opens in new tab)"
+              >
                 Substack
               </a>.
             </p>
@@ -330,21 +423,28 @@ const faqItems = [
   >
     <div class="app-layout">
       <div class="mb-10" data-reveal="fade-up">
-        <p class="mb-1 font-mono text-sm text-[var(--color-teal)]">03 / What I Build</p>
-        <h2 id="capabilities-heading" class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl">
+        <p class="mb-1 font-mono text-sm text-[var(--color-teal)]">
+          03 / What I Build
+        </p>
+        <h2
+          id="capabilities-heading"
+          class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+        >
           Capabilities
         </h2>
       </div>
 
       <div class="grid gap-5 sm:grid-cols-2" data-reveal="stagger">
-        {capabilities.map((cap, i) => (
-          <CapabilityCard
-            index={i + 1}
-            headline={cap.headline}
-            description={cap.description}
-            tags={cap.tags}
-          />
-        ))}
+        {
+          capabilities.map((cap, i) => (
+            <CapabilityCard
+              index={i + 1}
+              headline={cap.headline}
+              description={cap.description}
+              tags={cap.tags}
+            />
+          ))
+        }
       </div>
     </div>
   </section>
@@ -360,12 +460,18 @@ const faqItems = [
       class="pointer-events-none absolute inset-0"
       style="background: radial-gradient(ellipse 50% 70% at 90% 50%, rgba(29,158,117,0.05) 0%, transparent 60%);"
       aria-hidden="true"
-    ></div>
+    >
+    </div>
 
-    <div class="app-layout relative z-10">
+    <div class="relative z-10 app-layout">
       <div class="mb-10" data-reveal="fade-up">
-        <p class="mb-1 font-mono text-sm text-[var(--color-teal)]">04 / Journey</p>
-        <h2 id="timeline-heading" class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl">
+        <p class="mb-1 font-mono text-sm text-[var(--color-teal)]">
+          04 / Journey
+        </p>
+        <h2
+          id="timeline-heading"
+          class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+        >
           Timeline
         </h2>
       </div>
@@ -385,25 +491,32 @@ const faqItems = [
   >
     <div class="app-layout">
       <div class="mb-10" data-reveal="fade-up">
-        <p class="mb-1 font-mono text-sm text-[var(--color-teal)]">05 / Research</p>
-        <h2 id="publications-heading" class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl">
+        <p class="mb-1 font-mono text-sm text-[var(--color-teal)]">
+          05 / Research
+        </p>
+        <h2
+          id="publications-heading"
+          class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+        >
           Publications
         </h2>
       </div>
 
       <div class="grid gap-5 md:grid-cols-2" data-reveal="stagger">
-        {publications.map(pub => (
-          <PublicationCard
-            title={pub.title}
-            venue={pub.venue}
-            year={pub.year}
-            authors={pub.authors}
-            abstract={pub.abstract}
-            doi={pub.doi}
-            doiUrl={pub.doiUrl}
-            badges={pub.badges}
-          />
-        ))}
+        {
+          publications.map(pub => (
+            <PublicationCard
+              title={pub.title}
+              venue={pub.venue}
+              year={pub.year}
+              authors={pub.authors}
+              abstract={pub.abstract}
+              doi={pub.doi}
+              doiUrl={pub.doiUrl}
+              badges={pub.badges}
+            />
+          ))
+        }
       </div>
     </div>
   </section>
@@ -419,12 +532,16 @@ const faqItems = [
       class="pointer-events-none absolute inset-0"
       style="background: radial-gradient(ellipse 60% 60% at 50% 80%, rgba(239,159,39,0.04) 0%, transparent 60%);"
       aria-hidden="true"
-    ></div>
+    >
+    </div>
 
-    <div class="app-layout relative z-10">
+    <div class="relative z-10 app-layout">
       <div class="mb-10 text-center" data-reveal="fade-up">
         <p class="mb-1 font-mono text-sm text-[var(--color-teal)]">06 / FAQ</p>
-        <h2 id="faq-heading" class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl">
+        <h2
+          id="faq-heading"
+          class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+        >
           Frequently asked
         </h2>
       </div>
@@ -453,11 +570,15 @@ const faqItems = [
    * GSAP is dynamically imported to avoid blocking first paint.
    */
   async function initScrollReveal() {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
 
     if (prefersReduced) {
       document
-        .querySelectorAll<HTMLElement>("[data-reveal='fade-up'], [data-reveal='stagger'] > *, [data-timeline-item]")
+        .querySelectorAll<HTMLElement>(
+          "[data-reveal='fade-up'], [data-reveal='stagger'] > *, [data-timeline-item]"
+        )
         .forEach(el => {
           el.style.opacity = "1";
           el.style.transform = "none";
@@ -470,62 +591,79 @@ const faqItems = [
     gsap.registerPlugin(ScrollTrigger);
 
     // Sync GSAP ScrollTrigger with Lenis
-    const lenis = (window as { __lenis?: { on: (e: string, cb: () => void) => void; raf: (t: number) => void } }).__lenis;
+    const lenis = (
+      window as {
+        __lenis?: {
+          on: (e: string, cb: () => void) => void;
+          raf: (t: number) => void;
+        };
+      }
+    ).__lenis;
     if (lenis) {
       lenis.on("scroll", ScrollTrigger.update);
-      gsap.ticker.add(time => { lenis.raf(time * 1000); });
+      gsap.ticker.add(time => {
+        lenis.raf(time * 1000);
+      });
       gsap.ticker.lagSmoothing(0);
     }
 
     // fade-up: individual elements
-    document.querySelectorAll<HTMLElement>("[data-reveal='fade-up']").forEach(el => {
-      gsap.from(el, {
-        opacity: 0,
-        y: 24,
-        duration: 0.7,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: el,
-          start: "top 88%",
-          once: true,
-        },
-      });
-    });
-
-    // stagger: direct children of [data-reveal="stagger"]
-    document.querySelectorAll<HTMLElement>("[data-reveal='stagger']").forEach(container => {
-      const children = Array.from(container.children) as HTMLElement[];
-      gsap.from(children, {
-        opacity: 0,
-        y: 28,
-        duration: 0.6,
-        ease: "power2.out",
-        stagger: 0.1,
-        scrollTrigger: {
-          trigger: container,
-          start: "top 85%",
-          once: true,
-        },
-      });
-    });
-
-    // Timeline items: alternating left/right slide-in
-    const timelineContainer = document.querySelector<HTMLElement>("[data-reveal='timeline']");
-    if (timelineContainer) {
-      timelineContainer.querySelectorAll<HTMLElement>("[data-timeline-item]").forEach((item, i) => {
-        gsap.from(item, {
+    document
+      .querySelectorAll<HTMLElement>("[data-reveal='fade-up']")
+      .forEach(el => {
+        gsap.from(el, {
           opacity: 0,
-          x: i % 2 === 0 ? -24 : 24,
-          duration: 0.65,
+          y: 24,
+          duration: 0.7,
           ease: "power2.out",
-          delay: i * 0.08,
           scrollTrigger: {
-            trigger: item,
+            trigger: el,
             start: "top 88%",
             once: true,
           },
         });
       });
+
+    // stagger: direct children of [data-reveal="stagger"]
+    document
+      .querySelectorAll<HTMLElement>("[data-reveal='stagger']")
+      .forEach(container => {
+        const children = Array.from(container.children) as HTMLElement[];
+        gsap.from(children, {
+          opacity: 0,
+          y: 28,
+          duration: 0.6,
+          ease: "power2.out",
+          stagger: 0.1,
+          scrollTrigger: {
+            trigger: container,
+            start: "top 85%",
+            once: true,
+          },
+        });
+      });
+
+    // Timeline items: alternating left/right slide-in
+    const timelineContainer = document.querySelector<HTMLElement>(
+      "[data-reveal='timeline']"
+    );
+    if (timelineContainer) {
+      timelineContainer
+        .querySelectorAll<HTMLElement>("[data-timeline-item]")
+        .forEach((item, i) => {
+          gsap.from(item, {
+            opacity: 0,
+            x: i % 2 === 0 ? -24 : 24,
+            duration: 0.65,
+            ease: "power2.out",
+            delay: i * 0.08,
+            scrollTrigger: {
+              trigger: item,
+              start: "top 88%",
+              once: true,
+            },
+          });
+        });
     }
   }
 
