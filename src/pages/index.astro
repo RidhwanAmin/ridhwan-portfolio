@@ -27,8 +27,8 @@ import PublicationCard from "@/components/PublicationCard.astro";
 import FaqAccordion from "@/components/FaqAccordion.astro";
 import ContactSection from "@/components/ContactSection.astro";
 import { Icon } from "astro-icon/components";
-import { Image } from 'astro:assets';
-import profilePhoto from '../../public/images/ridhwan.jpg';
+import { Image } from "astro:assets";
+import profilePhoto from "../../public/images/ridhwan.jpg";
 
 // ── Featured projects data (placeholder — Wave 3 replaces with getCollection) ──
 const featuredProjects = [
@@ -251,19 +251,13 @@ const faqItems = [
               style="background: radial-gradient(ellipse 80% 80% at 50% 40%, rgba(29,158,117,0.15) 0%, rgba(10,10,15,0) 70%), linear-gradient(135deg, #0f1a14 0%, #0A0A0F 100%);"
               aria-hidden="true"
             >
-              <svg class="h-full w-full" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <text
-                  x="50%"
-                  y="52%"
-                  dominant-baseline="middle"
-                  text-anchor="middle"
-                  font-family="Inter, sans-serif"
-                  font-size="96"
-                  font-weight="700"
-                  fill="rgba(29,158,117,0.25)"
-                  letter-spacing="-4"
-                >RA</text>
-              </svg>
+              <Image
+                src={profilePhoto}
+                alt="Ridhwan Amin — AI/ML Researcher"
+                width={300}
+                height={300}
+                class="h-full w-full object-cover"
+              />
             </div>
           </div>
 
@@ -476,7 +470,7 @@ const faqItems = [
     gsap.registerPlugin(ScrollTrigger);
 
     // Sync GSAP ScrollTrigger with Lenis
-    const lenis = (window as any).__lenis;
+    const lenis = (window as { __lenis?: { on: (e: string, cb: () => void) => void; raf: (t: number) => void } }).__lenis;
     if (lenis) {
       lenis.on("scroll", ScrollTrigger.update);
       gsap.ticker.add(time => { lenis.raf(time * 1000); });
