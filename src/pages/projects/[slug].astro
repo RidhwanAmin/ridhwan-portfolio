@@ -5,6 +5,8 @@
  * Dynamic route for individual MDX case study pages.
  * Uses getStaticPaths() to pre-render all published case studies at build time.
  */
+export const prerender = true;
+
 import { getCollection, render } from "astro:content";
 import CaseStudyLayout from "@/layouts/CaseStudyLayout.astro";
 import { SITE } from "@/config";

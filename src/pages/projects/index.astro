@@ -9,6 +9,8 @@
  * Cross-agent contract: uses getCollection('case-studies') with shape
  * { id, data: { title, tagline, tags, thumbnail, featured, draft, status } }
  */
+export const prerender = true;
+
 import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import ProjectCard from "@/components/ProjectCard.astro";

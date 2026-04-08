@@ -8,6 +8,8 @@
  *
  * Reading time is calculated server-side (~200 wpm) from the raw MDX body.
  */
+export const prerender = true;
+
 import { getCollection, render } from "astro:content";
 import PostLayout from "@/layouts/PostLayout.astro";
 import { SITE } from "@/config";

@@ -7,6 +7,8 @@
  * Uses amber (#EF9F27) accent to distinguish case studies from blog posts.
  */
 
+export const prerender = true;
+
 import type { APIRoute } from "astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import { SITE } from "@/config";

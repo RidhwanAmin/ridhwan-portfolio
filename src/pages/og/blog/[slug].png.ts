@@ -8,6 +8,8 @@
  * Only generates for posts without an explicit ogImage override.
  */
 
+export const prerender = true;
+
 import type { APIRoute } from "astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import { SITE } from "@/config";
