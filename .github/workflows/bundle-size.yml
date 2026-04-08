@@ -33,22 +33,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.11.1
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
+          cache: npm
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm ci --legacy-peer-deps
 
       - name: Build (skip validate-env in CI — env vars not available)
-        run: pnpm exec astro build
+        run: npm run build
         env:
           # Provide dummy values so validate-env.mjs does not abort the build
           NODE_ENV: test
