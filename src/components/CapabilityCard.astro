@@ -1,0 +1,73 @@
+---
+/**
+ * CapabilityCard.astro — Agent A owns this file. Task A10.
+ *
+ * Numbered capability card (001–004).
+ * Monospace zero-padded number, headline, description, tech tags.
+ * Used in the "What I Build" / capabilities section of the home page.
+ */
+
+export interface Props {
+  /** Display index — rendered as 001, 002, 003, 004 */
+  index: number;
+  /** Capability headline */
+  headline: string;
+  /** 2-3 sentence description */
+  description: string;
+  /** Related tech/tools */
+  tags?: string[];
+}
+
+const { index, headline, description, tags = [] } = Astro.props;
+const num = String(index).padStart(3, "0");
+---
+
+<article
+  class="capability-card group relative overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 transition-all duration-300 hover:border-[var(--color-teal)] hover:bg-[var(--color-surface-hover)]"
+>
+  <!-- Subtle teal gradient on hover -->
+  <div
+    class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+    style="background: radial-gradient(ellipse 70% 60% at 0% 0%, rgba(29,158,117,0.07) 0%, transparent 60%);"
+    aria-hidden="true"
+  >
+  </div>
+
+  <!-- Monospace index number -->
+  <span
+    class="mb-4 block font-mono text-3xl leading-none font-bold text-[var(--color-teal)] opacity-40 transition-opacity duration-300 group-hover:opacity-70"
+    aria-hidden="true"
+  >
+    {num}
+  </span>
+
+  <h3
+    class="mb-2 text-base leading-snug font-semibold text-[var(--color-text-primary)]"
+  >
+    {headline}
+  </h3>
+
+  <p class="mb-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+    {description}
+  </p>
+
+  <!-- Tech tags -->
+  {
+    tags.length > 0 && (
+      <div
+        class="flex flex-wrap gap-1.5"
+        role="list"
+        aria-label={`Technologies for ${headline}`}
+      >
+        {tags.map(tag => (
+          <span
+            role="listitem"
+            class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-0.5 font-mono text-[0.6rem] text-[var(--color-text-muted)]"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+    )
+  }
+</article>

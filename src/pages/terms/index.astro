@@ -1,0 +1,215 @@
+---
+/**
+ * /terms — Agent D owns this file. Task D7.
+ *
+ * Terms of Service for Ridhwan Amin consulting services.
+ * Static page — no server-side logic required.
+ */
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const lastUpdated = "8 April 2026";
+---
+
+<BaseLayout
+  title="Terms of Service — Ridhwan Amin"
+  description="Terms of service for consulting and advisory services provided by Ridhwan Amin."
+>
+  <article
+    class="mx-auto max-w-2xl px-4 py-20 sm:px-6 lg:px-8"
+    aria-label="Terms of Service"
+  >
+    <header class="mb-12">
+      <h1
+        class="mb-3 text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+      >
+        Terms of Service
+      </h1>
+      <p class="text-sm text-[var(--color-text-muted)]">
+        Last updated: {lastUpdated}
+      </p>
+    </header>
+
+    <div
+      class="prose max-w-none space-y-8 text-[var(--color-text-secondary)] prose-invert"
+    >
+      <!-- 1. Services -->
+      <section>
+        <h2 class="mb-3 text-xl font-semibold text-[var(--color-text-primary)]">
+          1. Services
+        </h2>
+        <p class="text-sm leading-relaxed">
+          Ridhwan Amin (&ldquo;I&rdquo;, &ldquo;me&rdquo;) provides AI/ML
+          consulting, advisory, and research services to clients
+          (&ldquo;you&rdquo;) via ridhwan.dev. Services include, but are not
+          limited to: consulting calls, advisory retainers, and project
+          engagements as described on the{" "}
+          <a
+            href="/services"
+            class="text-[var(--color-teal)] underline underline-offset-2 hover:opacity-80"
+          >
+            Services
+          </a>{" "}
+          page.
+        </p>
+        <p class="mt-3 text-sm leading-relaxed">
+          I reserve the right to decline any engagement or terminate a service
+          relationship where a project scope falls outside my expertise, or
+          where continued engagement would be professionally inappropriate.
+        </p>
+      </section>
+
+      <!-- 2. Payment Terms -->
+      <section>
+        <h2 class="mb-3 text-xl font-semibold text-[var(--color-text-primary)]">
+          2. Payment
+        </h2>
+        <p class="text-sm leading-relaxed">
+          Payment for consulting calls and advisory retainers is processed via
+          Stripe. By completing a payment, you agree to Stripe&rsquo;s{" "}
+          <a
+            href="https://stripe.com/legal/ssa"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[var(--color-teal)] underline underline-offset-2 hover:opacity-80"
+          >
+            Terms of Service
+          </a>. All prices are listed in USD unless otherwise noted.
+        </p>
+        <p class="mt-3 text-sm leading-relaxed">
+          Advisory retainers are billed monthly. You may cancel before the next
+          billing cycle to avoid renewal. Refund eligibility is described in the{
+            " "
+          }
+          <a
+            href="/refund-policy"
+            class="text-[var(--color-teal)] underline underline-offset-2 hover:opacity-80"
+          >
+            Refund Policy
+          </a>.
+        </p>
+        <p class="mt-3 text-sm leading-relaxed">
+          Project engagements are billed on a milestone basis as agreed in
+          writing at the start of the engagement.
+        </p>
+      </section>
+
+      <!-- 3. Intellectual Property -->
+      <section>
+        <h2 class="mb-3 text-xl font-semibold text-[var(--color-text-primary)]">
+          3. Intellectual Property
+        </h2>
+        <p class="text-sm leading-relaxed">
+          Deliverables produced specifically for your project (code, reports,
+          designs) become your property upon full payment. I retain ownership of
+          all pre-existing tools, frameworks, and methodologies used in
+          delivering the work.
+        </p>
+        <p class="mt-3 text-sm leading-relaxed">
+          I reserve the right to reference the existence of our engagement in my
+          professional portfolio and public profile, without identifying your
+          organisation or disclosing confidential information, unless otherwise
+          agreed in a signed NDA.
+        </p>
+      </section>
+
+      <!-- 4. Confidentiality -->
+      <section>
+        <h2 class="mb-3 text-xl font-semibold text-[var(--color-text-primary)]">
+          4. Confidentiality
+        </h2>
+        <p class="text-sm leading-relaxed">
+          I treat all client information shared during an engagement as
+          confidential. I will not disclose proprietary business information,
+          unpublished research, or technical specifics to third parties without
+          your written consent. I routinely sign mutual NDAs — contact me at{
+            " "
+          }
+          <a
+            href="mailto:ridhwan@ridhwan.dev"
+            class="text-[var(--color-teal)] underline underline-offset-2 hover:opacity-80"
+          >
+            ridhwan@ridhwan.dev
+          </a>{" "}
+          to arrange one before our first session.
+        </p>
+      </section>
+
+      <!-- 5. Limitation of Liability -->
+      <section>
+        <h2 class="mb-3 text-xl font-semibold text-[var(--color-text-primary)]">
+          5. Limitation of Liability
+        </h2>
+        <p class="text-sm leading-relaxed">
+          Consulting and advisory services constitute professional opinion and
+          guidance, not a guarantee of specific outcomes. I am not liable for
+          any business decisions made based on my advice, nor for any
+          consequential, incidental, or indirect damages arising from our
+          engagement.
+        </p>
+        <p class="mt-3 text-sm leading-relaxed">
+          My total liability under any engagement is limited to the fees paid
+          for that specific engagement.
+        </p>
+      </section>
+
+      <!-- 6. Governing Law -->
+      <section>
+        <h2 class="mb-3 text-xl font-semibold text-[var(--color-text-primary)]">
+          6. Governing Law
+        </h2>
+        <p class="text-sm leading-relaxed">
+          These terms are governed by the laws of Malaysia. Any disputes will be
+          resolved under Malaysian jurisdiction.
+        </p>
+      </section>
+
+      <!-- 7. Changes -->
+      <section>
+        <h2 class="mb-3 text-xl font-semibold text-[var(--color-text-primary)]">
+          7. Changes to These Terms
+        </h2>
+        <p class="text-sm leading-relaxed">
+          I may update these terms from time to time. Material changes will be
+          noted with an updated &ldquo;Last updated&rdquo; date. Continued use
+          of the services after changes constitutes acceptance of the revised
+          terms.
+        </p>
+      </section>
+
+      <!-- 8. Contact -->
+      <section>
+        <h2 class="mb-3 text-xl font-semibold text-[var(--color-text-primary)]">
+          8. Contact
+        </h2>
+        <p class="text-sm leading-relaxed">
+          Questions about these terms? Reach me at{" "}
+          <a
+            href="mailto:ridhwan@ridhwan.dev"
+            class="text-[var(--color-teal)] underline underline-offset-2 hover:opacity-80"
+          >
+            ridhwan@ridhwan.dev
+          </a>.
+        </p>
+      </section>
+    </div>
+
+    <!-- Related links -->
+    <nav
+      class="mt-16 flex flex-wrap gap-4 border-t border-[var(--color-border)] pt-8"
+      aria-label="Related pages"
+    >
+      <a
+        href="/refund-policy"
+        class="text-sm text-[var(--color-teal)] underline underline-offset-2 hover:opacity-80"
+      >
+        Refund Policy
+      </a>
+      <a
+        href="/services"
+        class="text-sm text-[var(--color-teal)] underline underline-offset-2 hover:opacity-80"
+      >
+        Services
+      </a>
+    </nav>
+  </article>
+</BaseLayout>

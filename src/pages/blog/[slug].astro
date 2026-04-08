@@ -1,0 +1,89 @@
+---
+/**
+ * /blog/[slug] — Agent A owns this file. Task A21.
+ *
+ * Dynamic route for individual MDX blog posts.
+ * Uses getStaticPaths() to pre-render all published local posts at build time.
+ * Substack posts are NOT rendered here — they are external links on /blog.
+ *
+ * Reading time is calculated server-side (~200 wpm) from the raw MDX body.
+ */
+import { getCollection, render } from "astro:content";
+import PostLayout from "@/layouts/PostLayout.astro";
+import { SITE } from "@/config";
+import { getPath } from "@/utils/getPath";
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection("blog", ({ data }) => !data.draft);
+
+  // Sort by pubDatetime descending for prev/next
+  const posts = allPosts.sort(
+    (a, b) =>
+      new Date(b.data.pubDatetime).getTime() -
+      new Date(a.data.pubDatetime).getTime()
+  );
+
+  return posts.map((post, index) => {
+    const prev = posts[index + 1] ?? null;
+    const next = posts[index - 1] ?? null;
+
+    return {
+      params: { slug: post.id },
+      props: {
+        entry: post,
+        prevSlug: prev?.id,
+        prevTitle: prev?.data.title,
+        nextSlug: next?.id,
+        nextTitle: next?.data.title,
+      },
+    };
+  });
+}
+
+const { entry, prevSlug, prevTitle, nextSlug, nextTitle } = Astro.props;
+const { Content, remarkPluginFrontmatter } = await render(entry);
+
+/**
+ * Calculate reading time from word count.
+ * remark-reading-time is not installed, so we estimate from rendered body
+ * by counting words in the raw MDX content body via the frontmatter.
+ * Fallback: use a simple estimation of ~200 wpm.
+ */
+function estimateReadingTime(body: string | undefined): number {
+  if (!body) return 1;
+  const words = body.trim().split(/\s+/).length;
+  return Math.max(1, Math.ceil(words / 200));
+}
+
+const readingTimeMinutes =
+  remarkPluginFrontmatter?.readingTime ?? estimateReadingTime(entry.body);
+
+// B10: Per-post OG image. Use explicit ogImage from frontmatter if provided,
+// otherwise point to the dynamic OG route generated in /og/blog/[slug].png.ts.
+const ogImageUrl = entry.data.ogImage
+  ? `${SITE.website}/${entry.data.ogImage}`
+  : SITE.dynamicOgImage
+    ? `${SITE.website}/og/blog/${getPath(entry.id, entry.filePath, false)}.png`
+    : `${SITE.website}/og.png`;
+---
+
+<PostLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  pubDatetime={new Date(entry.data.pubDatetime)}
+  modDatetime={entry.data.modDatetime
+    ? new Date(entry.data.modDatetime)
+    : undefined}
+  author={entry.data.author}
+  tags={entry.data.tags ?? []}
+  slug={entry.id}
+  ogImage={ogImageUrl}
+  canonicalURL={entry.data.canonicalURL}
+  readingTimeMinutes={readingTimeMinutes}
+  prevSlug={prevSlug}
+  prevTitle={prevTitle}
+  nextSlug={nextSlug}
+  nextTitle={nextTitle}
+>
+  <Content />
+</PostLayout>

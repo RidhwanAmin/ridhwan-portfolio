@@ -1,0 +1,106 @@
+# E6: Smoke tests — Agent E owns this file. Task E6.
+#
+# Post-deploy smoke tests targeting the production (or preview) URL.
+# CP-4 is met (B7 /api/contact is live), so the if: false guard is NOT present.
+#
+# Tests:
+#   1. POST /api/contact returns 200 (with valid payload)
+#   2. GET  /api/contact returns 405
+#   3. GET  /api/checkout returns 405
+#   4. GET  /api/webhooks/stripe returns 405
+#
+# Cross-agent contracts enforced:
+#   - B7: /api/contact POST → 200, GET → 405
+#   - D3: /api/checkout GET → 405
+#   - D5: /api/webhooks/stripe GET → 405
+
+name: Smoke Tests
+
+permissions:
+  contents: read
+
+on:
+  # Run after a deployment to production
+  deployment_status:
+  # Also allow manual trigger for ad-hoc verification
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: "URL to test against (e.g. https://ridhwan.dev)"
+        required: false
+        default: "https://ridhwan.dev"
+
+jobs:
+  smoke-tests:
+    name: API smoke tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Only run on successful deployments or manual trigger
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'deployment_status' &&
+       github.event.deployment_status.state == 'success')
+
+    steps:
+      - name: Resolve target URL
+        id: url
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TARGET="${{ github.event.inputs.target_url }}"
+          else
+            TARGET="${{ github.event.deployment_status.environment_url }}"
+          fi
+          # Strip trailing slash
+          TARGET="${TARGET%/}"
+          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
+          echo "Smoke test target: $TARGET"
+
+      - name: POST /api/contact → expect 200
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"name":"Smoke Test","email":"smoke@test.dev","message":"Automated smoke test — ignore."}' \
+            "${{ steps.url.outputs.target }}/api/contact")
+          echo "POST /api/contact → HTTP $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "FAIL: Expected 200, got $STATUS"
+            exit 1
+          fi
+
+      - name: GET /api/contact → expect 405
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X GET \
+            "${{ steps.url.outputs.target }}/api/contact")
+          echo "GET /api/contact → HTTP $STATUS"
+          if [ "$STATUS" != "405" ]; then
+            echo "FAIL: Expected 405, got $STATUS"
+            exit 1
+          fi
+
+      - name: GET /api/checkout → expect 405
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X GET \
+            "${{ steps.url.outputs.target }}/api/checkout")
+          echo "GET /api/checkout → HTTP $STATUS"
+          if [ "$STATUS" != "405" ]; then
+            echo "FAIL: Expected 405, got $STATUS"
+            exit 1
+          fi
+
+      - name: GET /api/webhooks/stripe → expect 405
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X GET \
+            "${{ steps.url.outputs.target }}/api/webhooks/stripe")
+          echo "GET /api/webhooks/stripe → HTTP $STATUS"
+          if [ "$STATUS" != "405" ]; then
+            echo "FAIL: Expected 405, got $STATUS"
+            exit 1
+          fi
+
+      - name: Report smoke test results
+        if: always()
+        run: echo "Smoke tests completed for ${{ steps.url.outputs.target }}"

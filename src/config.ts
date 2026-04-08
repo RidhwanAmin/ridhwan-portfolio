@@ -1,23 +1,38 @@
 export const SITE = {
-  website: "https://astro-paper.pages.dev/", // replace this with your deployed domain
-  author: "Sat Naing",
-  profile: "https://satnaing.dev/",
-  desc: "A minimal, responsive and SEO-friendly Astro blog theme.",
-  title: "AstroPaper",
-  ogImage: "astropaper-og.jpg",
+  website: "https://ridhwan.dev",
+  author: "Ridhwan Amin",
+  profile: "https://ridhwan.dev",
+  desc: "AI/ML researcher at UTP. I build seismic inpainting models, anomaly detection systems, and hybrid RAG pipelines.",
+  title: "Ridhwan Amin — AI/ML Researcher",
+  ogImage: "og.png",
   lightAndDarkMode: true,
   postPerIndex: 4,
-  postPerPage: 4,
+  postPerPage: 6,
   scheduledPostMargin: 15 * 60 * 1000, // 15 minutes
-  showArchives: true,
-  showBackButton: true, // show back button in post detail
+  showArchives: false,
+  showBackButton: true,
   editPost: {
-    enabled: true,
+    enabled: false,
     text: "Edit page",
-    url: "https://github.com/satnaing/astro-paper/edit/main/",
+    url: "https://github.com/RidhwanAmin/ridhwan-portfolio/edit/main/",
   },
   dynamicOgImage: true,
-  dir: "ltr", // "rtl" | "auto"
-  lang: "en", // html lang code. Set this empty and default will be "en"
-  timezone: "Asia/Bangkok", // Default global timezone (IANA format) https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  dir: "ltr",
+  lang: "en",
+  timezone: "Asia/Kuala_Lumpur",
 } as const;
+
+export const SOCIAL_LINKS = {
+  github: "https://github.com/RidhwanAmin",
+  linkedin: "https://linkedin.com/in/ridhwanamin",
+  email: "mailto:ridhwan@ridhwan.dev",
+  substack: "https://ridhwanamin.substack.com",
+} as const;
+
+export const NAV_LINKS = [
+  { label: "Projects", href: "#projects", section: true },
+  { label: "About", href: "#about", section: true },
+  { label: "Blog", href: "/blog", section: false },
+  { label: "Services", href: "/services", section: false },
+  { label: "Contact", href: "#contact", section: true },
+] as const;

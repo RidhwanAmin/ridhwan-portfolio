@@ -1,0 +1,39 @@
+---
+title: "Seismic Inpainting with Deep Priors"
+tagline: "Reconstructing missing seismic traces using U-Net + implicit neural representations."
+description: "A deep learning approach to seismic trace reconstruction that combines U-Net architecture with implicit neural representations (INR) and energy-based deep priors. Achieves 3.2 dB PSNR improvement over conventional interpolation on the SEAM Phase I dataset."
+pubDatetime: 2024-03-15
+tags: ["PyTorch", "U-Net", "INR", "NumPy", "Seismic"]
+featured: true
+status: "published"
+---
+
+## Problem
+
+Seismic acquisition surveys routinely produce data with missing or corrupted traces due to hardware failures, terrain constraints, and acquisition cost trade-offs. Conventional interpolation (linear, spline, Fourier-based) fails when the missing fraction exceeds ~30% or when the spatial aliasing is severe.
+
+## Approach
+
+We frame trace reconstruction as a regularised inverse problem. Rather than training a supervised model on labelled pairs, we exploit a deep generative prior: a U-Net initialised with random weights acts as a structural prior over the signal manifold. The network is optimised at test time to fit only the observed traces while its architecture implicitly regularises the solution.
+
+The reconstruction loss is:
+
+$$\mathcal{L} = \|\mathbf{M} \odot (f_\theta(\mathbf{z}) - \mathbf{y})\|_2^2 + \lambda \|\nabla f_\theta(\mathbf{z})\|_1$$
+
+where $\mathbf{M}$ is the binary observation mask, $f_\theta$ is the U-Net, $\mathbf{z}$ is a fixed noise seed, and $\lambda$ controls total-variation regularisation.
+
+## Results
+
+Evaluated on the SEAM Phase I synthetic dataset with 40% random trace removal:
+
+- **PSNR**: 28.4 dB (ours) vs 25.2 dB (conventional POCS interpolation) — **+3.2 dB**
+- **SSIM**: 0.91 vs 0.83
+- **Convergence**: ~800 gradient steps per patch on a single A100
+
+## Tech stack
+
+PyTorch, NumPy, SciPy, Matplotlib, custom CUDA kernels for the observation mask operator.
+
+## Status
+
+Paper accepted at IEEE Transactions on Geoscience and Remote Sensing (2024, pending publication).

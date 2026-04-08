@@ -1,0 +1,62 @@
+# E7: Rollback workflow — Agent E owns this file. Task E7.
+#
+# Manual rollback via Vercel CLI. Triggered by workflow_dispatch.
+# Requires VERCEL_TOKEN secret (set by Agent C in C9).
+#
+# Usage:
+#   GitHub → Actions → "Rollback Vercel Deployment" → Run workflow
+#   Input: deployment_url (optional — if omitted, rolls back to the previous prod deployment)
+
+name: Rollback Vercel Deployment
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_url:
+        description: "Vercel deployment URL to roll back to (e.g. https://ridhwan-xyz.vercel.app). Leave blank to roll back to the previous production deployment."
+        required: false
+        default: ""
+      confirm:
+        description: "Type 'rollback' to confirm this action"
+        required: true
+        default: ""
+
+jobs:
+  rollback:
+    name: Rollback production deployment
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Validate confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "rollback" ]; then
+            echo "ERROR: Confirmation input must be exactly 'rollback'. Aborting."
+            exit 1
+          fi
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Rollback deployment
+        run: |
+          DEPLOYMENT_URL="${{ github.event.inputs.deployment_url }}"
+          if [ -n "$DEPLOYMENT_URL" ]; then
+            echo "Rolling back to: $DEPLOYMENT_URL"
+            vercel rollback "$DEPLOYMENT_URL" \
+              --token="${{ secrets.VERCEL_TOKEN }}" \
+              --yes
+          else
+            echo "No deployment URL specified — rolling back to previous production deployment"
+            vercel rollback \
+              --token="${{ secrets.VERCEL_TOKEN }}" \
+              --yes
+          fi
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Confirm rollback
+        run: echo "Rollback completed at $(date -u). Verify at https://ridhwan.dev"

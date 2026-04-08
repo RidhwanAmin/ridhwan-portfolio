@@ -1,0 +1,114 @@
+---
+/**
+ * PublicationCard.astro — Agent A owns this file. Task A12.
+ *
+ * IEEE / academic paper card.
+ * Shows title, venue, year, authors, abstract snippet, DOI link,
+ * and achievement badges (Best Paper, etc.).
+ */
+import { Icon } from "astro-icon/components";
+
+export interface Props {
+  title: string;
+  venue: string;
+  year: number | string;
+  authors: string[];
+  abstract?: string;
+  doi?: string;
+  doiUrl?: string;
+  /** Optional badges: e.g. "Best Paper Award", "Oral Presentation" */
+  badges?: string[];
+}
+
+const {
+  title,
+  venue,
+  year,
+  authors,
+  abstract,
+  doi,
+  doiUrl,
+  badges = [],
+} = Astro.props;
+
+const authorStr = authors.join(", ");
+---
+
+<article
+  class="publication-card group relative flex flex-col gap-4 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 transition-all duration-300 hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-hover)]"
+>
+  <!-- Left accent bar -->
+  <div
+    class="absolute top-0 left-0 h-full w-1 rounded-l-xl bg-[var(--color-teal)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+    aria-hidden="true"
+  >
+  </div>
+
+  <!-- Badges row -->
+  {
+    badges.length > 0 && (
+      <div class="flex flex-wrap gap-2">
+        {badges.map(badge => (
+          <span class="inline-flex items-center gap-1 rounded-full bg-[var(--color-amber-muted)] px-3 py-1 text-xs font-medium text-[var(--color-amber)]">
+            <Icon name="lucide:award" class="h-3 w-3" aria-hidden="true" />
+            {badge}
+          </span>
+        ))}
+      </div>
+    )
+  }
+
+  <!-- Title -->
+  <h3
+    class="text-base leading-snug font-semibold text-[var(--color-text-primary)]"
+  >
+    {
+      doiUrl ? (
+        <a
+          href={doiUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="transition-colors duration-150 hover:text-[var(--color-teal)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+          aria-label={`Open paper: ${title} (opens in new tab)`}
+        >
+          {title}
+        </a>
+      ) : (
+        title
+      )
+    }
+  </h3>
+
+  <!-- Venue + year -->
+  <p class="text-sm font-medium text-[var(--color-text-secondary)]">
+    {venue} &middot; {year}
+  </p>
+
+  <!-- Authors -->
+  <p class="text-xs text-[var(--color-text-muted)]">{authorStr}</p>
+
+  <!-- Abstract snippet -->
+  {
+    abstract && (
+      <p class="line-clamp-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+        {abstract}
+      </p>
+    )
+  }
+
+  <!-- DOI link -->
+  {
+    doi && doiUrl && (
+      <a
+        href={doiUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex w-fit items-center gap-1.5 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-1.5 font-mono text-xs text-[var(--color-text-muted)] transition-all duration-150 hover:border-[var(--color-teal)] hover:text-[var(--color-teal)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+        aria-label={`DOI: ${doi} (opens in new tab)`}
+      >
+        <Icon name="lucide:external-link" class="h-3 w-3" aria-hidden="true" />
+        DOI: {doi}
+      </a>
+    )
+  }
+</article>

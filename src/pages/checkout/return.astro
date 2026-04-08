@@ -1,0 +1,70 @@
+---
+/**
+ * /checkout/return — Agent A owns this file. Task A22.
+ *
+ * Post-payment confirmation page.
+ * Agent D will enhance this page to verify the Stripe session via
+ * session_id query param after D5 is complete.
+ *
+ * Cross-agent contract:
+ *   success_url: /checkout/return?session_id={CHECKOUT_SESSION_ID}
+ *   cancel_url: /services
+ */
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { Icon } from "astro-icon/components";
+
+// session_id is available but unused until Agent D adds session verification
+// const { session_id } = Astro.url.searchParams;
+---
+
+<BaseLayout
+  title="Booking Confirmed — Ridhwan Amin"
+  description="Your booking is confirmed. I'll be in touch shortly."
+>
+  <section
+    class="mx-auto flex min-h-[60vh] max-w-xl flex-col items-center justify-center px-4 py-20 text-center sm:px-6"
+  >
+    <!-- Success icon -->
+    <div
+      class="mb-6 flex h-16 w-16 items-center justify-center rounded-full"
+      style="background: var(--color-teal-muted);"
+      aria-hidden="true"
+    >
+      <Icon
+        name="lucide:check-circle"
+        class="h-8 w-8 text-[var(--color-teal)]"
+        aria-hidden="true"
+      />
+    </div>
+
+    <h1
+      class="mb-4 text-2xl font-bold text-[var(--color-text-primary)] sm:text-3xl"
+    >
+      Your booking is confirmed.
+    </h1>
+
+    <p
+      class="mb-8 text-base leading-relaxed text-[var(--color-text-secondary)]"
+    >
+      Thank you for booking. You'll receive a confirmation email shortly with
+      the next steps. I look forward to working with you.
+    </p>
+
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <a
+        href="/services"
+        class="inline-flex items-center gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3 text-sm font-semibold text-[var(--color-text-primary)] transition-all duration-150 hover:border-[var(--color-teal)] hover:text-[var(--color-teal)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+      >
+        <Icon name="lucide:arrow-left" class="h-4 w-4" aria-hidden="true" />
+        Back to Services
+      </a>
+      <a
+        href="/"
+        class="inline-flex items-center gap-2 rounded-xl bg-[var(--color-teal)] px-6 py-3 text-sm font-semibold text-white transition-all duration-150 hover:bg-[#178a62] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+      >
+        <Icon name="lucide:home" class="h-4 w-4" aria-hidden="true" />
+        Go to homepage
+      </a>
+    </div>
+  </section>
+</BaseLayout>
