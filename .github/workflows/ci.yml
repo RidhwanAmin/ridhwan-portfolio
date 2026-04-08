@@ -43,3 +43,11 @@ jobs:
 
       - name: "🚀 Build the project"
         run: npm run build
+        env:
+          NODE_ENV: test
+          SITE_URL: https://ridhwan.dev
+          SUBSTACK_RSS_URL: https://ridhwanamin.substack.com/feed
+          RESEND_API_KEY: re_dummy
+          STRIPE_SECRET_KEY: sk_test_dummy
+          STRIPE_PUBLISHABLE_KEY: pk_test_dummy
+          STRIPE_SIGNING_SECRET: whsec_dummy
