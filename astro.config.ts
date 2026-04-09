@@ -26,7 +26,7 @@ export default defineConfig({
   // are deployed as Vercel serverless functions.
   // Agent C (C13) has been notified via CP-3 to confirm the Vercel adapter.
   output: "server",
-  adapter: vercel(),
+  adapter: vercel({ imageService: true }),
   integrations: [
     mdx(),
     sitemap({
