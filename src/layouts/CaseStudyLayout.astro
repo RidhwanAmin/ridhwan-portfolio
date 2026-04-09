@@ -1,0 +1,314 @@
+---
+/**
+ * CaseStudyLayout.astro — Agent A owns this file. Task A17.
+ *
+ * Layout for /projects/[slug] MDX case study pages.
+ * Provides: hero header, sticky TOC sidebar (desktop), MDX content area,
+ * prev/next navigation, tag pills, and JSON-LD structured data.
+ *
+ * KaTeX is loaded globally via BaseLayout — no re-import needed here.
+ * Code highlighting comes from Shiki (configured in astro.config.ts).
+ */
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { SITE } from "@/config";
+import Datetime from "@/components/Datetime.astro";
+import { Icon } from "astro-icon/components";
+
+export type Props = {
+  title: string;
+  tagline: string;
+  description: string;
+  pubDatetime: Date;
+  tags: string[];
+  slug: string;
+  /** OG image URL — falls back to site default */
+  ogImage?: string;
+  prevSlug?: string;
+  prevTitle?: string;
+  nextSlug?: string;
+  nextTitle?: string;
+};
+
+const {
+  title,
+  tagline,
+  description,
+  pubDatetime,
+  tags,
+  slug,
+  ogImage,
+  prevSlug,
+  prevTitle,
+  nextSlug,
+  nextTitle,
+} = Astro.props;
+
+const canonicalURL = new URL(`/projects/${slug}`, SITE.website).toString();
+const resolvedOgImage = ogImage ?? `${SITE.website}/og.png`;
+
+// JSON-LD for the case study page
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: title,
+  description,
+  datePublished: pubDatetime.toISOString(),
+  author: {
+    "@type": "Person",
+    name: SITE.author,
+    url: SITE.website,
+  },
+  publisher: {
+    "@type": "Person",
+    name: SITE.author,
+    url: SITE.website,
+  },
+  image: resolvedOgImage,
+  url: canonicalURL,
+  keywords: tags.join(", "),
+};
+---
+
+<BaseLayout
+  title={`${title} | ${SITE.title}`}
+  description={description}
+  ogImage={resolvedOgImage}
+  canonicalURL={canonicalURL}
+  jsonLd={jsonLd}
+>
+  <!-- Case study hero -->
+  <div class="border-b border-[var(--color-border)]">
+    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+      <!-- Back link -->
+      <a
+        href="/projects"
+        class="mb-6 inline-flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] transition-colors duration-150 hover:text-[var(--color-teal)]"
+        aria-label="Back to all projects"
+      >
+        <Icon name="lucide:arrow-left" class="h-4 w-4" aria-hidden="true" />
+        All projects
+      </a>
+
+      <!-- Title + tagline -->
+      <h1
+        class="mt-4 text-3xl leading-tight font-bold text-[var(--color-text-primary)] sm:text-4xl lg:text-5xl"
+      >
+        {title}
+      </h1>
+      <p class="mt-3 max-w-2xl text-lg text-[var(--color-text-secondary)]">
+        {tagline}
+      </p>
+
+      <!-- Meta row -->
+      <div class="mt-5 flex flex-wrap items-center gap-4">
+        <Datetime pubDatetime={pubDatetime} size="sm" />
+
+        <!-- Tags -->
+        {
+          tags.length > 0 && (
+            <div
+              class="flex flex-wrap gap-1.5"
+              role="list"
+              aria-label="Project tags"
+            >
+              {tags.map(tag => (
+                <span
+                  role="listitem"
+                  class="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-0.5 font-mono text-[0.65rem] text-[var(--color-text-muted)]"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Two-column layout: TOC sidebar + content -->
+  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+    <div class="lg:grid lg:grid-cols-[1fr_260px] lg:gap-12">
+      <!-- MDX content area -->
+      <article
+        class="app-prose prose max-w-none prose-neutral dark:prose-invert prose-headings:font-bold prose-headings:text-[var(--color-text-primary)] prose-p:leading-relaxed prose-p:text-[var(--color-text-secondary)] prose-a:text-[var(--color-teal)] prose-a:no-underline hover:prose-a:underline prose-code:font-mono prose-code:text-sm prose-pre:bg-transparent prose-pre:p-0"
+        data-pagefind-body
+      >
+        <slot />
+      </article>
+
+      <!-- TOC sidebar — sticky, desktop only -->
+      <aside
+        id="toc-sidebar"
+        class="hidden lg:block"
+        aria-label="Table of contents"
+      >
+        <div class="sticky top-24">
+          <p
+            class="mb-3 text-xs font-semibold tracking-widest text-[var(--color-text-muted)] uppercase"
+          >
+            Contents
+          </p>
+          <nav
+            id="toc-nav"
+            class="text-sm text-[var(--color-text-secondary)]"
+            aria-label="Page sections"
+          >
+            <!-- Populated by JS from heading elements in the article -->
+          </nav>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Prev / Next navigation -->
+    {
+      (prevSlug || nextSlug) && (
+        <nav
+          class="mt-16 border-t border-[var(--color-border)] pt-8"
+          aria-label="Case study navigation"
+        >
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {prevSlug && prevTitle && (
+              <a
+                href={`/projects/${prevSlug}`}
+                class="group flex items-start gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 transition-colors duration-150 hover:border-[var(--color-teal)]"
+              >
+                <Icon
+                  name="lucide:arrow-left"
+                  class="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-text-muted)] transition-transform duration-150 group-hover:-translate-x-0.5 group-hover:text-[var(--color-teal)]"
+                  aria-hidden="true"
+                />
+                <div>
+                  <p class="text-xs text-[var(--color-text-muted)]">Previous</p>
+                  <p class="mt-0.5 text-sm font-medium text-[var(--color-text-primary)] group-hover:text-[var(--color-teal)]">
+                    {prevTitle}
+                  </p>
+                </div>
+              </a>
+            )}
+            {nextSlug && nextTitle && (
+              <a
+                href={`/projects/${nextSlug}`}
+                class="group flex items-start justify-end gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-right transition-colors duration-150 hover:border-[var(--color-teal)] sm:col-start-2"
+              >
+                <div>
+                  <p class="text-xs text-[var(--color-text-muted)]">Next</p>
+                  <p class="mt-0.5 text-sm font-medium text-[var(--color-text-primary)] group-hover:text-[var(--color-teal)]">
+                    {nextTitle}
+                  </p>
+                </div>
+                <Icon
+                  name="lucide:arrow-right"
+                  class="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-text-muted)] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-[var(--color-teal)]"
+                  aria-hidden="true"
+                />
+              </a>
+            )}
+          </div>
+        </nav>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<script>
+  /**
+   * Build a TOC from headings (h2, h3) in the article and render it into
+   * #toc-nav. Also highlights the active heading on scroll.
+   * Respects prefers-reduced-motion.
+   */
+  function buildToc() {
+    const article = document.querySelector("[data-pagefind-body]");
+    const tocNav = document.getElementById("toc-nav");
+    if (!article || !tocNav) return;
+
+    const headings = Array.from(
+      article.querySelectorAll<HTMLHeadingElement>("h2, h3")
+    );
+    if (headings.length === 0) return;
+
+    const fragment = document.createDocumentFragment();
+    headings.forEach(h => {
+      if (!h.id) {
+        h.id =
+          h.textContent
+            ?.toLowerCase()
+            .replace(/[^\w\s-]/g, "")
+            .replace(/\s+/g, "-")
+            .slice(0, 60) ?? "";
+      }
+
+      const a = document.createElement("a");
+      a.href = `#${h.id}`;
+      a.textContent = h.textContent ?? "";
+      a.dataset.headingId = h.id;
+      a.className = [
+        "block py-1 transition-colors duration-150",
+        h.tagName === "H3" ? "pl-4 text-[0.8rem]" : "text-sm",
+        "text-[var(--color-text-muted)] hover:text-[var(--color-teal)]",
+      ].join(" ");
+
+      fragment.appendChild(a);
+    });
+
+    tocNav.appendChild(fragment);
+
+    // Active heading highlight via IntersectionObserver
+    const links =
+      tocNav.querySelectorAll<HTMLAnchorElement>("a[data-heading-id]");
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const link = tocNav.querySelector<HTMLAnchorElement>(
+            `a[data-heading-id="${entry.target.id}"]`
+          );
+          if (!link) return;
+          if (entry.isIntersecting) {
+            links.forEach(l =>
+              l.classList.remove("text-[var(--color-teal)]", "font-medium")
+            );
+            link.classList.add("text-[var(--color-teal)]", "font-medium");
+          }
+        });
+      },
+      { rootMargin: "-20% 0px -70% 0px" }
+    );
+
+    headings.forEach(h => observer.observe(h));
+  }
+
+  buildToc();
+  document.addEventListener("astro:after-swap", buildToc);
+
+  /** Reading progress bar at the top of the viewport */
+  function createProgressBar() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const existing = document.querySelector(".cs-progress-container");
+    if (existing) existing.remove();
+
+    const container = document.createElement("div");
+    container.className =
+      "cs-progress-container fixed top-0 left-0 z-50 h-0.5 w-full bg-transparent";
+    const bar = document.createElement("div");
+    bar.className =
+      "cs-progress-bar h-full w-0 bg-[var(--color-teal)] transition-[width] duration-100";
+    bar.id = "cs-progress-bar";
+    container.appendChild(bar);
+    document.body.appendChild(container);
+
+    document.addEventListener("scroll", () => {
+      const winScroll = document.documentElement.scrollTop;
+      const height =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight;
+      const bar = document.getElementById("cs-progress-bar");
+      if (bar && height > 0) {
+        bar.style.width = `${(winScroll / height) * 100}%`;
+      }
+    });
+  }
+
+  createProgressBar();
+  document.addEventListener("astro:after-swap", createProgressBar);
+</script>

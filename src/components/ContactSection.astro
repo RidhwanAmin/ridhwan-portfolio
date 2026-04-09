@@ -1,0 +1,332 @@
+---
+/**
+ * ContactSection.astro — Agent A owns this file. Task A14.
+ *
+ * Two-column contact section:
+ * - Left column: contact info + social links + Cal.com embed placeholder
+ * - Right column: contact form (POSTs to /api/contact per cross-agent contract)
+ *
+ * Form contract (from CLAUDE.md):
+ *   POST /api/contact with {name, email, message}
+ *   Response: {success: boolean, error?: string}
+ *
+ * Agent B (B7) implements the /api/contact endpoint.
+ * This component handles the client-side form logic only.
+ */
+import { Icon } from "astro-icon/components";
+import { SOCIAL_LINKS } from "@/config";
+---
+
+<section
+  id="contact"
+  class="relative overflow-hidden py-24"
+  aria-labelledby="contact-heading"
+  data-reveal="section"
+>
+  <!-- Subtle ambient glow -->
+  <div
+    class="pointer-events-none absolute inset-0"
+    style="background: radial-gradient(ellipse 60% 50% at 80% 80%, rgba(29,158,117,0.06) 0%, transparent 60%);"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="relative z-10 app-layout">
+    <!-- Section header -->
+    <div class="mb-12 text-center" data-reveal="fade-up">
+      <p class="mb-2 font-mono text-sm text-[var(--color-teal)]">
+        05 / Contact
+      </p>
+      <h2
+        id="contact-heading"
+        class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+      >
+        Let's work together
+      </h2>
+      <p class="mx-auto mt-4 max-w-xl text-[var(--color-text-secondary)]">
+        Whether you need ML infrastructure, a research collaboration, or just
+        want to talk about seismic imaging — I'm reachable.
+      </p>
+    </div>
+
+    <div class="grid gap-12 md:grid-cols-2" data-reveal="fade-up">
+      <!-- Left column: contact info + Cal.com placeholder -->
+      <div class="flex flex-col gap-8">
+        <!-- Contact info list -->
+        <ul class="space-y-4" aria-label="Contact information">
+          <li class="flex items-start gap-3">
+            <span
+              class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-teal-muted)]"
+            >
+              <Icon
+                name="lucide:mail"
+                class="h-4 w-4 text-[var(--color-teal)]"
+                aria-hidden="true"
+              />
+            </span>
+            <div>
+              <p class="text-xs text-[var(--color-text-muted)]">Email</p>
+              <a
+                href={SOCIAL_LINKS.email}
+                class="text-sm text-[var(--color-text-primary)] transition-colors duration-150 hover:text-[var(--color-teal)]"
+              >
+                ridhwan@ridhwan.dev
+              </a>
+            </div>
+          </li>
+
+          <li class="flex items-start gap-3">
+            <span
+              class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-teal-muted)]"
+            >
+              <Icon
+                name="lucide:linkedin"
+                class="h-4 w-4 text-[var(--color-teal)]"
+                aria-hidden="true"
+              />
+            </span>
+            <div>
+              <p class="text-xs text-[var(--color-text-muted)]">LinkedIn</p>
+              <a
+                href={SOCIAL_LINKS.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm text-[var(--color-text-primary)] transition-colors duration-150 hover:text-[var(--color-teal)]"
+                aria-label="LinkedIn profile (opens in new tab)"
+              >
+                linkedin.com/in/ridhwanamin
+              </a>
+            </div>
+          </li>
+
+          <li class="flex items-start gap-3">
+            <span
+              class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-teal-muted)]"
+            >
+              <Icon
+                name="lucide:github"
+                class="h-4 w-4 text-[var(--color-teal)]"
+                aria-hidden="true"
+              />
+            </span>
+            <div>
+              <p class="text-xs text-[var(--color-text-muted)]">GitHub</p>
+              <a
+                href={SOCIAL_LINKS.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm text-[var(--color-text-primary)] transition-colors duration-150 hover:text-[var(--color-teal)]"
+                aria-label="GitHub profile (opens in new tab)"
+              >
+                github.com/RidhwanAmin
+              </a>
+            </div>
+          </li>
+        </ul>
+
+        <!-- Cal.com embed placeholder -->
+        <!-- Agent D / future task: replace with real Cal.com embed script -->
+        <div
+          class="rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-surface)] p-6 text-center"
+          role="complementary"
+          aria-label="Calendar booking placeholder"
+        >
+          <Icon
+            name="lucide:calendar"
+            class="mx-auto mb-3 h-8 w-8 text-[var(--color-text-muted)]"
+            aria-hidden="true"
+          />
+          <p class="text-sm font-medium text-[var(--color-text-secondary)]">
+            Schedule a call
+          </p>
+          <p class="mt-1 text-xs text-[var(--color-text-muted)]">
+            Cal.com booking widget — coming soon.
+          </p>
+          <a
+            href="mailto:ridhwan@ridhwan.dev?subject=Consulting%20Enquiry"
+            class="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-teal)] hover:underline"
+            aria-label="Email to schedule a call"
+          >
+            Email to schedule
+            <Icon
+              name="lucide:arrow-right"
+              class="h-3 w-3"
+              aria-hidden="true"
+            />
+          </a>
+        </div>
+      </div>
+
+      <!-- Right column: contact form -->
+      <div>
+        <form
+          id="contact-form"
+          novalidate
+          aria-label="Contact form"
+          class="flex flex-col gap-5"
+        >
+          <!-- Name -->
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="contact-name"
+              class="text-sm font-medium text-[var(--color-text-primary)]"
+            >
+              Name <span class="text-[var(--color-teal)]" aria-hidden="true"
+                >*</span
+              >
+            </label>
+            <input
+              id="contact-name"
+              name="name"
+              type="text"
+              required
+              autocomplete="name"
+              placeholder="Your full name"
+              class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] transition-colors duration-150 outline-none focus:border-[var(--color-teal)] focus:ring-1 focus:ring-[var(--color-teal)]"
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="contact-email"
+              class="text-sm font-medium text-[var(--color-text-primary)]"
+            >
+              Email <span class="text-[var(--color-teal)]" aria-hidden="true"
+                >*</span
+              >
+            </label>
+            <input
+              id="contact-email"
+              name="email"
+              type="email"
+              required
+              autocomplete="email"
+              placeholder="you@company.com"
+              class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] transition-colors duration-150 outline-none focus:border-[var(--color-teal)] focus:ring-1 focus:ring-[var(--color-teal)]"
+            />
+          </div>
+
+          <!-- Message -->
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="contact-message"
+              class="text-sm font-medium text-[var(--color-text-primary)]"
+            >
+              Message <span class="text-[var(--color-teal)]" aria-hidden="true"
+                >*</span
+              >
+            </label>
+            <textarea
+              id="contact-message"
+              name="message"
+              required
+              rows={5}
+              placeholder="Tell me about your project or question…"
+              class="resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] transition-colors duration-150 outline-none focus:border-[var(--color-teal)] focus:ring-1 focus:ring-[var(--color-teal)]"
+            ></textarea>
+          </div>
+
+          <!-- Status message (hidden until submit) -->
+          <p
+            id="contact-status"
+            role="status"
+            aria-live="polite"
+            class="hidden text-sm"
+          >
+          </p>
+
+          <!-- Submit button -->
+          <button
+            id="contact-submit"
+            type="submit"
+            class="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--color-teal)] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-500/20 transition-all duration-200 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Icon name="lucide:send" class="h-4 w-4" aria-hidden="true" />
+            Send message
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  /**
+   * Contact form — POSTs to /api/contact per cross-agent contract.
+   * Agent B (B7) implements the endpoint.
+   * Expected response: { success: boolean, error?: string }
+   */
+  function setupContactForm() {
+    const form = document.getElementById(
+      "contact-form"
+    ) as HTMLFormElement | null;
+    if (!form) return;
+
+    const submitBtn = document.getElementById(
+      "contact-submit"
+    ) as HTMLButtonElement;
+    const statusEl = document.getElementById(
+      "contact-status"
+    ) as HTMLParagraphElement;
+
+    function showStatus(message: string, isError: boolean) {
+      statusEl.textContent = message;
+      statusEl.className = `text-sm ${isError ? "text-red-400" : "text-[var(--color-teal)]"}`;
+      statusEl.classList.remove("hidden");
+    }
+
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const data = new FormData(form);
+      const name = (data.get("name") as string).trim();
+      const email = (data.get("email") as string).trim();
+      const message = (data.get("message") as string).trim();
+
+      // Client-side validation
+      if (!name || !email || !message) {
+        showStatus("Please fill in all required fields.", true);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending…";
+      statusEl.classList.add("hidden");
+
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, message }),
+        });
+
+        const json = (await res.json()) as { success: boolean; error?: string };
+
+        if (json.success) {
+          showStatus(
+            "Message sent! I'll get back to you within 24 hours.",
+            false
+          );
+          form.reset();
+        } else {
+          showStatus(
+            json.error ?? "Something went wrong. Please try again.",
+            true
+          );
+        }
+      } catch {
+        showStatus(
+          "Network error — please try again or email me directly.",
+          true
+        );
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send message`;
+      }
+    });
+  }
+
+  setupContactForm();
+  document.addEventListener("astro:after-swap", setupContactForm);
+</script>

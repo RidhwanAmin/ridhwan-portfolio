@@ -1,0 +1,87 @@
+---
+/**
+ * SubstackTeaser.astro — Agent A owns this file. Task A19.
+ *
+ * Card for Substack RSS feed items displayed on the /blog index page.
+ * Visual treatment: Substack orange badge, external link CTA, truncated excerpt.
+ *
+ * Cross-agent contract: substackPosts collection items are provided by
+ * Agent B (B1) via feedLoader. Caller passes mapped props.
+ */
+import { Icon } from "astro-icon/components";
+import Datetime from "@/components/Datetime.astro";
+
+export interface Props {
+  title: string;
+  /** Raw excerpt / description from the RSS item */
+  description?: string;
+  published: Date;
+  /** External Substack URL */
+  url: string;
+}
+
+const { title, description = "", published, url } = Astro.props;
+
+/** Truncate description to ~200 characters at a word boundary */
+function truncate(text: string, max = 200): string {
+  if (text.length <= max) return text;
+  const truncated = text.slice(0, max);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return (lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated) + "…";
+}
+
+const excerpt = truncate(description.replace(/<[^>]+>/g, ""));
+---
+
+<article
+  class="group flex flex-col gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 transition-all duration-200 hover:border-[var(--color-substack)] hover:bg-[var(--color-surface-hover)]"
+>
+  <!-- Substack badge + date row -->
+  <div class="flex items-center justify-between gap-3">
+    <span
+      class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.65rem] font-semibold tracking-wide uppercase"
+      style="background: rgba(255, 103, 25, 0.12); color: var(--color-substack);"
+    >
+      <Icon name="lucide:rss" class="h-3 w-3" aria-hidden="true" />
+      Substack
+    </span>
+    <Datetime pubDatetime={published} size="sm" />
+  </div>
+
+  <!-- Title -->
+  <h3
+    class="text-base leading-snug font-semibold text-[var(--color-text-primary)] transition-colors duration-150 group-hover:text-[var(--color-substack)]"
+  >
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Read "${title}" on Substack (opens in new tab)`}
+      class="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-substack)]"
+    >
+      {title}
+    </a>
+  </h3>
+
+  <!-- Excerpt -->
+  {
+    excerpt && (
+      <p class="flex-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+        {excerpt}
+      </p>
+    )
+  }
+
+  <!-- CTA -->
+  <a
+    href={url}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={`Read "${title}" on Substack (opens in new tab)`}
+    class="mt-1 inline-flex items-center gap-1.5 text-xs font-medium transition-all duration-150 hover:gap-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-substack)]"
+    style="color: var(--color-substack);"
+  >
+    Read on Substack
+    <Icon name="lucide:external-link" class="h-3.5 w-3.5" aria-hidden="true" />
+  </a>
+</article>

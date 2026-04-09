@@ -1,0 +1,209 @@
+---
+/**
+ * /projects — Agent A owns this file. Task A16.
+ *
+ * Filterable case study card grid. Queries the case-studies collection
+ * defined by Agent B (B1) and renders ProjectCard components with
+ * client-side tag filtering via vanilla JS.
+ *
+ * Cross-agent contract: uses getCollection('case-studies') with shape
+ * { id, data: { title, tagline, tags, thumbnail, featured, draft, status } }
+ */
+export const prerender = true;
+
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
+
+const allStudies = await getCollection("case-studies");
+
+// Filter out drafts and archived; sort by pubDatetime descending
+const studies = allStudies
+  .filter(s => !s.data.draft && s.data.status !== "archived")
+  .sort((a, b) => b.data.pubDatetime.getTime() - a.data.pubDatetime.getTime());
+
+// Collect unique tags across all published case studies
+const tagSet = new Set<string>();
+studies.forEach(s => s.data.tags.forEach(t => tagSet.add(t)));
+const allTags = Array.from(tagSet).sort();
+
+const pageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Projects — Ridhwan Amin",
+  description:
+    "ML research case studies covering seismic inpainting, hybrid RAG, and anomaly detection.",
+  url: "https://ridhwan.dev/projects",
+  author: {
+    "@type": "Person",
+    name: "Ridhwan Amin",
+    url: "https://ridhwan.dev",
+  },
+};
+---
+
+<BaseLayout
+  title="Projects — Ridhwan Amin"
+  description="ML research case studies covering seismic inpainting, hybrid RAG, and anomaly detection."
+  jsonLd={pageJsonLd}
+>
+  <section class="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
+    <!-- Page header -->
+    <header class="mb-12 max-w-2xl">
+      <h1
+        class="mb-4 text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+      >
+        Research Projects
+      </h1>
+      <p class="text-base leading-relaxed text-[var(--color-text-secondary)]">
+        Case studies from my work in seismic processing, retrieval-augmented
+        generation, and anomaly detection. Each project includes methods,
+        results, and implementation notes.
+      </p>
+    </header>
+
+    <!-- Tag filter buttons -->
+    {
+      allTags.length > 0 && (
+        <div
+          id="tag-filter"
+          class="mb-10 flex flex-wrap gap-2"
+          role="group"
+          aria-label="Filter projects by tag"
+        >
+          <button
+            data-tag="all"
+            class="tag-btn active rounded-full border border-[var(--color-teal)] bg-[var(--color-teal)] px-4 py-1.5 text-xs font-medium text-white transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+            aria-pressed="true"
+          >
+            All
+          </button>
+          {allTags.map(tag => (
+            <button
+              data-tag={tag}
+              class="tag-btn rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-1.5 text-xs font-medium text-[var(--color-text-secondary)] transition-colors duration-150 hover:border-[var(--color-teal)] hover:text-[var(--color-teal)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+              aria-pressed="false"
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )
+    }
+
+    <!-- Card grid -->
+    <div
+      id="projects-grid"
+      class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      role="list"
+      aria-label="Project case studies"
+    >
+      {
+        studies.map(study => (
+          <div
+            role="listitem"
+            class="project-item"
+            data-tags={JSON.stringify(study.data.tags)}
+          >
+            <ProjectCard
+              slug={study.id}
+              title={study.data.title}
+              tagline={study.data.tagline}
+              tags={study.data.tags}
+              featured={study.data.featured}
+            />
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Empty state (hidden by default, shown by JS when no matches) -->
+    <p
+      id="no-results"
+      class="mt-12 hidden text-center text-[var(--color-text-muted)]"
+      role="status"
+      aria-live="polite"
+    >
+      No projects match the selected tag.
+    </p>
+  </section>
+</BaseLayout>
+
+<script>
+  /**
+   * Client-side tag filtering for the projects grid.
+   * Reads data-tags JSON from each .project-item and toggles visibility.
+   * Respects prefers-reduced-motion — no transitions when motion is reduced.
+   */
+  function initTagFilter() {
+    const filter = document.getElementById("tag-filter");
+    const grid = document.getElementById("projects-grid");
+    const noResults = document.getElementById("no-results");
+
+    if (!filter || !grid) return;
+
+    const buttons = filter.querySelectorAll<HTMLButtonElement>(".tag-btn");
+    const items = grid.querySelectorAll<HTMLElement>(".project-item");
+
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    function applyFilter(activeTag: string) {
+      let visibleCount = 0;
+
+      items.forEach(item => {
+        const tags: string[] = JSON.parse(item.dataset.tags ?? "[]");
+        const matches = activeTag === "all" || tags.includes(activeTag);
+
+        if (prefersReduced) {
+          item.style.display = matches ? "" : "none";
+        } else {
+          item.style.transition = "opacity 0.2s, transform 0.2s";
+          if (matches) {
+            item.style.display = "";
+            // Force reflow before opacity change for transition to play
+            void item.offsetHeight;
+            item.style.opacity = "1";
+            item.style.transform = "translateY(0)";
+          } else {
+            item.style.opacity = "0";
+            item.style.transform = "translateY(8px)";
+            setTimeout(() => {
+              if (!item.dataset.visible) item.style.display = "none";
+            }, 200);
+          }
+          item.dataset.visible = matches ? "true" : "";
+        }
+
+        if (matches) visibleCount++;
+      });
+
+      if (noResults) {
+        noResults.classList.toggle("hidden", visibleCount > 0);
+      }
+    }
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tag = btn.dataset.tag ?? "all";
+
+        // Update button states
+        buttons.forEach(b => {
+          const isActive = b.dataset.tag === tag;
+          b.setAttribute("aria-pressed", String(isActive));
+          b.classList.toggle("bg-[var(--color-teal)]", isActive);
+          b.classList.toggle("text-white", isActive);
+          b.classList.toggle("border-[var(--color-teal)]", isActive);
+          b.classList.toggle("active", isActive);
+        });
+
+        applyFilter(tag);
+      });
+    });
+  }
+
+  // Init on first load and after View Transitions
+  initTagFilter();
+  document.addEventListener("astro:after-swap", initTagFilter);
+</script>

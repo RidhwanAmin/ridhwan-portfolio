@@ -1,0 +1,107 @@
+# E4: Lighthouse CI — Agent E owns this file. Task E4.
+#
+# Runs Lighthouse audits on Vercel preview URLs for every PR to main.
+# Uses VERCEL_TOKEN and VERCEL_PROJECT_ID secrets to fetch the preview URL.
+#
+# Thresholds:
+#   performance    >= 90
+#   accessibility  >= 95
+#   best-practices >= 90
+#   seo            >= 90
+#
+# CP-6: When this workflow is merged and working, Agent C should add
+# "Lighthouse CI / lighthouse" as a required check in branch protection rules.
+
+name: Lighthouse CI
+
+permissions:
+  contents: read
+  pull-requests: write
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  lighthouse:
+    name: Lighthouse audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Wait for Vercel preview deployment
+        id: vercel-wait
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 300
+          check_interval: 15
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Resolve preview URL
+        id: preview-url
+        run: |
+          URL="${{ steps.vercel-wait.outputs.url }}"
+          if [ -z "$URL" ]; then
+            # Fallback: query Vercel API for latest preview deployment
+            PROJECT_ID="${{ secrets.VERCEL_PROJECT_ID }}"
+            TEAM_ID="${{ secrets.VERCEL_TEAM_ID }}"
+            EXTRA=""
+            if [ -n "$TEAM_ID" ]; then EXTRA="&teamId=$TEAM_ID"; fi
+            URL=$(curl -s \
+              -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+              "https://api.vercel.com/v6/deployments?projectId=$PROJECT_ID&limit=1&state=READY&target=preview$EXTRA" \
+              | jq -r '.deployments[0].url // empty')
+            if [ -n "$URL" ]; then URL="https://$URL"; fi
+          fi
+          echo "preview_url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Preview URL: $URL"
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.14.x
+
+      - name: Run Lighthouse CI
+        run: |
+          lhci autorun \
+            --collect.url="${{ steps.preview-url.outputs.preview_url }}" \
+            --collect.numberOfRuns=2 \
+            --assert.assertions.categories:performance=["error",{"minScore":0.90}] \
+            --assert.assertions.categories:accessibility=["error",{"minScore":0.95}] \
+            --assert.assertions.categories:best-practices=["error",{"minScore":0.90}] \
+            --assert.assertions.categories:seo=["error",{"minScore":0.90}] \
+            --assert.assertions.is-crawlable=off \
+            --upload.target=temporary-public-storage
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment Lighthouse results on PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = '${{ steps.preview-url.outputs.preview_url }}';
+            const body = `### Lighthouse CI Results\n\nAudited: ${url}\n\n| Category | Threshold |\n|---|---|\n| Performance | ≥ 90 |\n| Accessibility | ≥ 95 |\n| Best Practices | ≥ 90 |\n| SEO | ≥ 90 |\n\nSee the workflow run for detailed scores.`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });

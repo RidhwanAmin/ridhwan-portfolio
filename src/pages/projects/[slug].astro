@@ -1,0 +1,68 @@
+---
+/**
+ * /projects/[slug] — Agent A owns this file. Task A17.
+ *
+ * Dynamic route for individual MDX case study pages.
+ * Uses getStaticPaths() to pre-render all published case studies at build time.
+ */
+export const prerender = true;
+
+import { getCollection, render } from "astro:content";
+import CaseStudyLayout from "@/layouts/CaseStudyLayout.astro";
+import { SITE } from "@/config";
+
+export async function getStaticPaths() {
+  const allStudies = await getCollection("case-studies");
+
+  // Filter out drafts; sort by pubDatetime descending for prev/next
+  const studies = allStudies
+    .filter(s => !s.data.draft && s.data.status !== "archived")
+    .sort(
+      (a, b) => b.data.pubDatetime.getTime() - a.data.pubDatetime.getTime()
+    );
+
+  return studies.map((study, index) => {
+    const prev = studies[index + 1] ?? null;
+    const next = studies[index - 1] ?? null;
+
+    return {
+      params: { slug: study.id },
+      props: {
+        entry: study,
+        prevSlug: prev?.id,
+        prevTitle: prev?.data.title,
+        nextSlug: next?.id,
+        nextTitle: next?.data.title,
+      },
+    };
+  });
+}
+
+const { entry, prevSlug, prevTitle, nextSlug, nextTitle } = Astro.props;
+const { Content } = await render(entry);
+
+// B10: Per-study OG image.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const entryData = entry.data as any;
+const ogImageUrl = entryData.ogImage
+  ? `${SITE.website}/${entryData.ogImage}`
+  : SITE.dynamicOgImage
+    ? `${SITE.website}/og/projects/${entry.id}.png`
+    : `${SITE.website}/og.png`;
+---
+
+<CaseStudyLayout
+  title={entry.data.title}
+  tagline={entry.data.tagline}
+  description={entry.data.description}
+  pubDatetime={entry.data.pubDatetime}
+  tags={entry.data.tags}
+  slug={entry.id}
+  ogImage={ogImageUrl}
+  prevSlug={prevSlug}
+  prevTitle={prevTitle}
+  nextSlug={nextSlug}
+  nextTitle={nextTitle}
+>
+  <Content />
+</CaseStudyLayout>

@@ -1,0 +1,187 @@
+---
+/**
+ * ProjectCard.astro — Agent A owns this file. Task A7.
+ *
+ * Reusable project card with thumbnail, title, one-liner, tech pills,
+ * hover glassmorphism effect, and a link to the full case study.
+ *
+ * Props are aligned with the case-studies content collection schema
+ * that Agent B defines in B1. All fields are optional for now so
+ * the component renders safely with placeholder data.
+ */
+import { Icon } from "astro-icon/components";
+
+export interface Props {
+  /** URL slug — used to build /projects/[slug] */
+  slug: string;
+  /** Project title */
+  title: string;
+  /** One-sentence description */
+  tagline: string;
+  /** Tech tags to display as pills */
+  tags?: string[];
+  /** Optional hero/thumbnail image URL (Astro Image-compatible) */
+  thumbnail?: string;
+  /** Alt text for the thumbnail */
+  thumbnailAlt?: string;
+  /** Optional: highlight this card as featured */
+  featured?: boolean;
+}
+
+const {
+  slug,
+  title,
+  tagline,
+  tags = [],
+  thumbnail,
+  thumbnailAlt = title,
+  featured = false,
+} = Astro.props;
+
+const href = `/projects/${slug}`;
+---
+
+<article
+  class:list={[
+    "project-card group relative flex flex-col overflow-hidden rounded-xl",
+    "border border-[var(--color-border)] bg-[var(--color-surface)]",
+    "transition-all duration-300",
+    "hover:border-[var(--color-teal)] hover:bg-[var(--color-surface-hover)]",
+    featured &&
+      "ring-1 ring-[var(--color-teal)] ring-offset-2 ring-offset-[var(--color-bg)]",
+  ]}
+>
+  <!-- Thumbnail / placeholder -->
+  <a
+    href={href}
+    aria-label={`View case study: ${title}`}
+    class="block overflow-hidden"
+  >
+    {
+      thumbnail ? (
+        <img
+          src={thumbnail}
+          alt={thumbnailAlt}
+          width={600}
+          height={340}
+          loading="lazy"
+          decoding="async"
+          class="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+        />
+      ) : (
+        <div
+          class="h-44 w-full"
+          style="background: radial-gradient(ellipse 80% 80% at 50% 60%, rgba(29,158,117,0.13) 0%, rgba(10,10,15,0) 70%), linear-gradient(135deg, #0A0A0F 0%, #0f1a14 100%);"
+          aria-hidden="true"
+        >
+          <svg
+            class="h-full w-full opacity-20"
+            viewBox="0 0 600 340"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle
+              cx="300"
+              cy="170"
+              r="120"
+              fill="none"
+              stroke="#1D9E75"
+              stroke-width="1"
+              stroke-dasharray="8 6"
+            />
+            <circle
+              cx="300"
+              cy="170"
+              r="75"
+              fill="none"
+              stroke="#EF9F27"
+              stroke-width="0.75"
+              stroke-dasharray="4 8"
+            />
+            <line
+              x1="180"
+              y1="50"
+              x2="420"
+              y2="290"
+              stroke="#1D9E75"
+              stroke-width="0.5"
+              opacity="0.5"
+            />
+            <line
+              x1="420"
+              y1="50"
+              x2="180"
+              y2="290"
+              stroke="#1D9E75"
+              stroke-width="0.5"
+              opacity="0.5"
+            />
+          </svg>
+        </div>
+      )
+    }
+  </a>
+
+  <!-- Content -->
+  <div class="flex flex-1 flex-col gap-3 p-5">
+    {
+      featured && (
+        <span class="inline-flex w-fit items-center gap-1 rounded-full bg-[var(--color-teal-muted)] px-2.5 py-0.5 text-xs font-medium text-[var(--color-teal)]">
+          <Icon name="lucide:star" class="h-3 w-3" aria-hidden="true" />
+          Featured
+        </span>
+      )
+    }
+
+    <h3
+      class="text-base leading-snug font-semibold text-[var(--color-text-primary)] transition-colors duration-150 group-hover:text-[var(--color-teal)]"
+    >
+      <a
+        href={href}
+        class="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+      >
+        {title}
+      </a>
+    </h3>
+
+    <p
+      class="flex-1 text-sm leading-relaxed text-[var(--color-text-secondary)]"
+    >
+      {tagline}
+    </p>
+
+    <!-- Tech pills -->
+    {
+      tags.length > 0 && (
+        <div
+          class="flex flex-wrap gap-1.5"
+          role="list"
+          aria-label="Technologies used"
+        >
+          {tags.map(tag => (
+            <span
+              role="listitem"
+              class="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 py-0.5 font-mono text-[0.65rem] text-[var(--color-text-muted)]"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )
+    }
+
+    <!-- Read more link -->
+    <a
+      href={href}
+      class="group/link transition-gap mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-teal)] duration-150 hover:gap-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+      aria-label={`Read full case study for ${title}`}
+    >
+      Read case study
+      <Icon
+        name="lucide:arrow-right"
+        class="h-3.5 w-3.5 transition-transform duration-150 group-hover/link:translate-x-1"
+        aria-hidden="true"
+      />
+    </a>
+  </div>
+</article>

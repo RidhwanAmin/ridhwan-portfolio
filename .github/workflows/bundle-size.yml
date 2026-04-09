@@ -1,0 +1,117 @@
+# E5: Bundle size check — Agent E owns this file. Task E5.
+#
+# Measures total JS bundle size in .vercel/output/static/_astro/*.js after a
+# production build (with @astrojs/vercel adapter, output goes there, not dist/).
+# Fails if total exceeds 256 KB.
+#
+# Budget note: originally 50 KB, raised to 256 KB because GSAP (70 KB) +
+# ScrollTrigger (44 KB) + Lenis are required tech stack items per CLAUDE.md.
+#
+# continue-on-error: true on feature branches (non-main PRs) so
+# the check is informational on feature work but enforced on main PRs.
+#
+# Cross-agent contract:
+#   - Agent A must keep individual pages under the 256 KB total JS budget.
+#   - The prebuild script (validate-env.mjs) runs before the Astro build.
+
+name: Bundle Size
+
+permissions:
+  contents: read
+  pull-requests: write
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  bundle-size:
+    name: JS bundle size check (≤50 KB)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Allow feature branches to exceed limit without blocking — informational only
+    continue-on-error: ${{ github.base_ref != 'main' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build (skip validate-env in CI — env vars not available)
+        run: npm run build
+        env:
+          # Provide dummy values so validate-env.mjs does not abort the build
+          NODE_ENV: test
+          SITE_URL: https://ridhwan.dev
+          SUBSTACK_RSS_URL: https://ridhwanamin.substack.com/feed
+          RESEND_API_KEY: re_dummy
+          STRIPE_SECRET_KEY: sk_test_dummy
+          STRIPE_PUBLISHABLE_KEY: pk_test_dummy
+          STRIPE_SIGNING_SECRET: whsec_dummy
+
+      - name: Measure JS bundle size
+        id: bundle
+        run: |
+          # @astrojs/vercel adapter outputs to .vercel/output/static/_astro/
+          # Fall back to dist/_astro (legacy static adapter) then dist/
+          BUNDLE_DIR=".vercel/output/static/_astro"
+          if [ ! -d "$BUNDLE_DIR" ]; then
+            echo "No .vercel/output/static/_astro directory found — checking dist/_astro"
+            BUNDLE_DIR="dist/_astro"
+          fi
+          if [ ! -d "$BUNDLE_DIR" ]; then
+            echo "No dist/_astro directory found — checking for any .js in dist/"
+            BUNDLE_DIR="dist"
+          fi
+
+          TOTAL_BYTES=$(find "$BUNDLE_DIR" -name "*.js" -not -name "*.map" \
+            | xargs wc -c 2>/dev/null | tail -1 | awk '{print $1}')
+
+          TOTAL_KB=$(echo "scale=2; $TOTAL_BYTES / 1024" | bc)
+          # Budget raised to 256 KB to accommodate GSAP (70 KB) + ScrollTrigger (44 KB) + Lenis.
+          # The original 50 KB limit was written before GSAP was added to the stack.
+          # See CLAUDE.md — GSAP + ScrollTrigger are required tech stack items.
+          LIMIT_BYTES=262144  # 256 KB in bytes
+
+          echo "total_bytes=$TOTAL_BYTES" >> "$GITHUB_OUTPUT"
+          echo "total_kb=$TOTAL_KB"        >> "$GITHUB_OUTPUT"
+
+          if [ "$TOTAL_BYTES" -gt "$LIMIT_BYTES" ]; then
+            echo "status=exceeded" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=ok" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "Total JS: ${TOTAL_KB} KB (limit: 256 KB)"
+
+      - name: Comment bundle size on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const totalKb = '${{ steps.bundle.outputs.total_kb }}';
+            const status  = '${{ steps.bundle.outputs.status }}';
+            const icon    = status === 'ok' ? '✅' : '❌';
+            const body    = `### JS Bundle Size\n\n${icon} Total JS: **${totalKb} KB** (budget: 256 KB)\n\nNote: Budget raised from 50 KB to 256 KB to accommodate GSAP (70 KB) + ScrollTrigger (44 KB) + Lenis, which are required tech stack items.\n\n${status === 'exceeded' ? '> Bundle exceeds the 256 KB budget. Please reduce JS before merging to main.' : '> Bundle is within budget.'}`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
+
+      - name: Fail if bundle exceeds 256 KB
+        if: steps.bundle.outputs.status == 'exceeded'
+        run: |
+          echo "ERROR: JS bundle (${TOTAL_KB} KB) exceeds 256 KB limit."
+          exit 1
+        env:
+          TOTAL_KB: ${{ steps.bundle.outputs.total_kb }}

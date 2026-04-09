@@ -1,30 +1,38 @@
-## Description
+## Summary
 
-<!-- A clear and concise description of what the pull request does. Include any relevant motivation and background. -->
+<!-- What does this PR do? One or two sentences. -->
 
-## Types of changes
+## Agent ownership
 
-<!-- What types of changes does your code introduce to AstroPaper? Put an `x` in the boxes that apply -->
+<!-- Which agent(s) own the changed files? -->
 
-- [ ] Bug Fix (non-breaking change which fixes an issue)
-- [ ] New Feature (non-breaking change which adds functionality)
-- [ ] Documentation Update (if none of the other choices apply)
-- [ ] Others (any other types not listed above)
+- [ ] A — Frontend (`.astro` components, layouts, pages, styles, vanilla JS)
+- [ ] B — Backend (content schemas, MDX, API endpoints, Resend, SEO, RSS)
+- [ ] C — Deployment (Vercel, DNS, env vars, vercel.json crons/framework keys)
+- [ ] D — Payment (Stripe Checkout, webhooks, legal pages)
+- [ ] E — CI/CD (vercel.json headers/routes, Lighthouse CI, bundle check, smoke tests)
 
 ## Checklist
 
-<!-- Please follow this checklist and put an x in each of the boxes, like this: [x]. You can also fill these out after creating the PR. This is simply a reminder of what we are going to look for before merging your code. -->
+- [ ] `npm run build` passes locally (runs validate-env.mjs then Astro build)
+- [ ] `npx astro check` returns 0 errors
+- [ ] No raster hero images added (CSS-only decorative backgrounds per CLAUDE.md)
+- [ ] All new icons use `astro-icon` Lucide set only (`lucide:*`)
+- [ ] Animated elements use `transform` + `opacity` only; `prefers-reduced-motion` respected
+- [ ] No React islands introduced (vanilla JS in `<script>` tags only)
+- [ ] New API routes have `export const prerender = false`
+- [ ] Cross-agent interface contracts respected (see CLAUDE.md — Cross-agent interfaces)
+- [ ] `.env.example` updated if new env vars were added (Agent B maintains)
+- [ ] `vercel.json` keys respected: Agent C owns `crons`/`framework`; Agent E owns `headers`/`routes`/`trailingSlash`
 
-- [ ] I have read the [Contributing Guide](https://github.com/satnaing/astro-paper/blob/main/.github/CONTRIBUTING.md)
-- [ ] I have added the necessary documentation (if appropriate)
-- [ ] Breaking Change (fix or feature that would cause existing functionality to not work as expected)
+## Cross-agent impact
 
-## Further comments
+<!-- Does this PR affect another agent's boundary? List the contract and confirm it is honoured. -->
 
-<!-- If this is a relatively large or complex change, kick off the discussion by explaining why you chose the solution you did and what alternatives you considered, etc... -->
+## Test evidence
 
-## Related Issue
+<!-- Screenshot, `astro check` output, or smoke test result -->
 
-<!-- If this PR is related to an existing issue, link to it here. -->
+## Related task(s)
 
-Closes: #<!-- Issue number, if applicable -->
+<!-- e.g. A6, B1, C7 from subagent_work_breakdown.md -->

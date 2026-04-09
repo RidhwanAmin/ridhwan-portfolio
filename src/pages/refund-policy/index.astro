@@ -1,0 +1,170 @@
+---
+/**
+ * /refund-policy — Agent D owns this file. Task D7.
+ *
+ * Refund policy for Ridhwan Amin consulting services.
+ * Static page — no server-side logic required.
+ */
+export const prerender = true;
+
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const lastUpdated = "8 April 2026";
+---
+
+<BaseLayout
+  title="Refund Policy — Ridhwan Amin"
+  description="Refund policy for consulting and advisory services provided by Ridhwan Amin."
+>
+  <article
+    class="mx-auto max-w-2xl px-4 py-20 sm:px-6 lg:px-8"
+    aria-label="Refund Policy"
+  >
+    <header class="mb-12">
+      <h1
+        class="mb-3 text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+      >
+        Refund Policy
+      </h1>
+      <p class="text-sm text-[var(--color-text-muted)]">
+        Last updated: {lastUpdated}
+      </p>
+    </header>
+
+    <div
+      class="prose max-w-none space-y-8 text-[var(--color-text-secondary)] prose-invert"
+    >
+      <p class="text-sm leading-relaxed">
+        I want every engagement to be valuable. If something doesn&rsquo;t work
+        out, here&rsquo;s how refunds are handled for each service tier.
+      </p>
+
+      <!-- Consulting Calls -->
+      <section>
+        <h2 class="mb-3 text-xl font-semibold text-[var(--color-text-primary)]">
+          Consulting Calls
+        </h2>
+        <ul
+          class="ml-4 list-disc space-y-2 text-sm leading-relaxed marker:text-[var(--color-teal)]"
+        >
+          <li>
+            <strong class="text-[var(--color-text-primary)]"
+              >Cancellation 24+ hours before the call:</strong
+            > Full refund.
+          </li>
+          <li>
+            <strong class="text-[var(--color-text-primary)]"
+              >Cancellation within 24 hours:</strong
+            > 50% refund.
+          </li>
+          <li>
+            <strong class="text-[var(--color-text-primary)]"
+              >No-show (no notification):</strong
+            > No refund.
+          </li>
+          <li>
+            <strong class="text-[var(--color-text-primary)]"
+              >Rescheduling:</strong
+            > You may reschedule up to 24 hours before the call at no charge.
+          </li>
+        </ul>
+        <p class="mt-4 text-sm leading-relaxed">
+          If after the call you feel we didn&rsquo;t make meaningful progress on
+          your problem, I will schedule a follow-up session at no charge.
+        </p>
+      </section>
+
+      <!-- Advisory Retainer -->
+      <section>
+        <h2 class="mb-3 text-xl font-semibold text-[var(--color-text-primary)]">
+          Advisory Retainer
+        </h2>
+        <ul
+          class="ml-4 list-disc space-y-2 text-sm leading-relaxed marker:text-[var(--color-teal)]"
+        >
+          <li>
+            <strong class="text-[var(--color-text-primary)]"
+              >Cancellation before next billing date:</strong
+            > No further charges. The current month is non-refundable.
+          </li>
+          <li>
+            <strong class="text-[var(--color-text-primary)]"
+              >Unused sessions:</strong
+            > Sessions do not carry over between months and are not individually refundable.
+          </li>
+        </ul>
+        <p class="mt-4 text-sm leading-relaxed">
+          There are no lock-in periods. Cancel any time from your billing
+          dashboard or by emailing me before your renewal date.
+        </p>
+      </section>
+
+      <!-- Project Engagement -->
+      <section>
+        <h2 class="mb-3 text-xl font-semibold text-[var(--color-text-primary)]">
+          Project Engagement
+        </h2>
+        <ul
+          class="ml-4 list-disc space-y-2 text-sm leading-relaxed marker:text-[var(--color-teal)]"
+        >
+          <li>
+            <strong class="text-[var(--color-text-primary)]"
+              >Before work begins:</strong
+            > Full refund of any upfront deposit.
+          </li>
+          <li>
+            <strong class="text-[var(--color-text-primary)]"
+              >During the engagement:</strong
+            > Milestone-based payments are non-refundable once a milestone is delivered
+            and accepted. Partial refunds on incomplete milestones may be negotiated
+            per the written agreement.
+          </li>
+          <li>
+            <strong class="text-[var(--color-text-primary)]"
+              >Early termination:</strong
+            > You pay for work completed to date; I deliver all work product produced
+            up to that point.
+          </li>
+        </ul>
+      </section>
+
+      <!-- How to Request -->
+      <section>
+        <h2 class="mb-3 text-xl font-semibold text-[var(--color-text-primary)]">
+          How to Request a Refund
+        </h2>
+        <p class="text-sm leading-relaxed">
+          Email{" "}
+          <a
+            href="mailto:ridhwan@ridhwan.dev"
+            class="text-[var(--color-teal)] underline underline-offset-2 hover:opacity-80"
+          >
+            ridhwan@ridhwan.dev
+          </a>{" "}
+          with your booking details and the reason for the refund request. I respond
+          within 48 hours. Approved refunds are processed via Stripe within 5–10 business
+          days depending on your bank.
+        </p>
+      </section>
+    </div>
+
+    <!-- Related links -->
+    <nav
+      class="mt-16 flex flex-wrap gap-4 border-t border-[var(--color-border)] pt-8"
+      aria-label="Related pages"
+    >
+      <a
+        href="/terms"
+        class="text-sm text-[var(--color-teal)] underline underline-offset-2 hover:opacity-80"
+      >
+        Terms of Service
+      </a>
+      <a
+        href="/services"
+        class="text-sm text-[var(--color-teal)] underline underline-offset-2 hover:opacity-80"
+      >
+        Services
+      </a>
+    </nav>
+  </article>
+</BaseLayout>

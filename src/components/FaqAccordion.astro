@@ -1,0 +1,157 @@
+---
+/**
+ * FaqAccordion.astro — Agent A owns this file. Task A13.
+ *
+ * Accessible accordion FAQ.
+ * - Vanilla JS expand/collapse (no React)
+ * - Smooth height animation via CSS max-height transition
+ * - Only one item open at a time
+ * - Proper aria-expanded / aria-controls attributes
+ * - prefers-reduced-motion: skips transition, opens instantly
+ */
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+export interface Props {
+  items: FaqItem[];
+  /** Optional heading ID for FAQ section — used for aria labelling */
+  headingId?: string;
+}
+
+const { items, headingId = "faq-heading" } = Astro.props;
+---
+
+<div class="faq-accordion space-y-3" role="list" aria-labelledby={headingId}>
+  {
+    items.map((item, i) => {
+      const btnId = `faq-btn-${i}`;
+      const panelId = `faq-panel-${i}`;
+      return (
+        <div
+          role="listitem"
+          class="faq-item overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] transition-colors duration-200 hover:border-[var(--color-border-strong)]"
+        >
+          <button
+            id={btnId}
+            type="button"
+            aria-expanded="false"
+            aria-controls={panelId}
+            class="faq-trigger flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-medium text-[var(--color-text-primary)] transition-colors duration-150 hover:text-[var(--color-teal)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+          >
+            <span>{item.question}</span>
+            <span
+              class="faq-icon shrink-0 text-[var(--color-text-muted)] transition-transform duration-200"
+              aria-hidden="true"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </span>
+          </button>
+
+          <div
+            id={panelId}
+            role="region"
+            aria-labelledby={btnId}
+            class="faq-panel overflow-hidden"
+            style="max-height: 0;"
+          >
+            <div class="border-t border-[var(--color-border)] px-5 py-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+              {item.answer}
+            </div>
+          </div>
+        </div>
+      );
+    })
+  }
+</div>
+
+<style>
+  .faq-panel {
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-panel {
+      transition: none;
+    }
+  }
+
+  .faq-item[data-open="true"] .faq-icon {
+    transform: rotate(180deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-icon {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function setupFaqAccordion() {
+    const accordions = document.querySelectorAll<HTMLElement>(".faq-accordion");
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    accordions.forEach(accordion => {
+      const triggers =
+        accordion.querySelectorAll<HTMLButtonElement>(".faq-trigger");
+
+      triggers.forEach(trigger => {
+        trigger.addEventListener("click", () => {
+          const panelId = trigger.getAttribute("aria-controls")!;
+          const panel = document.getElementById(panelId)!;
+          const item = trigger.closest(".faq-item") as HTMLElement;
+          const isOpen = trigger.getAttribute("aria-expanded") === "true";
+
+          // Close all siblings first
+          triggers.forEach(otherTrigger => {
+            if (otherTrigger === trigger) return;
+            const otherId = otherTrigger.getAttribute("aria-controls")!;
+            const otherPanel = document.getElementById(otherId)!;
+            const otherItem = otherTrigger.closest(".faq-item") as HTMLElement;
+            otherTrigger.setAttribute("aria-expanded", "false");
+            otherItem.removeAttribute("data-open");
+            otherPanel.style.maxHeight = "0";
+          });
+
+          if (isOpen) {
+            // Close this one
+            trigger.setAttribute("aria-expanded", "false");
+            item.removeAttribute("data-open");
+            panel.style.maxHeight = "0";
+          } else {
+            // Open this one
+            trigger.setAttribute("aria-expanded", "true");
+            item.setAttribute("data-open", "true");
+            // Use scrollHeight for natural height
+            const inner = panel.querySelector("div") as HTMLElement;
+            const height = inner ? inner.scrollHeight + 1 : 200;
+            panel.style.maxHeight = prefersReduced
+              ? `${height}px`
+              : `${height + 16}px`;
+          }
+        });
+      });
+    });
+  }
+
+  setupFaqAccordion();
+  document.addEventListener("astro:after-swap", setupFaqAccordion);
+</script>

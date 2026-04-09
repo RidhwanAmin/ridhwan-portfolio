@@ -1,0 +1,303 @@
+---
+/**
+ * Nav.astro — Agent A owns this file.
+ *
+ * Sticky frosted-glass navigation bar.
+ *
+ * Hybrid scroll/route model (from CLAUDE.md):
+ * - On the home page (/): section links (#projects, #about, etc.) scroll in-page via Lenis.
+ * - On any other page: section links navigate to /#section (full route change).
+ * - Non-section links (/blog, /services) always navigate normally.
+ *
+ * Mobile: hamburger menu with vanilla JS toggle.
+ * CTA button: "Hire me" → #contact section.
+ */
+import { Icon } from "astro-icon/components";
+import { SITE, NAV_LINKS } from "@/config";
+
+const { pathname } = Astro.url;
+const isHome = pathname === "/" || pathname === "";
+
+/**
+ * Resolve the href for a nav link.
+ * Section links get prefixed with "/" when not on the home page.
+ */
+function resolveHref(link: (typeof NAV_LINKS)[number]): string {
+  if (!link.section) return link.href;
+  return isHome ? link.href : `/${link.href}`;
+}
+
+/** True when the link's route segment matches the current path. */
+function isActive(link: (typeof NAV_LINKS)[number]): boolean {
+  if (link.section) return false; // section links don't get active styling by route
+  const seg = link.href.split("/").filter(Boolean)[0];
+  return pathname.startsWith(`/${seg}`);
+}
+---
+
+<header
+  id="site-nav"
+  class="fixed top-0 right-0 left-0 z-50 transition-all duration-300"
+  aria-label="Site navigation"
+>
+  <!-- Frosted glass bar -->
+  <div class="border-b border-[var(--color-border)] glass">
+    <div class="app-layout flex h-16 items-center justify-between">
+      <!-- Logo / wordmark -->
+      <a
+        href="/"
+        class="flex items-center gap-2 font-semibold text-[var(--color-text-primary)] transition-opacity hover:opacity-80"
+        aria-label={`${SITE.author} — home`}
+      >
+        <!-- Teal dot accent -->
+        <span
+          class="inline-block h-2 w-2 rounded-full bg-[var(--color-teal)]"
+          aria-hidden="true"></span>
+        <span class="text-sm tracking-wide">Ridhwan Amin</span>
+      </a>
+
+      <!-- Desktop nav links -->
+      <nav
+        class="hidden items-center gap-6 md:flex"
+        aria-label="Primary navigation"
+      >
+        {
+          NAV_LINKS.map(link => (
+            <a
+              href={resolveHref(link)}
+              class:list={[
+                "text-sm font-medium transition-colors duration-150",
+                isActive(link)
+                  ? "active-nav text-[var(--color-teal)]"
+                  : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]",
+              ]}
+              {...(link.section && isHome
+                ? { "data-scroll-to": link.href.replace("#", "") }
+                : {})}
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <!-- Desktop: theme toggle + CTA -->
+      <div class="hidden items-center gap-3 md:flex">
+        <!-- Theme toggle -->
+        <button
+          id="theme-toggle-desktop"
+          class="rounded-md p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text-primary)]"
+          aria-label="Toggle dark/light mode"
+          title="Toggle theme"
+        >
+          <Icon
+            name="lucide:sun"
+            class="hidden h-4 w-4 dark:block"
+            aria-hidden="true"
+          />
+          <Icon
+            name="lucide:moon"
+            class="block h-4 w-4 dark:hidden"
+            aria-hidden="true"
+          />
+        </button>
+
+        <!-- Hire me CTA -->
+        <a
+          href={isHome ? "#contact" : "/#contact"}
+          class="rounded-md bg-[var(--color-teal)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+        >
+          Hire me
+        </a>
+      </div>
+
+      <!-- Mobile: hamburger -->
+      <div class="flex items-center gap-2 md:hidden">
+        <button
+          id="theme-toggle-mobile"
+          class="rounded-md p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-surface-hover)]"
+          aria-label="Toggle dark/light mode"
+        >
+          <Icon
+            name="lucide:sun"
+            class="hidden h-4 w-4 dark:block"
+            aria-hidden="true"
+          />
+          <Icon
+            name="lucide:moon"
+            class="block h-4 w-4 dark:hidden"
+            aria-hidden="true"
+          />
+        </button>
+
+        <button
+          id="hamburger"
+          class="rounded-md p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-surface-hover)]"
+          aria-label="Open navigation menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+        >
+          <Icon
+            name="lucide:menu"
+            class="h-5 w-5"
+            id="hamburger-open"
+            aria-hidden="true"
+          />
+          <Icon
+            name="lucide:x"
+            class="hidden h-5 w-5"
+            id="hamburger-close"
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu drawer -->
+  <div
+    id="mobile-menu"
+    class="hidden border-b border-[var(--color-border)] glass md:hidden"
+    aria-hidden="true"
+  >
+    <nav
+      class="app-layout flex flex-col gap-1 py-4"
+      aria-label="Mobile navigation"
+    >
+      {
+        NAV_LINKS.map(link => (
+          <a
+            href={resolveHref(link)}
+            class:list={[
+              "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+              isActive(link)
+                ? "bg-[var(--color-teal-muted)] text-[var(--color-teal)]"
+                : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text-primary)]",
+            ]}
+            data-mobile-link
+          >
+            {link.label}
+          </a>
+        ))
+      }
+      <div class="mt-3 border-t border-[var(--color-border)] pt-3">
+        <a
+          href={isHome ? "#contact" : "/#contact"}
+          class="block w-full rounded-md bg-[var(--color-teal)] px-4 py-2.5 text-center text-sm font-semibold text-white"
+          data-mobile-link
+        >
+          Hire me
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // ---- Hamburger toggle ----
+  function setupHamburger() {
+    const hamburger = document.getElementById("hamburger");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const openIcon = document.getElementById("hamburger-open");
+    const closeIcon = document.getElementById("hamburger-close");
+
+    if (!hamburger || !mobileMenu) return;
+
+    hamburger.addEventListener("click", () => {
+      const isOpen = hamburger.getAttribute("aria-expanded") === "true";
+      hamburger.setAttribute("aria-expanded", isOpen ? "false" : "true");
+      hamburger.setAttribute(
+        "aria-label",
+        isOpen ? "Open navigation menu" : "Close navigation menu"
+      );
+      mobileMenu.classList.toggle("hidden");
+      mobileMenu.setAttribute("aria-hidden", isOpen ? "true" : "false");
+      openIcon?.classList.toggle("hidden");
+      closeIcon?.classList.toggle("hidden");
+    });
+
+    // Close menu when a mobile link is tapped
+    document.querySelectorAll("[data-mobile-link]").forEach(link => {
+      link.addEventListener("click", () => {
+        hamburger.setAttribute("aria-expanded", "false");
+        hamburger.setAttribute("aria-label", "Open navigation menu");
+        mobileMenu.classList.add("hidden");
+        mobileMenu.setAttribute("aria-hidden", "true");
+        openIcon?.classList.remove("hidden");
+        closeIcon?.classList.add("hidden");
+      });
+    });
+  }
+
+  // ---- Theme toggle ----
+  function setupThemeToggle() {
+    const buttons = [
+      document.getElementById("theme-toggle-desktop"),
+      document.getElementById("theme-toggle-mobile"),
+    ].filter(Boolean) as HTMLElement[];
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme");
+        const next = current === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        try {
+          localStorage.setItem("theme", next);
+        } catch {}
+      });
+    });
+  }
+
+  // ---- Scroll-linked section links (home page only) ----
+  function setupSectionScroll() {
+    document.querySelectorAll("[data-scroll-to]").forEach(el => {
+      el.addEventListener("click", e => {
+        const id = (el as HTMLElement).dataset.scrollTo;
+        if (!id) return;
+        const target = document.getElementById(id);
+        if (!target) return;
+        e.preventDefault();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const lenis = (window as any).__lenis;
+        if (lenis) {
+          lenis.scrollTo(target, { offset: -64, duration: 1.2 });
+        } else {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+  }
+
+  // ---- Nav scroll shadow ----
+  function setupNavShadow() {
+    const nav = document.getElementById("site-nav");
+    if (!nav) return;
+    const onScroll = () => {
+      if (window.scrollY > 20) {
+        nav.classList.add("shadow-lg", "shadow-black/20");
+      } else {
+        nav.classList.remove("shadow-lg", "shadow-black/20");
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    // Store cleanup ref for after-swap
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).__navScrollCleanup = () =>
+      window.removeEventListener("scroll", onScroll);
+  }
+
+  function init() {
+    setupHamburger();
+    setupThemeToggle();
+    setupSectionScroll();
+    setupNavShadow();
+  }
+
+  init();
+
+  document.addEventListener("astro:after-swap", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).__navScrollCleanup?.();
+    init();
+  });
+</script>

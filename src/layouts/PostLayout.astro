@@ -1,0 +1,420 @@
+---
+/**
+ * PostLayout.astro — Agent A owns this file. Task A21.
+ *
+ * Layout for /blog/[slug] MDX posts.
+ * Provides: reading time, author, tags, share buttons, TOC sidebar,
+ * KaTeX (via BaseLayout global import), Shiki code highlighting,
+ * prev/next navigation, and JSON-LD BlogPosting schema (B9 contract).
+ *
+ * Note: the existing PostDetails.astro (AstroPaper) handles /posts/[slug].
+ * This layout is for the new /blog/[slug] route which uses BaseLayout.
+ */
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Datetime from "@/components/Datetime.astro";
+import { Icon } from "astro-icon/components";
+import { SITE } from "@/config";
+
+export type Props = {
+  title: string;
+  description: string;
+  pubDatetime: Date;
+  modDatetime?: Date | null;
+  author?: string;
+  tags: string[];
+  slug: string;
+  ogImage?: string;
+  canonicalURL?: string;
+  /** Raw MDX body text for reading time calculation (passed from [slug].astro) */
+  readingTimeMinutes?: number;
+  prevSlug?: string;
+  prevTitle?: string;
+  nextSlug?: string;
+  nextTitle?: string;
+};
+
+const {
+  title,
+  description,
+  pubDatetime,
+  modDatetime,
+  author = SITE.author,
+  tags,
+  slug,
+  ogImage,
+  canonicalURL: canonicalProp,
+  readingTimeMinutes,
+  prevSlug,
+  prevTitle,
+  nextSlug,
+  nextTitle,
+} = Astro.props;
+
+const canonicalURL =
+  canonicalProp ?? new URL(`/blog/${slug}`, SITE.website).toString();
+const resolvedOgImage = ogImage ?? `${SITE.website}/og.png`;
+
+// JSON-LD BlogPosting (B9 — self-referencing canonical, not Substack URL)
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: title,
+  description,
+  datePublished: pubDatetime.toISOString(),
+  dateModified: modDatetime?.toISOString() ?? pubDatetime.toISOString(),
+  author: {
+    "@type": "Person",
+    name: author,
+    url: SITE.website,
+  },
+  publisher: {
+    "@type": "Person",
+    name: author,
+    url: SITE.website,
+  },
+  image: resolvedOgImage,
+  url: canonicalURL,
+  keywords: tags.join(", "),
+  mainEntityOfPage: {
+    "@type": "WebPage",
+    "@id": canonicalURL,
+  },
+};
+
+// Build Twitter/X and LinkedIn share URLs
+const encodedUrl = encodeURIComponent(canonicalURL);
+const encodedTitle = encodeURIComponent(title);
+const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
+const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+---
+
+<BaseLayout
+  title={`${title} | ${SITE.title}`}
+  description={description}
+  ogImage={resolvedOgImage}
+  canonicalURL={canonicalURL}
+  jsonLd={jsonLd}
+>
+  <!-- Post hero / header -->
+  <div class="border-b border-[var(--color-border)]">
+    <div class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+      <!-- Back link -->
+      <a
+        href="/blog"
+        class="mb-6 inline-flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] transition-colors duration-150 hover:text-[var(--color-teal)]"
+        aria-label="Back to blog"
+      >
+        <Icon name="lucide:arrow-left" class="h-4 w-4" aria-hidden="true" />
+        All posts
+      </a>
+
+      <!-- Title -->
+      <h1
+        class="mt-4 text-3xl leading-tight font-bold text-[var(--color-text-primary)] sm:text-4xl"
+      >
+        {title}
+      </h1>
+
+      <!-- Meta row -->
+      <div
+        class="mt-5 flex flex-wrap items-center gap-4 text-sm text-[var(--color-text-muted)]"
+      >
+        <Datetime
+          pubDatetime={pubDatetime}
+          modDatetime={modDatetime}
+          size="sm"
+        />
+
+        {
+          readingTimeMinutes && (
+            <span class="flex items-center gap-1.5">
+              <Icon
+                name="lucide:clock"
+                class="h-3.5 w-3.5"
+                aria-hidden="true"
+              />
+              {readingTimeMinutes} min read
+            </span>
+          )
+        }
+
+        <span class="flex items-center gap-1.5">
+          <Icon name="lucide:user" class="h-3.5 w-3.5" aria-hidden="true" />
+          {author}
+        </span>
+      </div>
+
+      <!-- Tags -->
+      {
+        tags.length > 0 && (
+          <div
+            class="mt-4 flex flex-wrap gap-1.5"
+            role="list"
+            aria-label="Post tags"
+          >
+            {tags.map(tag => (
+              <span
+                role="listitem"
+                class="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-0.5 font-mono text-[0.65rem] text-[var(--color-text-muted)]"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </div>
+
+  <!-- Two-column: article + TOC sidebar -->
+  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+    <div class="lg:grid lg:grid-cols-[1fr_240px] lg:gap-12">
+      <!-- MDX article -->
+      <article
+        class="app-prose prose max-w-none prose-neutral dark:prose-invert prose-headings:font-bold prose-headings:text-[var(--color-text-primary)] prose-p:leading-relaxed prose-p:text-[var(--color-text-secondary)] prose-a:text-[var(--color-teal)] prose-a:no-underline hover:prose-a:underline prose-code:font-mono prose-code:text-sm prose-pre:bg-transparent prose-pre:p-0"
+        data-pagefind-body
+      >
+        <slot />
+      </article>
+
+      <!-- TOC sidebar -->
+      <aside
+        id="post-toc-sidebar"
+        class="hidden lg:block"
+        aria-label="Table of contents"
+      >
+        <div class="sticky top-24">
+          <p
+            class="mb-3 text-xs font-semibold tracking-widest text-[var(--color-text-muted)] uppercase"
+          >
+            Contents
+          </p>
+          <nav
+            id="post-toc-nav"
+            class="text-sm text-[var(--color-text-secondary)]"
+            aria-label="Post sections"
+          >
+          </nav>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Share buttons -->
+    <div class="mt-12 border-t border-[var(--color-border)] pt-8">
+      <p class="mb-4 text-sm font-medium text-[var(--color-text-muted)]">
+        Share this post
+      </p>
+      <div class="flex gap-3">
+        <a
+          href={twitterShareUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Share on X / Twitter (opens in new tab)"
+          class="inline-flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm text-[var(--color-text-secondary)] transition-colors duration-150 hover:border-[var(--color-teal)] hover:text-[var(--color-teal)]"
+        >
+          <Icon name="lucide:twitter" class="h-4 w-4" aria-hidden="true" />
+          X / Twitter
+        </a>
+        <a
+          href={linkedinShareUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Share on LinkedIn (opens in new tab)"
+          class="inline-flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm text-[var(--color-text-secondary)] transition-colors duration-150 hover:border-[var(--color-teal)] hover:text-[var(--color-teal)]"
+        >
+          <Icon name="lucide:linkedin" class="h-4 w-4" aria-hidden="true" />
+          LinkedIn
+        </a>
+      </div>
+    </div>
+
+    <!-- Prev / Next -->
+    {
+      (prevSlug || nextSlug) && (
+        <nav
+          class="mt-8 border-t border-[var(--color-border)] pt-8"
+          aria-label="Post navigation"
+        >
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {prevSlug && prevTitle && (
+              <a
+                href={`/blog/${prevSlug}`}
+                class="group flex items-start gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 transition-colors duration-150 hover:border-[var(--color-teal)]"
+              >
+                <Icon
+                  name="lucide:arrow-left"
+                  class="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-text-muted)] transition-transform duration-150 group-hover:-translate-x-0.5 group-hover:text-[var(--color-teal)]"
+                  aria-hidden="true"
+                />
+                <div>
+                  <p class="text-xs text-[var(--color-text-muted)]">Previous</p>
+                  <p class="mt-0.5 text-sm font-medium text-[var(--color-text-primary)] group-hover:text-[var(--color-teal)]">
+                    {prevTitle}
+                  </p>
+                </div>
+              </a>
+            )}
+            {nextSlug && nextTitle && (
+              <a
+                href={`/blog/${nextSlug}`}
+                class="group flex items-start justify-end gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-right transition-colors duration-150 hover:border-[var(--color-teal)] sm:col-start-2"
+              >
+                <div>
+                  <p class="text-xs text-[var(--color-text-muted)]">Next</p>
+                  <p class="mt-0.5 text-sm font-medium text-[var(--color-text-primary)] group-hover:text-[var(--color-teal)]">
+                    {nextTitle}
+                  </p>
+                </div>
+                <Icon
+                  name="lucide:arrow-right"
+                  class="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-text-muted)] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-[var(--color-teal)]"
+                  aria-hidden="true"
+                />
+              </a>
+            )}
+          </div>
+        </nav>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<script>
+  /** Build TOC from article headings */
+  function buildPostToc() {
+    const article = document.querySelector("[data-pagefind-body]");
+    const tocNav = document.getElementById("post-toc-nav");
+    if (!article || !tocNav) return;
+
+    tocNav.innerHTML = "";
+    const headings = Array.from(
+      article.querySelectorAll<HTMLHeadingElement>("h2, h3")
+    );
+    if (headings.length === 0) return;
+
+    headings.forEach(h => {
+      if (!h.id) {
+        h.id =
+          h.textContent
+            ?.toLowerCase()
+            .replace(/[^\w\s-]/g, "")
+            .replace(/\s+/g, "-")
+            .slice(0, 60) ?? "";
+      }
+      const a = document.createElement("a");
+      a.href = `#${h.id}`;
+      a.textContent = h.textContent ?? "";
+      a.dataset.headingId = h.id;
+      a.className = [
+        "block py-1 transition-colors duration-150",
+        h.tagName === "H3" ? "pl-4 text-[0.8rem]" : "text-sm",
+        "text-[var(--color-text-muted)] hover:text-[var(--color-teal)]",
+      ].join(" ");
+      tocNav.appendChild(a);
+    });
+
+    const links =
+      tocNav.querySelectorAll<HTMLAnchorElement>("a[data-heading-id]");
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const link = tocNav.querySelector<HTMLAnchorElement>(
+            `a[data-heading-id="${entry.target.id}"]`
+          );
+          if (!link) return;
+          if (entry.isIntersecting) {
+            links.forEach(l =>
+              l.classList.remove("text-[var(--color-teal)]", "font-medium")
+            );
+            link.classList.add("text-[var(--color-teal)]", "font-medium");
+          }
+        });
+      },
+      { rootMargin: "-20% 0px -70% 0px" }
+    );
+    headings.forEach(h => observer.observe(h));
+  }
+
+  /** Heading anchor links */
+  function addHeadingLinks() {
+    const headings = document.querySelectorAll<HTMLHeadingElement>(
+      "[data-pagefind-body] h2, [data-pagefind-body] h3, [data-pagefind-body] h4"
+    );
+    headings.forEach(h => {
+      if (!h.id) return;
+      h.classList.add("group");
+      const existing = h.querySelector(".heading-link");
+      if (existing) return;
+      const a = document.createElement("a");
+      a.href = `#${h.id}`;
+      a.className =
+        "heading-link ms-2 no-underline opacity-0 group-hover:opacity-75 focus:opacity-75 transition-opacity";
+      a.innerHTML = `<span aria-hidden="true">#</span>`;
+      h.appendChild(a);
+    });
+  }
+
+  /** Code block copy buttons */
+  function attachCopyButtons() {
+    const blocks = document.querySelectorAll<HTMLPreElement>(
+      "[data-pagefind-body] pre"
+    );
+    blocks.forEach(block => {
+      if (block.querySelector(".copy-code")) return;
+      const btn = document.createElement("button");
+      btn.className =
+        "copy-code absolute end-3 -top-3 rounded border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-1 text-xs font-medium text-[var(--color-text-muted)]";
+      btn.textContent = "Copy";
+      btn.setAttribute("aria-label", "Copy code to clipboard");
+      block.style.position = "relative";
+      block.setAttribute("tabindex", "0");
+      block.appendChild(btn);
+      btn.addEventListener("click", async () => {
+        const code = block.querySelector("code");
+        if (!code) return;
+        await navigator.clipboard.writeText(code.innerText);
+        btn.textContent = "Copied";
+        btn.setAttribute("aria-label", "Code copied");
+        setTimeout(() => {
+          btn.textContent = "Copy";
+          btn.setAttribute("aria-label", "Copy code to clipboard");
+        }, 700);
+      });
+    });
+  }
+
+  /** Reading progress bar */
+  function createProgressBar() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const existing = document.querySelector(".post-progress-container");
+    if (existing) existing.remove();
+    const container = document.createElement("div");
+    container.className =
+      "post-progress-container fixed top-0 left-0 z-50 h-0.5 w-full";
+    const bar = document.createElement("div");
+    bar.id = "post-progress-bar";
+    bar.className =
+      "h-full w-0 bg-[var(--color-teal)] transition-[width] duration-100";
+    container.appendChild(bar);
+    document.body.appendChild(container);
+    document.addEventListener("scroll", () => {
+      const bar = document.getElementById("post-progress-bar");
+      const height =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight;
+      if (bar && height > 0) {
+        bar.style.width = `${(document.documentElement.scrollTop / height) * 100}%`;
+      }
+    });
+  }
+
+  function init() {
+    buildPostToc();
+    addHeadingLinks();
+    attachCopyButtons();
+    createProgressBar();
+  }
+
+  init();
+  document.addEventListener("astro:after-swap", init);
+</script>

@@ -1,0 +1,131 @@
+---
+/**
+ * Timeline.astro — Agent A owns this file. Task A11.
+ *
+ * Vertical alternating timeline for work/education history.
+ * GSAP ScrollTrigger stagger reveals are wired in by A15 (ScrollReveal).
+ * The component itself renders in correct final state;
+ * the `data-reveal="timeline"` attribute is the hook for A15's GSAP script.
+ *
+ * Animation rule: only transform + opacity. prefers-reduced-motion: no animation.
+ */
+import { Icon } from "astro-icon/components";
+
+export interface TimelineEntry {
+  year: string;
+  title: string;
+  organisation: string;
+  description: string;
+  /** "work" | "education" | "award" */
+  type?: "work" | "education" | "award";
+  /** Optional URL for the organisation */
+  href?: string;
+}
+
+export interface Props {
+  entries: TimelineEntry[];
+}
+
+const { entries } = Astro.props;
+
+const iconMap = {
+  work: "lucide:briefcase",
+  education: "lucide:graduation-cap",
+  award: "lucide:award",
+} as const;
+
+function getIcon(type: TimelineEntry["type"] = "work") {
+  return iconMap[type] ?? iconMap.work;
+}
+---
+
+<ol
+  class="timeline relative"
+  data-reveal="timeline"
+  aria-label="Career and education timeline"
+>
+  {
+    entries.map((entry, i) => {
+      const isRight = i % 2 === 0;
+      const icon = getIcon(entry.type);
+      return (
+        <li
+          class:list={[
+            "timeline-entry relative mb-10 flex flex-row items-start gap-6",
+            !isRight && "md:flex-row-reverse",
+            "opacity-0", // initial hidden state for GSAP A15
+          ]}
+          data-timeline-item
+        >
+          <div
+            class:list={[
+              "hidden w-28 shrink-0 flex-col items-end md:flex",
+              !isRight && "items-start",
+            ]}
+          >
+            <span class="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1 font-mono text-xs text-[var(--color-text-muted)]">
+              {entry.year}
+            </span>
+          </div>
+
+          <div class="relative flex shrink-0 flex-col items-center">
+            <div class="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-surface)]">
+              <Icon
+                name={icon}
+                class="h-3.5 w-3.5 text-[var(--color-teal)]"
+                aria-hidden="true"
+              />
+            </div>
+            {i < entries.length - 1 && (
+              <div
+                class="absolute top-8 h-full w-px bg-gradient-to-b from-[var(--color-border)] to-transparent"
+                aria-hidden="true"
+              />
+            )}
+          </div>
+
+          <div class="flex-1 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 transition-all duration-200 hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-hover)]">
+            <span class="mb-2 inline-block font-mono text-xs text-[var(--color-text-muted)] md:hidden">
+              {entry.year}
+            </span>
+
+            <h3 class="text-sm font-semibold text-[var(--color-text-primary)]">
+              {entry.title}
+            </h3>
+
+            {entry.href ? (
+              <a
+                href={entry.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mt-0.5 inline-block text-xs text-[var(--color-teal)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-teal)]"
+                aria-label={`${entry.organisation} (opens in new tab)`}
+              >
+                {entry.organisation}
+              </a>
+            ) : (
+              <p class="mt-0.5 text-xs font-medium text-[var(--color-text-secondary)]">
+                {entry.organisation}
+              </p>
+            )}
+
+            <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+              {entry.description}
+            </p>
+          </div>
+        </li>
+      );
+    })
+  }
+</ol>
+
+<style>
+  /* Timeline vertical connector is drawn via the absolute positioned div above */
+  /* Reduced-motion: items start fully visible (opacity:1), JS skip handled in A15 */
+  @media (prefers-reduced-motion: reduce) {
+    .timeline-entry {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>

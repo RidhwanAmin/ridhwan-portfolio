@@ -1,0 +1,325 @@
+---
+/**
+ * /services — Agent A owns this file. Task A22.
+ *
+ * Consulting pricing page with three tiers.
+ * Stripe-enabled tiers have data-price-id buttons — Agent D will wire
+ * the checkout JS to read these and POST to /api/checkout.
+ *
+ * Cross-agent contract:
+ *   - data-price-id attributes are consumed by Agent D's checkout script
+ *   - success_url: /checkout/return?session_id={CHECKOUT_SESSION_ID}
+ *   - cancel_url: /services
+ *   - Quote tier: mailto CTA instead of Stripe button
+ *
+ * Note: STRIPE_PUBLISHABLE_KEY is read client-side by Agent D's script.
+ * This page does not need it directly.
+ */
+export const prerender = true;
+
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { Icon } from "astro-icon/components";
+
+const tiers = [
+  {
+    id: "consulting-call",
+    name: "Consulting Call",
+    price: "RM 150",
+    period: "/ session",
+    description:
+      "A focused 60-minute deep dive into your AI/ML challenge. Come with a specific problem; leave with a concrete action plan.",
+    features: [
+      "60-minute video call",
+      "Pre-call questionnaire to maximise focus",
+      "Written summary + recommendations after the call",
+      "One follow-up Q&A email within 48 hours",
+    ],
+    cta: "Book a call",
+    priceId: "price_consulting_call",
+    highlight: false,
+  },
+  {
+    id: "advisory-retainer",
+    name: "Advisory Retainer",
+    price: "RM 3,000",
+    period: "/ month",
+    description:
+      "Ongoing strategic guidance for teams building AI/ML systems. Four sessions per month plus asynchronous access for quick questions.",
+    features: [
+      "4 x 60-minute sessions per month",
+      "Async Slack channel for quick questions",
+      "Architecture and code reviews on request",
+      "Priority response within 24 hours",
+      "Monthly written research digest",
+    ],
+    cta: "Start retainer",
+    priceId: "price_advisory_retainer",
+    highlight: true,
+  },
+  {
+    id: "project-engagement",
+    name: "Project Engagement",
+    price: "Quote",
+    period: "",
+    description:
+      "End-to-end research or development engagement for a specific ML project — from scoping and design through to implementation and handoff.",
+    features: [
+      "Custom scope and timeline",
+      "Literature review and system design",
+      "Prototype or production implementation",
+      "Documentation and knowledge transfer",
+      "Post-delivery support period",
+    ],
+    cta: "Get a quote",
+    priceId: null,
+    contactEmail: "ridhwan@ridhwan.dev",
+    highlight: false,
+  },
+] as const;
+
+const pageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: "AI/ML Consulting — Ridhwan Amin",
+  description:
+    "Consulting and advisory services for AI/ML teams: architecture reviews, research guidance, and project engagement.",
+  provider: {
+    "@type": "Person",
+    name: "Ridhwan Amin",
+    url: "https://ridhwan.dev",
+  },
+  url: "https://ridhwan.dev/services",
+};
+---
+
+<BaseLayout
+  title="Services — Ridhwan Amin"
+  description="Consulting and advisory services for AI/ML teams. Book a call, start a retainer, or enquire about a project engagement."
+  jsonLd={pageJsonLd}
+>
+  <section class="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
+    <!-- Page header -->
+    <header class="mb-16 max-w-2xl">
+      <h1
+        class="mb-4 text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+      >
+        Services
+      </h1>
+      <p class="text-base leading-relaxed text-[var(--color-text-secondary)]">
+        I help AI/ML teams move faster — through strategic consulting calls,
+        ongoing advisory, or taking on research and development work directly.
+      </p>
+    </header>
+
+    <!-- Pricing tiers grid -->
+    <div class="grid gap-6 lg:grid-cols-3">
+      {
+        tiers.map(tier => (
+          <article
+            class:list={[
+              "flex flex-col rounded-2xl border p-8 transition-all duration-200",
+              tier.highlight
+                ? "border-[var(--color-teal)] bg-[var(--color-teal-muted)] ring-1 ring-[var(--color-teal)] ring-offset-2 ring-offset-[var(--color-bg)]"
+                : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-teal)]",
+            ]}
+            aria-label={`${tier.name} pricing tier`}
+          >
+            {tier.highlight && (
+              <span class="mb-4 inline-flex w-fit items-center gap-1 rounded-full bg-[var(--color-teal)] px-3 py-1 text-xs font-semibold text-white">
+                <Icon name="lucide:star" class="h-3 w-3" aria-hidden="true" />
+                Most popular
+              </span>
+            )}
+
+            <h2 class="text-xl font-bold text-[var(--color-text-primary)]">
+              {tier.name}
+            </h2>
+
+            <div class="mt-4 flex items-baseline gap-1">
+              <span class="text-4xl font-extrabold text-[var(--color-text-primary)]">
+                {tier.price}
+              </span>
+              {tier.period && (
+                <span class="text-sm text-[var(--color-text-muted)]">
+                  {tier.period}
+                </span>
+              )}
+            </div>
+
+            <p class="mt-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+              {tier.description}
+            </p>
+
+            <ul
+              class="mt-6 flex-1 space-y-2.5"
+              role="list"
+              aria-label={`${tier.name} features`}
+            >
+              {tier.features.map(feature => (
+                <li class="flex items-start gap-2.5 text-sm text-[var(--color-text-secondary)]">
+                  <Icon
+                    name="lucide:check"
+                    class="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-teal)]"
+                    aria-hidden="true"
+                  />
+                  {feature}
+                </li>
+              ))}
+            </ul>
+
+            <div class="mt-8">
+              {tier.priceId ? (
+                <button
+                  type="button"
+                  data-price-id={tier.priceId}
+                  class:list={[
+                    "checkout-btn w-full rounded-xl px-6 py-3 text-sm font-semibold transition-all duration-150",
+                    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]",
+                    tier.highlight
+                      ? "bg-[var(--color-teal)] text-white hover:bg-[#178a62]"
+                      : "border border-[var(--color-teal)] text-[var(--color-teal)] hover:bg-[var(--color-teal)] hover:text-white",
+                  ]}
+                  aria-label={`${tier.cta} — ${tier.name}`}
+                >
+                  {tier.cta}
+                </button>
+              ) : (
+                <a
+                  href={`mailto:${"contactEmail" in tier ? tier.contactEmail : ""}?subject=${encodeURIComponent("Project Engagement enquiry")}`}
+                  class="block w-full rounded-xl border border-[var(--color-border)] px-6 py-3 text-center text-sm font-semibold text-[var(--color-text-primary)] transition-all duration-150 hover:border-[var(--color-teal)] hover:text-[var(--color-teal)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+                  aria-label="Get a quote via email for Project Engagement"
+                >
+                  {tier.cta}
+                </a>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <!-- Checkout error display area -->
+    <p
+      id="checkout-error"
+      class="mt-6 hidden text-center text-sm text-red-400"
+      role="alert"
+      aria-live="polite"
+    >
+    </p>
+
+    <!-- FAQ / reassurance -->
+    <div class="mt-16 border-t border-[var(--color-border)] pt-12">
+      <h2 class="mb-6 text-xl font-bold text-[var(--color-text-primary)]">
+        Common questions
+      </h2>
+      <dl class="grid gap-6 sm:grid-cols-2">
+        <div>
+          <dt class="font-semibold text-[var(--color-text-primary)]">
+            What timezones do you work across?
+          </dt>
+          <dd class="mt-1 text-sm text-[var(--color-text-secondary)]">
+            Based in Malaysia (MYT, UTC+8). I regularly work with teams in
+            Europe, the US, and the Middle East.
+          </dd>
+        </div>
+        <div>
+          <dt class="font-semibold text-[var(--color-text-primary)]">
+            What if a call doesn't solve my problem?
+          </dt>
+          <dd class="mt-1 text-sm text-[var(--color-text-secondary)]">
+            If after the call you feel we didn't make meaningful progress, I'll
+            schedule a follow-up at no charge.
+          </dd>
+        </div>
+        <div>
+          <dt class="font-semibold text-[var(--color-text-primary)]">
+            Can I cancel the retainer?
+          </dt>
+          <dd class="mt-1 text-sm text-[var(--color-text-secondary)]">
+            Yes — cancel any time before the next billing date. No lock-in
+            periods.
+          </dd>
+        </div>
+        <div>
+          <dt class="font-semibold text-[var(--color-text-primary)]">
+            Do you sign NDAs?
+          </dt>
+          <dd class="mt-1 text-sm text-[var(--color-text-secondary)]">
+            Yes. I routinely work under mutual NDA for client engagements. Send
+            me the draft and I'll review within 48 hours.
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+</BaseLayout>
+
+<!--
+  Checkout script — Agent A wires the UI; Agent D will replace/extend this
+  script with the full Stripe integration (D5 task).
+
+  This script reads data-price-id from buttons and POSTs to /api/checkout.
+  On success, it redirects to the Stripe-hosted Checkout URL.
+  On failure, it shows an inline error message.
+
+  Agent D contract:
+    POST /api/checkout { priceId: string }
+    → { url: string }   (Stripe Checkout session URL)
+    → { error: string } (on failure)
+-->
+<script>
+  function initCheckout() {
+    const buttons = document.querySelectorAll<HTMLButtonElement>(
+      "button[data-price-id].checkout-btn"
+    );
+    const errorEl = document.getElementById("checkout-error");
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const priceId = btn.dataset.priceId;
+        if (!priceId) return;
+
+        // Disable button and show loading state
+        btn.disabled = true;
+        const originalText = btn.textContent ?? "";
+        btn.textContent = "Redirecting…";
+        if (errorEl) {
+          errorEl.classList.add("hidden");
+          errorEl.textContent = "";
+        }
+
+        try {
+          const res = await fetch("/api/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ priceId }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok || !data.url) {
+            throw new Error(
+              data.error ?? "Failed to start checkout. Please try again."
+            );
+          }
+
+          // Redirect to Stripe Checkout
+          window.location.href = data.url;
+        } catch (err) {
+          if (errorEl) {
+            errorEl.textContent =
+              err instanceof Error
+                ? err.message
+                : "Something went wrong. Please try again.";
+            errorEl.classList.remove("hidden");
+          }
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
+      });
+    });
+  }
+
+  initCheckout();
+  document.addEventListener("astro:after-swap", initCheckout);
+</script>

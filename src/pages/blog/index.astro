@@ -1,0 +1,132 @@
+---
+/**
+ * /blog — Agent A owns this file. Task A18.
+ *
+ * Merged chronological feed combining:
+ *   - local MDX posts (blog collection, Agent B B1)
+ *   - Substack RSS teasers (substackPosts collection, Agent B B1/B2)
+ *
+ * Sorted by date descending. Local posts link to /blog/[slug];
+ * Substack posts link to the external Substack URL.
+ *
+ * JSON-LD: Blog schema for the index page.
+ */
+export const prerender = true;
+
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import BlogPostCard from "@/components/BlogPostCard.astro";
+import SubstackTeaser from "@/components/SubstackTeaser.astro";
+
+// ── Fetch local posts ────────────────────────────────────────────────────────
+const localPosts = await getCollection("blog", ({ data }) => !data.draft);
+
+// ── Fetch Substack posts ─────────────────────────────────────────────────────
+// substackPosts collection returns empty array if feed is unreachable (graceful)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let substackPosts: any[] = [];
+try {
+  substackPosts = await getCollection("substackPosts");
+} catch {
+  // Feed unavailable — render without Substack items
+}
+
+// ── Merge and sort by date descending ────────────────────────────────────────
+type LocalItem = {
+  type: "local";
+  date: Date;
+  entry: (typeof localPosts)[number];
+};
+
+type SubstackItem = {
+  type: "substack";
+  date: Date;
+  entry: (typeof substackPosts)[number];
+};
+
+type FeedItem = LocalItem | SubstackItem;
+
+const localItems: LocalItem[] = localPosts.map(e => ({
+  type: "local",
+  date: new Date(e.data.pubDatetime),
+  entry: e,
+}));
+
+const substackItems: SubstackItem[] = substackPosts.map(e => ({
+  type: "substack",
+  date: new Date(e.data.published ?? e.data.pubDate ?? 0),
+  entry: e,
+}));
+
+const feed: FeedItem[] = [...localItems, ...substackItems].sort(
+  (a, b) => b.date.getTime() - a.date.getTime()
+);
+
+const pageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  name: "Blog — Ridhwan Amin",
+  description:
+    "Writing on AI/ML research, retrieval systems, and lessons from building at the frontier.",
+  url: "https://ridhwan.dev/blog",
+  author: {
+    "@type": "Person",
+    name: "Ridhwan Amin",
+    url: "https://ridhwan.dev",
+  },
+};
+---
+
+<BaseLayout
+  title="Blog — Ridhwan Amin"
+  description="Writing on AI/ML research, retrieval systems, and lessons from building at the frontier."
+  jsonLd={pageJsonLd}
+>
+  <section class="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
+    <!-- Page header -->
+    <header class="mb-12 max-w-2xl">
+      <h1
+        class="mb-4 text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+      >
+        Writing
+      </h1>
+      <p class="text-base leading-relaxed text-[var(--color-text-secondary)]">
+        Thoughts on AI/ML research, retrieval systems, and building at the
+        frontier. Local posts and essays from Substack in one feed.
+      </p>
+    </header>
+
+    <!-- Feed -->
+    {
+      feed.length > 0 ? (
+        <div class="flex flex-col gap-4" role="feed" aria-label="Blog posts">
+          {feed.map(item =>
+            item.type === "local" ? (
+              <BlogPostCard
+                slug={item.entry.id}
+                title={item.entry.data.title}
+                description={item.entry.data.description}
+                pubDatetime={item.date}
+                tags={item.entry.data.tags ?? []}
+                featured={item.entry.data.featured}
+              />
+            ) : (
+              <SubstackTeaser
+                title={item.entry.data.title ?? "Untitled"}
+                description={
+                  item.entry.data.description ?? item.entry.data.summary ?? ""
+                }
+                published={item.date}
+                url={item.entry.data.link ?? item.entry.data.url ?? "#"}
+              />
+            )
+          )}
+        </div>
+      ) : (
+        <p class="text-[var(--color-text-muted)]">
+          No posts yet. Check back soon.
+        </p>
+      )
+    }
+  </section>
+</BaseLayout>

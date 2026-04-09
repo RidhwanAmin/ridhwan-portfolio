@@ -1,0 +1,122 @@
+---
+/**
+ * BlogPostCard.astro — Agent A owns this file. Task A20.
+ *
+ * Card component for local MDX blog posts on the /blog index page.
+ * Shows title, description excerpt, date, tag pills, and featured badge.
+ *
+ * Cross-agent contract: blog collection shape defined by Agent B (B1).
+ * Caller (blog index page) maps CollectionEntry data to these props.
+ */
+import { Icon } from "astro-icon/components";
+import Datetime from "@/components/Datetime.astro";
+
+export interface Props {
+  slug: string;
+  title: string;
+  description: string;
+  pubDatetime: Date;
+  tags: string[];
+  featured?: boolean;
+}
+
+const {
+  slug,
+  title,
+  description,
+  pubDatetime,
+  tags,
+  featured = false,
+} = Astro.props;
+
+const href = `/blog/${slug}`;
+
+/** Truncate description to ~180 characters at word boundary */
+function truncate(text: string, max = 180): string {
+  if (text.length <= max) return text;
+  const t = text.slice(0, max);
+  const lastSpace = t.lastIndexOf(" ");
+  return (lastSpace > 0 ? t.slice(0, lastSpace) : t) + "…";
+}
+
+const excerpt = truncate(description);
+---
+
+<article
+  class="group flex flex-col gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 transition-all duration-200 hover:border-[var(--color-teal)] hover:bg-[var(--color-surface-hover)]"
+>
+  <!-- Featured badge + date row -->
+  <div class="flex items-center justify-between gap-3">
+    {
+      featured ? (
+        <span
+          class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.65rem] font-semibold tracking-wide uppercase"
+          style="background: var(--color-amber-muted); color: var(--color-amber);"
+        >
+          <Icon name="lucide:star" class="h-3 w-3" aria-hidden="true" />
+          Featured
+        </span>
+      ) : (
+        <span
+          class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.65rem] font-semibold tracking-wide uppercase"
+          style="background: var(--color-teal-muted); color: var(--color-teal);"
+        >
+          <Icon name="lucide:file-text" class="h-3 w-3" aria-hidden="true" />
+          Post
+        </span>
+      )
+    }
+    <Datetime pubDatetime={pubDatetime} size="sm" />
+  </div>
+
+  <!-- Title -->
+  <h3
+    class="text-base leading-snug font-semibold text-[var(--color-text-primary)] transition-colors duration-150 group-hover:text-[var(--color-teal)]"
+  >
+    <a
+      href={href}
+      class="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+    >
+      {title}
+    </a>
+  </h3>
+
+  <!-- Excerpt -->
+  {
+    excerpt && (
+      <p class="flex-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+        {excerpt}
+      </p>
+    )
+  }
+
+  <!-- Tags -->
+  {
+    tags.length > 0 && (
+      <div class="flex flex-wrap gap-1.5" role="list" aria-label="Post tags">
+        {tags.map(tag => (
+          <span
+            role="listitem"
+            class="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 py-0.5 font-mono text-[0.65rem] text-[var(--color-text-muted)]"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+    )
+  }
+
+  <!-- Read more -->
+  <a
+    href={href}
+    class="mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-teal)] transition-all duration-150 hover:gap-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+    aria-label={`Read: ${title}`}
+  >
+    Read post
+    <Icon
+      name="lucide:arrow-right"
+      class="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-1"
+      aria-hidden="true"
+    />
+  </a>
+</article>

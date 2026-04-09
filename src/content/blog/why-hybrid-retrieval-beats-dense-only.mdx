@@ -1,0 +1,37 @@
+---
+title: "Why Hybrid Retrieval Beats Dense-Only RAG in Domain-Specific Tasks"
+description: "Dense embeddings miss exact terminology. Here's why combining BM25 with vector search improved our petroleum Q&A system by 12 percentage points — and how to implement it."
+pubDatetime: 2024-01-18
+author: "Ridhwan Amin"
+tags: ["RAG", "NLP", "LangChain", "retrieval"]
+featured: true
+draft: false
+---
+
+Most RAG tutorials start and end with a vector database. You chunk your documents, embed them, store the vectors, and retrieve the top-k by cosine similarity. For general knowledge questions, this works well. For domain-specific enterprise search, it frequently fails — and the failure mode is predictable.
+
+## The problem with dense-only retrieval
+
+Dense embeddings capture semantic similarity well. They fail on exact terminology. In petroleum engineering, a query like "Bertam-6 completion report 2019" should retrieve exactly that document. A dense model trained on general text will instead return documents _about_ well completion reports that happen to score well on semantic similarity — but miss the specific well ID entirely.
+
+This is the fundamental trade-off: dense retrieval generalises; sparse retrieval (BM25) specialises.
+
+## The BM25 score
+
+BM25 ranks a document $d$ for query $q$ as:
+
+$$\text{BM25}(q, d) = \sum_{t \in q} \text{IDF}(t) \cdot \frac{f(t,d) \cdot (k_1+1)}{f(t,d) + k_1\left(1 - b + b \cdot \frac{|d|}{\text{avgdl}}\right)}$$
+
+The key insight: IDF gives high weight to rare terms. A rare well ID like "Bertam-6" gets a huge IDF boost, which is exactly what you want for exact-match retrieval.
+
+## Hybrid retrieval in practice
+
+Run both retrievers in parallel. Merge their result sets. Pass the union through a cross-encoder reranker that scores each candidate against the full query with full attention — not just an embedding dot product.
+
+In our petroleum Q&A system, this combination improved answer faithfulness from 66% to 78% on a 200-question human-rated benchmark. The gains were concentrated in technical ID lookups and regulatory citation questions — precisely the queries where dense-only fails.
+
+## Implementation
+
+LangChain's `EnsembleRetriever` makes this straightforward. The non-obvious part is fine-tuning the cross-encoder on domain pairs — the off-the-shelf `ms-marco-MiniLM` model underperforms on technical text until you give it even a few hundred domain examples.
+
+Full implementation notes are in the [Hybrid RAG Pipeline case study](/projects/hybrid-rag-pipeline).
