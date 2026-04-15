@@ -19,55 +19,65 @@ export interface Props {
 }
 
 const { index, headline, description, tags = [] } = Astro.props;
-const num = String(index).padStart(3, "0");
+const num = String(index).padStart(2, "0");
 ---
 
 <article
-  class="capability-card group relative overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 transition-all duration-300 hover:border-[var(--color-teal)] hover:bg-[var(--color-surface-hover)]"
+  class="capability-card group relative overflow-hidden rounded-lg border border-[var(--color-border)] border-l-[3px] border-l-[var(--color-teal)] bg-[var(--color-surface)] transition-all duration-300 hover:border-[var(--color-teal)] hover:bg-[var(--color-surface-hover)]"
 >
-  <!-- Subtle teal gradient on hover -->
+  <!-- Subtle surface highlight on hover (neutral) -->
   <div
     class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-    style="background: radial-gradient(ellipse 70% 60% at 0% 0%, rgba(29,158,117,0.07) 0%, transparent 60%);"
+    style="background: radial-gradient(ellipse 60% 50% at 0% 0%, var(--color-surface-hover) 0%, transparent 60%);"
     aria-hidden="true"
   >
   </div>
 
-  <!-- Monospace index number -->
+  <!-- Index number: monospace, top-right, absolutely positioned -->
   <span
-    class="mb-4 block font-mono text-3xl leading-none font-bold text-[var(--color-teal)] opacity-40 transition-opacity duration-300 group-hover:opacity-70"
+    class="absolute right-4 top-4 font-mono text-xs font-bold text-[var(--color-teal)] opacity-30 transition-opacity duration-300 group-hover:opacity-60"
     aria-hidden="true"
   >
     {num}
   </span>
 
-  <h3
-    class="mb-2 text-base leading-snug font-semibold text-[var(--color-text-primary)]"
-  >
-    {headline}
-  </h3>
+  <div class="relative p-6">
+    <h3
+      class="mb-2 text-base leading-snug font-semibold text-[var(--color-text-primary)]"
+    >
+      {headline}
+    </h3>
 
-  <p class="mb-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-    {description}
-  </p>
+    <p class="mb-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+      {description}
+    </p>
 
-  <!-- Tech tags -->
-  {
-    tags.length > 0 && (
-      <div
-        class="flex flex-wrap gap-1.5"
-        role="list"
-        aria-label={`Technologies for ${headline}`}
-      >
-        {tags.map(tag => (
-          <span
-            role="listitem"
-            class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-0.5 font-mono text-[0.6rem] text-[var(--color-text-muted)]"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-    )
-  }
+    <!-- Tech tags -->
+    {
+      tags.length > 0 && (
+        <div
+          class="flex flex-wrap gap-1.5"
+          role="list"
+          aria-label={`Technologies for ${headline}`}
+        >
+          {tags.map(tag => (
+            <span
+              role="listitem"
+              class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-0.5 font-mono text-[0.6rem] text-[var(--color-text-muted)]"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )
+    }
+  </div>
 </article>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    .capability-card span {
+      transition: none;
+    }
+  }
+</style>

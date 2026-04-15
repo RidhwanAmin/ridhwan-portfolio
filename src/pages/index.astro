@@ -13,7 +13,7 @@
  *   7. FAQ               (A13) — accordion
  *   8. Contact           (A14) — form + Cal.com placeholder
  *
- * ScrollReveal (A15) is wired via <script> at the bottom.
+ * ScrollReveal (A15) is wired via the script block at the bottom.
  * All section data is inline here for now; Agent B's content collections
  * (B1-B4) will be consumed in Wave 3 for /projects and /blog pages.
  */
@@ -221,7 +221,7 @@ const faqItems = [
           </p>
           <h2
             id="projects-heading"
-            class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+            class="font-display text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
           >
             Featured work
           </h2>
@@ -240,19 +240,20 @@ const faqItems = [
         </a>
       </div>
 
-      <!-- 4-card grid -->
+      <!-- Project grid — 2-col horizontal research log cards -->
       <div
-        class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        class="grid gap-5 sm:grid-cols-2"
         data-reveal="stagger"
       >
         {
-          featuredProjects.map(p => (
+          featuredProjects.map((p, i) => (
             <ProjectCard
               slug={p.slug}
               title={p.title}
               tagline={p.tagline}
               tags={p.tags}
               featured={p.featured}
+              index={i + 1}
             />
           ))
         }
@@ -351,7 +352,7 @@ const faqItems = [
         <div class="flex flex-col justify-center gap-5" data-reveal="fade-up">
           <h2
             id="about-heading"
-            class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+            class="font-display text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
           >
             About me
           </h2>
@@ -430,7 +431,7 @@ const faqItems = [
         </p>
         <h2
           id="capabilities-heading"
-          class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+          class="font-display text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
         >
           Capabilities
         </h2>
@@ -472,7 +473,7 @@ const faqItems = [
         </p>
         <h2
           id="timeline-heading"
-          class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+          class="font-display text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
         >
           Timeline
         </h2>
@@ -498,7 +499,7 @@ const faqItems = [
         </p>
         <h2
           id="publications-heading"
-          class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+          class="font-display text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
         >
           Publications
         </h2>
@@ -542,7 +543,7 @@ const faqItems = [
         <p class="mb-1 font-mono text-sm text-[var(--color-teal)]">06 / FAQ</p>
         <h2
           id="faq-heading"
-          class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+          class="font-display text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
         >
           Frequently asked
         </h2>
@@ -591,6 +592,27 @@ const faqItems = [
     const { gsap } = await import("gsap");
     const { ScrollTrigger } = await import("gsap/ScrollTrigger");
     gsap.registerPlugin(ScrollTrigger);
+
+    // Hero staggered entrance (runs on load, not scroll)
+    const heroSequence = [
+      { sel: ".hero-meta",     yOffset: 0,  delay: 0.05 },
+      { sel: "#hero-headline", yOffset: 20, delay: 0.18 },
+      { sel: ".hero-rule",     yOffset: 0,  delay: 0.38 },
+      { sel: "#hero-desc",     yOffset: 16, delay: 0.48 },
+      { sel: "#hero-ctas",     yOffset: 16, delay: 0.62 },
+      { sel: ".heatmap-wrapper", yOffset: 0, delay: 0.45 },
+    ];
+    heroSequence.forEach(({ sel, yOffset, delay }) => {
+      const el = document.querySelector(sel);
+      if (!el) return;
+      gsap.from(el, {
+        opacity: 0,
+        y: yOffset,
+        duration: 0.7,
+        ease: "power2.out",
+        delay,
+      });
+    });
 
     // Sync GSAP ScrollTrigger with Lenis
     const lenis = (

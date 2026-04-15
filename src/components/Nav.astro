@@ -41,19 +41,22 @@ function isActive(link: (typeof NAV_LINKS)[number]): boolean {
   aria-label="Site navigation"
 >
   <!-- Frosted glass bar -->
-  <div class="border-b border-[var(--color-border)] glass">
+  <div class="relative border-b border-[var(--color-border)] glass">
+    <!-- Teal scan-line — appears on scroll -->
+    <div
+      id="nav-scan-line"
+      class="absolute bottom-0 left-0 right-0 h-px bg-[var(--color-teal)] opacity-0 transition-opacity duration-300"
+      aria-hidden="true"
+    ></div>
     <div class="app-layout flex h-16 items-center justify-between">
       <!-- Logo / wordmark -->
       <a
         href="/"
-        class="flex items-center gap-2 font-semibold text-[var(--color-text-primary)] transition-opacity hover:opacity-80"
+        class="flex items-center font-mono text-sm font-bold tracking-widest text-[var(--color-text-primary)] uppercase transition-opacity hover:opacity-80"
         aria-label={`${SITE.author} — home`}
       >
-        <!-- Teal dot accent -->
-        <span
-          class="inline-block h-2 w-2 rounded-full bg-[var(--color-teal)]"
-          aria-hidden="true"></span>
-        <span class="text-sm tracking-wide">Ridhwan Amin</span>
+        <span class="opacity-50">R.</span>
+        <span class="ml-1">AMIN</span>
       </a>
 
       <!-- Desktop nav links -->
@@ -105,7 +108,7 @@ function isActive(link: (typeof NAV_LINKS)[number]): boolean {
         <!-- Hire me CTA -->
         <a
           href={isHome ? "#contact" : "/#contact"}
-          class="rounded-md bg-[var(--color-teal)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          class="border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-4 py-2 text-sm font-semibold text-[var(--color-bg)] transition-all duration-150 hover:bg-transparent hover:text-[var(--color-text-primary)]"
         >
           Hire me
         </a>
@@ -183,7 +186,7 @@ function isActive(link: (typeof NAV_LINKS)[number]): boolean {
       <div class="mt-3 border-t border-[var(--color-border)] pt-3">
         <a
           href={isHome ? "#contact" : "/#contact"}
-          class="block w-full rounded-md bg-[var(--color-teal)] px-4 py-2.5 text-center text-sm font-semibold text-white"
+          class="block w-full border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-4 py-2.5 text-center text-sm font-semibold text-[var(--color-bg)]"
           data-mobile-link
         >
           Hire me
@@ -268,15 +271,18 @@ function isActive(link: (typeof NAV_LINKS)[number]): boolean {
     });
   }
 
-  // ---- Nav scroll shadow ----
+  // ---- Nav scroll shadow + teal scan-line ----
   function setupNavShadow() {
     const nav = document.getElementById("site-nav");
+    const scanLine = document.getElementById("nav-scan-line");
     if (!nav) return;
     const onScroll = () => {
       if (window.scrollY > 20) {
         nav.classList.add("shadow-lg", "shadow-black/20");
+        scanLine?.classList.replace("opacity-0", "opacity-100");
       } else {
         nav.classList.remove("shadow-lg", "shadow-black/20");
+        scanLine?.classList.replace("opacity-100", "opacity-0");
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });

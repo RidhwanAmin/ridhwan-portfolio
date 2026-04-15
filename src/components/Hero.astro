@@ -1,91 +1,141 @@
 ---
 /**
- * Hero.astro — Agent A owns this file. Task A6.
+ * Hero.astro — Black & White Minimalist redesign.
  *
- * Full-viewport hero with animated CSS gradient mesh background.
- * Two CTAs: scroll to #projects, scroll to #contact.
+ * Layout: asymmetric 2-column (60/40)
+ *   Left: Sora display heading, monospace role label, description, high-contrast CTAs
+ *   Right: B&W heatmap grid — gradient from sparse (top-left) → dense (bottom-right)
+ *          evoking model output / data density; pure B&W, CSS-animated
  *
- * Animation rule: only transform + opacity. prefers-reduced-motion disables all motion.
- * No raster images — CSS-only decorative background.
+ * No decorative backgrounds — white or black only.
+ * Animations: staggered cell reveal (CSS), GSAP entrance handled in index.astro (A15).
+ * All motion respects prefers-reduced-motion.
  */
 import { Icon } from "astro-icon/components";
 import { SITE } from "@/config";
+
+// Generate a 14×9 B&W heatmap — density increases from top-left to bottom-right
+// (sparse → dense visual narrative: noise → signal)
+const COLS = 14;
+const ROWS = 9;
+const heatCells = Array.from({ length: COLS * ROWS }, (_, i) => {
+  const col = i % COLS;
+  const row = Math.floor(i / COLS);
+  // Gradient: top-left sparse, bottom-right dense
+  const base = (col / (COLS - 1)) * 0.55 + (row / (ROWS - 1)) * 0.35;
+  // Deterministic noise to avoid uniform bands
+  const noise = (((i * 2654435761 + 1013904223) >>> 0) % 1000) / 1000 * 0.18;
+  return Math.min(1, base + noise).toFixed(2);
+});
 ---
 
 <section
   id="hero"
-  class="relative flex min-h-[100svh] items-center justify-center overflow-hidden"
+  class="relative flex min-h-[100svh] items-center overflow-hidden"
   aria-label="Hero — introduction"
 >
-  <!-- Animated CSS gradient mesh background (CSS-only, no raster) -->
-  <div class="mesh-bg" aria-hidden="true"></div>
-
-  <!-- Noise overlay for texture -->
-  <div class="noise-overlay" aria-hidden="true"></div>
-
   <!-- Content -->
-  <div class="relative z-10 app-layout py-24 text-center">
-    <!-- Availability badge -->
-    <div
-      class="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--color-teal-muted)] bg-[var(--color-teal-muted)] px-4 py-1.5"
-    >
-      <span
-        class="availability-dot h-2 w-2 rounded-full bg-[var(--color-teal)]"
-        aria-hidden="true"></span>
-      <span class="text-xs font-medium text-[var(--color-teal)]"
-        >Available for consulting — 2 slots open</span
-      >
-    </div>
+  <div class="relative z-10 app-layout w-full py-24">
+    <div class="hero-grid grid items-center gap-16">
 
-    <!-- Name + title -->
-    <h1
-      id="hero-headline"
-      class="hero-headline mb-4 text-4xl leading-tight font-bold tracking-tight text-[var(--color-text-primary)] sm:text-5xl md:text-6xl lg:text-7xl"
-    >
-      {SITE.author}
-    </h1>
+      <!-- LEFT: text content -->
+      <div class="flex flex-col gap-7">
 
-    <p
-      id="hero-sub"
-      class="hero-sub mx-auto mb-4 max-w-xl text-lg font-medium text-[var(--color-teal)] sm:text-xl"
-    >
-      AI/ML Researcher &amp; Engineer
-    </p>
+        <!-- Monospace label strip -->
+        <div class="hero-meta flex flex-wrap items-center gap-x-5 gap-y-2">
+          <span class="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-text-muted)]">
+            AI / ML Researcher
+          </span>
+          <span class="h-px w-8 bg-[var(--color-text-muted)]" aria-hidden="true"></span>
+          <span class="inline-flex items-center gap-1.5">
+            <span
+              class="availability-dot h-1.5 w-1.5 rounded-full bg-[var(--color-text-primary)]"
+              aria-hidden="true"
+            ></span>
+            <span class="font-mono text-xs uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
+              Available — 2 slots
+            </span>
+          </span>
+          <span class="font-mono text-xs uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
+            UTC+8
+          </span>
+        </div>
 
-    <p
-      id="hero-desc"
-      class="hero-desc mx-auto mb-10 max-w-2xl text-base leading-relaxed text-[var(--color-text-secondary)] sm:text-lg"
-    >
-      I build seismic inpainting models, anomaly detection systems, and hybrid
-      RAG pipelines at UTP. I also consult with teams that need production-ready
-      ML infrastructure.
-    </p>
+        <!-- Name — Sora display font, max contrast -->
+        <h1
+          id="hero-headline"
+          class="hero-headline font-display text-[clamp(2.8rem,7vw,5.5rem)] leading-[0.95] font-bold tracking-tight text-[var(--color-text-primary)]"
+        >
+          {SITE.author}
+        </h1>
 
-    <!-- Dual CTAs -->
-    <div
-      id="hero-ctas"
-      class="hero-ctas flex flex-col items-center justify-center gap-4 sm:flex-row"
-    >
-      <a
-        href="#projects"
-        data-scroll-to="projects"
-        class="inline-flex items-center gap-2 rounded-lg bg-[var(--color-teal)] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-500/20 transition-all duration-200 hover:opacity-90 hover:shadow-teal-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
-        aria-label="View my projects"
-      >
-        View Projects
-        <Icon name="lucide:arrow-right" class="h-4 w-4" aria-hidden="true" />
-      </a>
+        <!-- Thin rule under name -->
+        <div class="hero-rule h-px w-16 bg-[var(--color-text-primary)]" aria-hidden="true"></div>
 
-      <a
-        href="#contact"
-        data-scroll-to="contact"
-        class="inline-flex items-center gap-2 rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-6 py-3 text-sm font-semibold text-[var(--color-text-primary)] transition-all duration-200 hover:border-[var(--color-teal)] hover:bg-[var(--color-surface-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
-        aria-label="Get in touch"
-      >
-        Get in Touch
-        <Icon name="lucide:mail" class="h-4 w-4" aria-hidden="true" />
-      </a>
-    </div>
+        <!-- Description -->
+        <p
+          id="hero-desc"
+          class="hero-desc max-w-md text-base leading-relaxed text-[var(--color-text-secondary)]"
+        >
+          I build seismic inpainting models, anomaly detection systems, and
+          hybrid RAG pipelines at UTP. I consult with teams that need
+          production-ready ML infrastructure.
+        </p>
+
+        <!-- CTAs — high contrast, square-cornered -->
+        <div id="hero-ctas" class="hero-ctas flex flex-wrap gap-3">
+          <a
+            href="#projects"
+            data-scroll-to="projects"
+            class="cta-primary inline-flex items-center gap-2.5 border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-6 py-3 text-sm font-semibold text-[var(--color-bg)] transition-all duration-200 hover:bg-transparent hover:text-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
+            aria-label="View my projects"
+          >
+            View Projects
+            <Icon name="lucide:arrow-right" class="h-4 w-4" aria-hidden="true" />
+          </a>
+          <a
+            href="#contact"
+            data-scroll-to="contact"
+            class="inline-flex items-center gap-2.5 border border-[var(--color-border-strong)] px-6 py-3 text-sm font-semibold text-[var(--color-text-primary)] transition-all duration-200 hover:border-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
+            aria-label="Get in touch"
+          >
+            Get in Touch
+            <Icon name="lucide:mail" class="h-4 w-4" aria-hidden="true" />
+          </a>
+        </div>
+
+        <!-- Location -->
+        <div class="flex items-center gap-2 opacity-60">
+          <Icon name="lucide:map-pin" class="h-3.5 w-3.5 text-[var(--color-text-muted)]" aria-hidden="true" />
+          <span class="font-mono text-xs text-[var(--color-text-muted)]">Seri Iskandar, Malaysia</span>
+        </div>
+
+      </div><!-- /left -->
+
+      <!-- RIGHT: B&W heatmap grid — data density visualization -->
+      <div aria-hidden="true">
+        <div class="heatmap-wrapper">
+          <p class="heatmap-label">model output distribution</p>
+          <div
+            class="heatmap-grid"
+            style={`grid-template-columns: repeat(${COLS}, 1fr);`}
+          >
+            {heatCells.map((opacity, i) => (
+              <div
+                class="heatmap-cell"
+                style={`opacity: ${opacity}; animation-delay: ${(i % COLS) * 35}ms`}
+              ></div>
+            ))}
+          </div>
+          <div class="heatmap-axis">
+            <span>low density</span>
+            <div class="heatmap-scale" aria-hidden="true"></div>
+            <span>high density</span>
+          </div>
+        </div>
+      </div><!-- /right -->
+
+    </div><!-- /hero-grid -->
 
     <!-- Scroll indicator -->
     <div
@@ -99,113 +149,121 @@ import { SITE } from "@/config";
         aria-hidden="true"
       />
     </div>
+
   </div>
 </section>
 
 <style>
-  /* ===== Animated gradient mesh — CSS only, no images ===== */
-  .mesh-bg {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(
-        ellipse 80% 60% at 20% 30%,
-        rgba(29, 158, 117, 0.12) 0%,
-        transparent 60%
-      ),
-      radial-gradient(
-        ellipse 60% 50% at 80% 70%,
-        rgba(239, 159, 39, 0.08) 0%,
-        transparent 60%
-      ),
-      radial-gradient(
-        ellipse 100% 80% at 50% 50%,
-        rgba(29, 158, 117, 0.04) 0%,
-        transparent 70%
-      ),
-      var(--color-bg);
-    animation: mesh-drift 20s ease-in-out infinite alternate;
+  /* ===== Two-column grid: 60/40 on lg+ ===== */
+  .hero-grid {
+    grid-template-columns: 1fr;
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .mesh-bg {
-      animation: none;
+  @media (min-width: 1024px) {
+    .hero-grid {
+      grid-template-columns: 3fr 2fr;
     }
   }
 
-  @keyframes mesh-drift {
-    0% {
-      background-position:
-        0% 0%,
-        100% 100%,
-        50% 50%;
-    }
-    33% {
-      background-position:
-        20% 10%,
-        80% 80%,
-        60% 40%;
-    }
-    66% {
-      background-position:
-        10% 20%,
-        90% 70%,
-        40% 60%;
-    }
-    100% {
-      background-position:
-        5% 15%,
-        85% 85%,
-        55% 45%;
-    }
-  }
-
-  /* Noise overlay for texture — SVG data URI */
-  .noise-overlay {
-    position: absolute;
-    inset: 0;
-    opacity: 0.025;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 256px 256px;
-    pointer-events: none;
-  }
-
-  /* Availability dot pulse */
+  /* ===== Availability pulse dot ===== */
   .availability-dot {
-    animation: pulse-dot 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: pulse-dot 3s ease-in-out infinite;
   }
-
   @keyframes pulse-dot {
-    0%,
-    100% {
-      opacity: 1;
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.2; }
+  }
+
+  /* ===== Heatmap panel ===== */
+  .heatmap-wrapper {
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+    padding: 1.25rem;
+    border: 1px solid var(--color-border);
+    border-top: 2px solid var(--color-text-primary);
+  }
+
+  .heatmap-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .heatmap-grid {
+    display: grid;
+    gap: 3px;
+    width: 100%;
+  }
+
+  .heatmap-cell {
+    aspect-ratio: 1;
+    background-color: var(--color-text-primary);
+    border-radius: 1px;
+    animation: cell-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    transform-origin: center;
+  }
+
+  @keyframes cell-reveal {
+    from {
+      transform: scale(0);
+      opacity: 0;
     }
-    50% {
-      opacity: 0.5;
+    to {
+      transform: scale(1);
+      /* opacity: as set by inline style */
     }
   }
 
+  /* Scale to full opacity on reveal, then settle to cell's value */
+  /* We animate opacity separately with a second pass */
+  .heatmap-cell {
+    animation:
+      cell-reveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) both,
+      cell-settle 0.6s ease-out both;
+  }
+  /* cell-settle: opacity flashes to 1 then settles to inline value */
+  @keyframes cell-settle {
+    0%   { filter: brightness(2); }
+    100% { filter: brightness(1); }
+  }
+
+  .heatmap-axis {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--color-text-muted);
+    letter-spacing: 0.08em;
+  }
+
+  .heatmap-scale {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      rgba(128, 128, 128, 0.15),
+      var(--color-text-primary)
+    );
+  }
+
+  /* ===== Scroll indicator ===== */
   @media (prefers-reduced-motion: reduce) {
-    .availability-dot {
+    .availability-dot,
+    .heatmap-cell {
       animation: none;
     }
     .scroll-indicator {
       display: none;
     }
   }
-
-  /* Initial state for GSAP ScrollReveal (A15 sets these via JS) */
-  /* Elements start visible by default — GSAP A15 will set opacity:0 translateY:20px */
 </style>
 
 <script>
-  /**
-   * Hero scroll-to handlers.
-   * The main scroll-to logic lives in Nav.astro's setupSectionScroll(),
-   * but hero CTAs also have data-scroll-to so they're caught by the same handler.
-   * This script ensures they work even if Nav hasn't run yet (e.g., direct page load).
-   */
   function setupHeroScrollLinks() {
     document.querySelectorAll("#hero [data-scroll-to]").forEach(el => {
       el.addEventListener("click", e => {

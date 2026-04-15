@@ -19,6 +19,7 @@ import { SEO } from "astro-seo";
 import { SITE } from "@/config";
 import "@/styles/global.css";
 import "@fontsource-variable/inter";
+import "@fontsource-variable/sora";
 import "@fontsource/jetbrains-mono/400.css";
 import "@fontsource/jetbrains-mono/400-italic.css";
 
@@ -134,17 +135,30 @@ const {
     <!-- Theme — must run before first paint to prevent FOUC -->
     <script is:inline>
       (function () {
-        try {
-          const stored = localStorage.getItem("theme");
-          const preferred = window.matchMedia("(prefers-color-scheme: dark)")
-            .matches
-            ? "dark"
-            : "light";
-          const theme = stored || preferred;
-          document.documentElement.setAttribute("data-theme", theme);
-        } catch {
-          // localStorage may be unavailable in some contexts; default stays "dark"
+        function getTheme() {
+          try {
+            const stored = localStorage.getItem("theme");
+            if (stored === "dark" || stored === "light") return stored;
+            return window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+          } catch {
+            return "dark";
+          }
         }
+
+        // Apply on first load
+        document.documentElement.setAttribute("data-theme", getTheme());
+
+        // Before each View Transition swap, carry the live theme onto the
+        // incoming document so the hardcoded data-theme="dark" in the new
+        // HTML never flashes on screen.
+        document.addEventListener("astro:before-swap", function (e) {
+          e.newDocument.documentElement.setAttribute(
+            "data-theme",
+            document.documentElement.getAttribute("data-theme") || getTheme()
+          );
+        });
       })();
     </script>
 

@@ -2,12 +2,11 @@
 /**
  * ProjectCard.astro — Agent A owns this file. Task A7.
  *
- * Reusable project card with thumbnail, title, one-liner, tech pills,
- * hover glassmorphism effect, and a link to the full case study.
+ * Horizontal "research log entry" card layout.
+ * Left: teal accent border + bold index number.
+ * Right: title, tagline, tech pills, hover arrow.
  *
- * Props are aligned with the case-studies content collection schema
- * that Agent B defines in B1. All fields are optional for now so
- * the component renders safely with placeholder data.
+ * Props are aligned with the case-studies content collection schema.
  */
 import { Icon } from "astro-icon/components";
 
@@ -20,12 +19,14 @@ export interface Props {
   tagline: string;
   /** Tech tags to display as pills */
   tags?: string[];
-  /** Optional hero/thumbnail image URL (Astro Image-compatible) */
+  /** Optional hero/thumbnail image URL (kept for API compatibility, not rendered) */
   thumbnail?: string;
   /** Alt text for the thumbnail */
   thumbnailAlt?: string;
   /** Optional: highlight this card as featured */
   featured?: boolean;
+  /** Display index for research log numbering (01, 02, 03...) */
+  index?: number;
 }
 
 const {
@@ -33,97 +34,41 @@ const {
   title,
   tagline,
   tags = [],
-  thumbnail,
-  thumbnailAlt = title,
   featured = false,
+  index,
 } = Astro.props;
 
 const href = `/projects/${slug}`;
+const displayIndex =
+  index !== undefined ? String(index).padStart(2, "0") : undefined;
 ---
 
 <article
   class:list={[
-    "project-card group relative flex flex-col overflow-hidden rounded-xl",
-    "border border-[var(--color-border)] bg-[var(--color-surface)]",
+    "project-card group relative flex overflow-hidden rounded-lg",
+    "border border-[var(--color-border)] border-l-[3px] border-l-[var(--color-teal)] bg-[var(--color-surface)]",
     "transition-all duration-300",
     "hover:border-[var(--color-teal)] hover:bg-[var(--color-surface-hover)]",
     featured &&
       "ring-1 ring-[var(--color-teal)] ring-offset-2 ring-offset-[var(--color-bg)]",
   ]}
 >
-  <!-- Thumbnail / placeholder -->
-  <a
-    href={href}
-    aria-label={`View case study: ${title}`}
-    class="block overflow-hidden"
-  >
-    {
-      thumbnail ? (
-        <img
-          src={thumbnail}
-          alt={thumbnailAlt}
-          width={600}
-          height={340}
-          loading="lazy"
-          decoding="async"
-          class="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-        />
-      ) : (
-        <div
-          class="h-44 w-full"
-          style="background: radial-gradient(ellipse 80% 80% at 50% 60%, rgba(29,158,117,0.13) 0%, rgba(10,10,15,0) 70%), linear-gradient(135deg, #0A0A0F 0%, #0f1a14 100%);"
-          aria-hidden="true"
-        >
-          <svg
-            class="h-full w-full opacity-20"
-            viewBox="0 0 600 340"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <circle
-              cx="300"
-              cy="170"
-              r="120"
-              fill="none"
-              stroke="#1D9E75"
-              stroke-width="1"
-              stroke-dasharray="8 6"
-            />
-            <circle
-              cx="300"
-              cy="170"
-              r="75"
-              fill="none"
-              stroke="#EF9F27"
-              stroke-width="0.75"
-              stroke-dasharray="4 8"
-            />
-            <line
-              x1="180"
-              y1="50"
-              x2="420"
-              y2="290"
-              stroke="#1D9E75"
-              stroke-width="0.5"
-              opacity="0.5"
-            />
-            <line
-              x1="420"
-              y1="50"
-              x2="180"
-              y2="290"
-              stroke="#1D9E75"
-              stroke-width="0.5"
-              opacity="0.5"
-            />
-          </svg>
-        </div>
-      )
-    }
-  </a>
+  <!-- Index column -->
+  {
+    displayIndex && (
+      <div
+        class="flex shrink-0 items-start justify-center w-14 pt-5"
+        aria-hidden="true"
+      >
+        <span class="card-index font-mono text-xl font-bold text-[var(--color-teal)] opacity-50 transition-opacity duration-200 group-hover:opacity-100">
+          {displayIndex}
+        </span>
+      </div>
+    )
+  }
 
   <!-- Content -->
-  <div class="flex flex-1 flex-col gap-3 p-5">
+  <div class="flex flex-1 flex-col gap-2.5 px-5 py-5">
     {
       featured && (
         <span class="inline-flex w-fit items-center gap-1 rounded-full bg-[var(--color-teal-muted)] px-2.5 py-0.5 text-xs font-medium text-[var(--color-teal)]">
@@ -138,30 +83,24 @@ const href = `/projects/${slug}`;
     >
       <a
         href={href}
+        aria-label={`View case study: ${title}`}
         class="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
       >
         {title}
       </a>
     </h3>
 
-    <p
-      class="flex-1 text-sm leading-relaxed text-[var(--color-text-secondary)]"
-    >
+    <p class="text-sm leading-relaxed text-[var(--color-text-secondary)]">
       {tagline}
     </p>
 
-    <!-- Tech pills -->
     {
       tags.length > 0 && (
-        <div
-          class="flex flex-wrap gap-1.5"
-          role="list"
-          aria-label="Technologies used"
-        >
+        <div class="flex flex-wrap gap-1.5" role="list" aria-label="Technologies used">
           {tags.map(tag => (
             <span
               role="listitem"
-              class="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 py-0.5 font-mono text-[0.65rem] text-[var(--color-text-muted)]"
+              class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-0.5 font-mono text-[0.6rem] text-[var(--color-text-muted)]"
             >
               {tag}
             </span>
@@ -169,19 +108,30 @@ const href = `/projects/${slug}`;
         </div>
       )
     }
+  </div>
 
-    <!-- Read more link -->
-    <a
-      href={href}
-      class="group/link transition-gap mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-teal)] duration-150 hover:gap-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
-      aria-label={`Read full case study for ${title}`}
-    >
-      Read case study
-      <Icon
-        name="lucide:arrow-right"
-        class="h-3.5 w-3.5 transition-transform duration-150 group-hover/link:translate-x-1"
-        aria-hidden="true"
-      />
-    </a>
+  <!-- Hover arrow: slides in from left on hover -->
+  <div
+    class="card-arrow flex items-center justify-center w-10 pr-4 opacity-0 -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
+    aria-hidden="true"
+  >
+    <Icon
+      name="lucide:arrow-right"
+      class="h-4 w-4 text-[var(--color-teal)]"
+      aria-hidden="true"
+    />
   </div>
 </article>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    .card-arrow {
+      transition: none;
+      opacity: 1;
+      transform: none;
+    }
+    .card-index {
+      transition: none;
+    }
+  }
+</style>
