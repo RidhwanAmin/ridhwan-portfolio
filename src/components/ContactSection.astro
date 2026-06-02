@@ -297,6 +297,9 @@ import { SOCIAL_LINKS } from "@/config";
     import.meta.env.PUBLIC_EMAILJS_SERVICE_ID || "service_7can0am";
   const TEMPLATE_ID = import.meta.env.PUBLIC_EMAILJS_TEMPLATE_ID;
   const PUBLIC_KEY = import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY;
+  // Optional second template that emails ME (To Email = my inbox) so I receive
+  // each submission. If unset, only the visitor auto-reply is sent.
+  const NOTIFY_TEMPLATE_ID = import.meta.env.PUBLIC_EMAILJS_NOTIFY_TEMPLATE_ID;
 
   type FieldName = "name" | "email" | "message";
 
@@ -427,17 +430,57 @@ import { SOCIAL_LINKS } from "@/config";
         const [firstName, ...rest] = fullName.split(/\s+/);
         const lastName = rest.join(" ");
 
-        await emailjs.send(
-          SERVICE_ID,
-          TEMPLATE_ID,
-          {
-            first_name: firstName,
-            last_name: lastName,
-            user_email: fields.email.input.value.trim(),
-            message: fields.message.input.value.trim(),
-          },
-          { publicKey: PUBLIC_KEY }
-        );
+        const email = fields.email.input.value.trim();
+        const message = fields.message.input.value.trim();
+
+        // Auto-reply template (template_v9lpz0q): {{first_name}} {{last_name}}
+        // {{user_email}} {{message}} — To Email binds to {{user_email}}.
+        const autoReplyParams = {
+          first_name: firstName,
+          last_name: lastName,
+          user_email: email,
+          message,
+        };
+
+        // Notify-me template (template_h38pvoi): {{name}} {{email}} {{time}}
+        // {{message}} — To Email is my inbox (fixed in the dashboard).
+        const notifyParams = {
+          name: fullName,
+          email,
+          time: new Date().toLocaleString(),
+          message,
+        };
+
+        // Two emails: (1) auto-reply to the visitor, and (2) a notification to
+        // my inbox when configured. Use allSettled so a failure of one doesn't
+        // silently drop the other; treat the submission as successful if at
+        // least one send goes through.
+        const sends = [
+          emailjs.send(SERVICE_ID, TEMPLATE_ID, autoReplyParams, {
+            publicKey: PUBLIC_KEY,
+          }),
+        ];
+        if (NOTIFY_TEMPLATE_ID) {
+          sends.push(
+            emailjs.send(SERVICE_ID, NOTIFY_TEMPLATE_ID, notifyParams, {
+              publicKey: PUBLIC_KEY,
+            })
+          );
+        }
+
+        const results = await Promise.allSettled(sends);
+        const failures = results.filter(r => r.status === "rejected");
+        if (failures.length === results.length) {
+          // Every send failed — surface the first error to the catch block.
+          throw (failures[0] as PromiseRejectedResult).reason;
+        }
+        if (failures.length > 0) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[contact] One EmailJS send failed:",
+            (failures[0] as PromiseRejectedResult).reason
+          );
+        }
 
         showStatus(
           "Message sent! I'll get back to you within 24 hours.",
