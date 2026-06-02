@@ -22,6 +22,7 @@
     "@astrojs/rss": "^4.0.14",
     "@astrojs/sitemap": "^3.6.0",
     "@astrojs/vercel": "^7.8.2",
+    "@emailjs/browser": "^4.4.1",
     "@fontsource-variable/inter": "^5.2.8",
     "@fontsource-variable/playfair-display": "^5.2.8",
     "@fontsource-variable/sora": "^5.2.8",

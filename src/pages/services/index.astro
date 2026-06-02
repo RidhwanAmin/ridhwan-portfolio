@@ -72,7 +72,7 @@ const tiers = [
     ],
     cta: "Get a quote",
     priceId: null,
-    contactEmail: "ridhwan@ridhwan.dev",
+    contactEmail: "ridhwanamin97@gmail.com",
     highlight: false,
   },
 ] as const;
@@ -125,7 +125,7 @@ const pageJsonLd = {
             aria-label={`${tier.name} pricing tier`}
           >
             {tier.highlight && (
-              <span class="mb-4 inline-flex w-fit items-center gap-1 rounded-full bg-[var(--color-teal)] px-3 py-1 text-xs font-semibold text-white">
+              <span class="mb-4 inline-flex w-fit items-center gap-1 rounded-full bg-[var(--color-teal)] px-3 py-1 text-xs font-semibold text-[var(--color-bg)]">
                 <Icon name="lucide:star" class="h-3 w-3" aria-hidden="true" />
                 Most popular
               </span>
@@ -206,51 +206,6 @@ const pageJsonLd = {
       aria-live="polite"
     >
     </p>
-
-    <!-- FAQ / reassurance -->
-    <div class="mt-16 border-t border-[var(--color-border)] pt-12">
-      <h2 class="mb-6 text-xl font-bold text-[var(--color-text-primary)]">
-        Common questions
-      </h2>
-      <dl class="grid gap-6 sm:grid-cols-2">
-        <div>
-          <dt class="font-semibold text-[var(--color-text-primary)]">
-            What timezones do you work across?
-          </dt>
-          <dd class="mt-1 text-sm text-[var(--color-text-secondary)]">
-            Based in Malaysia (MYT, UTC+8). I regularly work with teams in
-            Europe, the US, and the Middle East.
-          </dd>
-        </div>
-        <div>
-          <dt class="font-semibold text-[var(--color-text-primary)]">
-            What if a call doesn't solve my problem?
-          </dt>
-          <dd class="mt-1 text-sm text-[var(--color-text-secondary)]">
-            If after the call you feel we didn't make meaningful progress, I'll
-            schedule a follow-up at no charge.
-          </dd>
-        </div>
-        <div>
-          <dt class="font-semibold text-[var(--color-text-primary)]">
-            Can I cancel the retainer?
-          </dt>
-          <dd class="mt-1 text-sm text-[var(--color-text-secondary)]">
-            Yes — cancel any time before the next billing date. No lock-in
-            periods.
-          </dd>
-        </div>
-        <div>
-          <dt class="font-semibold text-[var(--color-text-primary)]">
-            Do you sign NDAs?
-          </dt>
-          <dd class="mt-1 text-sm text-[var(--color-text-secondary)]">
-            Yes. I routinely work under mutual NDA for client engagements. Send
-            me the draft and I'll review within 48 hours.
-          </dd>
-        </div>
-      </dl>
-    </div>
   </section>
 </BaseLayout>
 

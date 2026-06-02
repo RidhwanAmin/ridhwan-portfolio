@@ -127,7 +127,7 @@ export async function sendConfirmationEmail(
               <p style="margin:0;font-size:12px;color:#6B7280;line-height:1.6;">
                 Ridhwan Amin — AI/ML Researcher &amp; Consultant<br />
                 <a href="https://ridhwan.dev" style="color:#1D9E75;text-decoration:none;">ridhwan.dev</a> &nbsp;·&nbsp;
-                <a href="mailto:ridhwan@ridhwan.dev" style="color:#1D9E75;text-decoration:none;">ridhwan@ridhwan.dev</a>
+                <a href="mailto:ridhwanamin97@gmail.com" style="color:#1D9E75;text-decoration:none;">ridhwanamin97@gmail.com</a>
               </p>
             </td>
           </tr>
@@ -145,7 +145,7 @@ export async function sendConfirmationEmail(
     const { error } = await resend.emails.send({
       from: "Ridhwan Amin <ridhwan@ridhwan.dev>",
       to: [customerEmail],
-      replyTo: "ridhwan@ridhwan.dev",
+      replyTo: "ridhwanamin97@gmail.com",
       subject: "Booking confirmed — Ridhwan Amin",
       html,
     });

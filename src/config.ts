@@ -25,14 +25,16 @@ export const SITE = {
 export const SOCIAL_LINKS = {
   github: "https://github.com/RidhwanAmin",
   linkedin: "https://linkedin.com/in/ridhwanamin",
-  email: "mailto:ridhwan@ridhwan.dev",
+  email: "mailto:ridhwanamin97@gmail.com",
   substack: "https://ridhwanamin.substack.com",
 } as const;
 
 export const NAV_LINKS = [
-  { label: "Projects", href: "#projects", section: true },
   { label: "About", href: "#about", section: true },
+  { label: "Capabilities", href: "#capabilities", section: true },
+  { label: "Projects", href: "#projects", section: true },
   { label: "Blog", href: "/blog", section: false },
   { label: "Services", href: "/services", section: false },
   { label: "Contact", href: "#contact", section: true },
+  { label: "FAQ", href: "#faq", section: true },
 ] as const;

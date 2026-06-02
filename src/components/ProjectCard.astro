@@ -2,11 +2,13 @@
 /**
  * ProjectCard.astro — Agent A owns this file. Task A7.
  *
- * Horizontal "research log entry" card layout.
- * Left: teal accent border + bold index number.
- * Right: title, tagline, tech pills, hover arrow.
+ * Two visual modes:
+ *   • With thumbnail  — browser-chrome preview image at top, content below (flex-col)
+ *   • Without thumbnail — horizontal "research log entry" card (flex-row, original)
  *
- * Props are aligned with the case-studies content collection schema.
+ * New props:
+ *   externalUrl — if set, links out to an external site instead of /projects/[slug]
+ *   role        : e.g. "Co-builder" shown as an outlined monochrome badge
  */
 import { Icon } from "astro-icon/components";
 
@@ -19,7 +21,7 @@ export interface Props {
   tagline: string;
   /** Tech tags to display as pills */
   tags?: string[];
-  /** Optional hero/thumbnail image URL (kept for API compatibility, not rendered) */
+  /** Optional hero/thumbnail image URL — when provided renders a browser-chrome preview */
   thumbnail?: string;
   /** Alt text for the thumbnail */
   thumbnailAlt?: string;
@@ -27,6 +29,12 @@ export interface Props {
   featured?: boolean;
   /** Display index for research log numbering (01, 02, 03...) */
   index?: number;
+  /** External URL — overrides the internal /projects/[slug] link */
+  externalUrl?: string;
+  /** Role badge text, e.g. "Co-builder" */
+  role?: string;
+  /** CSS entrance animation delay in seconds (0 = immediate) */
+  enterDelay?: number;
 }
 
 const {
@@ -34,28 +42,84 @@ const {
   title,
   tagline,
   tags = [],
+  thumbnail,
+  thumbnailAlt,
   featured = false,
   index,
+  externalUrl,
+  role,
+  enterDelay = 0,
 } = Astro.props;
 
-const href = `/projects/${slug}`;
+const href = externalUrl ?? `/projects/${slug}`;
+const isExternal = Boolean(externalUrl);
 const displayIndex =
   index !== undefined ? String(index).padStart(2, "0") : undefined;
+const hasThumbnail = Boolean(thumbnail);
 ---
 
 <article
   class:list={[
-    "project-card group relative flex overflow-hidden rounded-lg",
-    "border border-[var(--color-border)] border-l-[3px] border-l-[var(--color-teal)] bg-[var(--color-surface)]",
+    "project-card group relative overflow-hidden rounded-lg",
+    "border border-[var(--color-border)] bg-[var(--color-surface)]",
     "transition-all duration-300",
-    "hover:border-[var(--color-teal)] hover:bg-[var(--color-surface-hover)]",
-    featured &&
-      "ring-1 ring-[var(--color-teal)] ring-offset-2 ring-offset-[var(--color-bg)]",
+    "hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-hover)]",
+    featured && "ring-1 ring-[var(--color-teal)] ring-offset-2 ring-offset-[var(--color-bg)]",
+    hasThumbnail ? "flex flex-col" : "flex",
   ]}
+  style={`animation-delay:${enterDelay}s`}
 >
-  <!-- Index column -->
-  {
-    displayIndex && (
+  <!-- ── Browser-chrome screenshot preview (only when thumbnail provided) ── -->
+  {hasThumbnail && (
+    <div class="relative overflow-hidden border-b border-[var(--color-border)]">
+      <!-- Browser chrome bar -->
+      <div
+        class="flex items-center gap-2 bg-[#0d0d14] px-3 py-2"
+        aria-hidden="true"
+      >
+        <div class="flex gap-1 shrink-0">
+          <div class="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+          <div class="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+          <div class="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+        </div>
+        <div class="ml-1 min-w-0 flex-1 truncate rounded-md bg-[#1a1a24] px-2.5 py-1 font-mono text-[0.55rem] text-[var(--color-text-muted)]">
+          {externalUrl
+            ? externalUrl.replace(/^https?:\/\//, "")
+            : `ridhwan.dev/projects/${slug}`}
+        </div>
+        {isExternal && (
+          <Icon
+            name="lucide:external-link"
+            class="h-3 w-3 shrink-0 text-[var(--color-text-muted)]"
+            aria-hidden="true"
+          />
+        )}
+      </div>
+
+      <!-- Screenshot image -->
+      <div class="relative overflow-hidden" style="aspect-ratio: 16/9;">
+        <img
+          src={thumbnail}
+          alt={thumbnailAlt ?? title}
+          width="640"
+          height="360"
+          class="screenshot w-full h-full object-cover object-top transition-transform duration-700 will-change-transform group-hover:scale-[1.04]"
+          loading="eager"
+          decoding="async"
+        />
+        <!-- Fade to card bg at the bottom -->
+        <div
+          class="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[var(--color-surface)] to-transparent"
+          aria-hidden="true"
+        />
+      </div>
+    </div>
+  )}
+
+  <!-- ── Card body (index + content + arrow) ── -->
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Index column -->
+    {displayIndex && (
       <div
         class="flex shrink-0 items-start justify-center w-14 pt-5"
         aria-hidden="true"
@@ -64,38 +128,46 @@ const displayIndex =
           {displayIndex}
         </span>
       </div>
-    )
-  }
+    )}
 
-  <!-- Content -->
-  <div class="flex flex-1 flex-col gap-2.5 px-5 py-5">
-    {
-      featured && (
-        <span class="inline-flex w-fit items-center gap-1 rounded-full bg-[var(--color-teal-muted)] px-2.5 py-0.5 text-xs font-medium text-[var(--color-teal)]">
-          <Icon name="lucide:star" class="h-3 w-3" aria-hidden="true" />
-          Featured
-        </span>
-      )
-    }
+    <!-- Text content -->
+    <div class="flex flex-1 flex-col gap-2.5 px-5 py-5">
+      <!-- Badges row -->
+      {(featured || role) && (
+        <div class="flex flex-wrap gap-2">
+          {featured && (
+            <span class="inline-flex w-fit items-center gap-1 rounded-full bg-[var(--color-teal-muted)] px-2.5 py-0.5 text-xs font-medium text-[var(--color-teal)]">
+              <Icon name="lucide:star" class="h-3 w-3" aria-hidden="true" />
+              Featured
+            </span>
+          )}
+          {role && (
+            <span class="inline-flex w-fit items-center gap-1 rounded-full border border-[var(--color-border-strong)] px-2.5 py-0.5 text-xs font-medium text-[var(--color-text-secondary)]">
+              <Icon name="lucide:users" class="h-3 w-3" aria-hidden="true" />
+              {role}
+            </span>
+          )}
+        </div>
+      )}
 
-    <h3
-      class="text-base leading-snug font-semibold text-[var(--color-text-primary)] transition-colors duration-150 group-hover:text-[var(--color-teal)]"
-    >
-      <a
-        href={href}
-        aria-label={`View case study: ${title}`}
-        class="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+      <h3
+        class="text-base leading-snug font-semibold text-[var(--color-text-primary)] transition-colors duration-150 group-hover:text-[var(--color-teal)]"
       >
-        {title}
-      </a>
-    </h3>
+        <a
+          href={href}
+          aria-label={`${isExternal ? "Visit" : "View case study"}: ${title}`}
+          {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          class="card-link stretched-link focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]"
+        >
+          {title}
+        </a>
+      </h3>
 
-    <p class="text-sm leading-relaxed text-[var(--color-text-secondary)]">
-      {tagline}
-    </p>
+      <p class="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+        {tagline}
+      </p>
 
-    {
-      tags.length > 0 && (
+      {tags.length > 0 && (
         <div class="flex flex-wrap gap-1.5" role="list" aria-label="Technologies used">
           {tags.map(tag => (
             <span
@@ -106,31 +178,73 @@ const displayIndex =
             </span>
           ))}
         </div>
-      )
-    }
-  </div>
+      )}
+    </div>
 
-  <!-- Hover arrow: slides in from left on hover -->
-  <div
-    class="card-arrow flex items-center justify-center w-10 pr-4 opacity-0 -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
-    aria-hidden="true"
-  >
-    <Icon
-      name="lucide:arrow-right"
-      class="h-4 w-4 text-[var(--color-teal)]"
+    <!-- Hover arrow (slides in from left) -->
+    <div
+      class="card-arrow flex items-center justify-center w-10 pr-4 opacity-0 -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
       aria-hidden="true"
-    />
+    >
+      <Icon
+        name={isExternal ? "lucide:external-link" : "lucide:arrow-right"}
+        class="h-4 w-4 text-[var(--color-teal)]"
+        aria-hidden="true"
+      />
+    </div>
   </div>
 </article>
 
 <style>
+  /* ── Stretched link — whole card is clickable ── */
+  /*
+   * The ::after pseudo-element of .card-link covers the entire card.
+   * Tags and the arrow sit above it (z-index: 1) so they remain
+   * separately interactive if needed.
+   */
+  .project-card {
+    isolation: isolate; /* new stacking context keeps overlay contained */
+  }
+  .stretched-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    cursor: pointer;
+  }
+  /* Tags, badges, and arrow float above the overlay */
+  .project-card [role="listitem"],
+  .project-card .card-arrow,
+  .project-card .card-index {
+    position: relative;
+    z-index: 1;
+  }
+
+/* ── CSS entrance animation (replaces GSAP stagger) ── */
+  @media (prefers-reduced-motion: no-preference) {
+    .project-card {
+      animation: pc-enter 0.55s ease-out both;
+    }
+    @keyframes pc-enter {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: none; }
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .project-card {
+      animation: none;
+      opacity: 1;
+    }
     .card-arrow {
       transition: none;
       opacity: 1;
       transform: none;
     }
     .card-index {
+      transition: none;
+    }
+    .screenshot {
       transition: none;
     }
   }

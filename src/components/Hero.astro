@@ -1,32 +1,6 @@
 ---
-/**
- * Hero.astro — Black & White Minimalist redesign.
- *
- * Layout: asymmetric 2-column (60/40)
- *   Left: Sora display heading, monospace role label, description, high-contrast CTAs
- *   Right: B&W heatmap grid — gradient from sparse (top-left) → dense (bottom-right)
- *          evoking model output / data density; pure B&W, CSS-animated
- *
- * No decorative backgrounds — white or black only.
- * Animations: staggered cell reveal (CSS), GSAP entrance handled in index.astro (A15).
- * All motion respects prefers-reduced-motion.
- */
 import { Icon } from "astro-icon/components";
 import { SITE } from "@/config";
-
-// Generate a 14×9 B&W heatmap — density increases from top-left to bottom-right
-// (sparse → dense visual narrative: noise → signal)
-const COLS = 14;
-const ROWS = 9;
-const heatCells = Array.from({ length: COLS * ROWS }, (_, i) => {
-  const col = i % COLS;
-  const row = Math.floor(i / COLS);
-  // Gradient: top-left sparse, bottom-right dense
-  const base = (col / (COLS - 1)) * 0.55 + (row / (ROWS - 1)) * 0.35;
-  // Deterministic noise to avoid uniform bands
-  const noise = (((i * 2654435761 + 1013904223) >>> 0) % 1000) / 1000 * 0.18;
-  return Math.min(1, base + noise).toFixed(2);
-});
 ---
 
 <section
@@ -34,108 +8,92 @@ const heatCells = Array.from({ length: COLS * ROWS }, (_, i) => {
   class="relative flex min-h-[100svh] items-center overflow-hidden"
   aria-label="Hero — introduction"
 >
-  <!-- Content -->
-  <div class="relative z-10 app-layout w-full py-24">
-    <div class="hero-grid grid items-center gap-16">
+  <!-- Interpolation Field — 2D canvas: sparse data points, hairline links,
+       cursor draws the "best relation" to nearby nodes (the hero copy, made visible). -->
+  <canvas
+    id="hero-field"
+    class="hero-field absolute inset-0 z-0 h-full w-full"
+    aria-hidden="true"
+  ></canvas>
 
-      <!-- LEFT: text content -->
-      <div class="flex flex-col gap-7">
+  <!-- Gradient veil — left-heavy so text stays legible over the field -->
+  <div class="hero-overlay pointer-events-none absolute inset-0 z-[1]" aria-hidden="true"></div>
 
-        <!-- Monospace label strip -->
-        <div class="hero-meta flex flex-wrap items-center gap-x-5 gap-y-2">
-          <span class="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-text-muted)]">
-            AI / ML Researcher
-          </span>
-          <span class="h-px w-8 bg-[var(--color-text-muted)]" aria-hidden="true"></span>
-          <span class="inline-flex items-center gap-1.5">
-            <span
-              class="availability-dot h-1.5 w-1.5 rounded-full bg-[var(--color-text-primary)]"
-              aria-hidden="true"
-            ></span>
-            <span class="font-mono text-xs uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
-              Available — 2 slots
-            </span>
-          </span>
-          <span class="font-mono text-xs uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
-            UTC+8
-          </span>
-        </div>
+  <!-- Text content layered on top; pointer-events-none so the cursor reaches the field -->
+  <div class="pointer-events-none relative z-[2] app-layout w-full py-24">
+    <div class="flex max-w-xl flex-col gap-7">
 
-        <!-- Name — Sora display font, max contrast -->
-        <h1
-          id="hero-headline"
-          class="hero-headline font-display text-[clamp(2.8rem,7vw,5.5rem)] leading-[0.95] font-bold tracking-tight text-[var(--color-text-primary)]"
+      <!-- Meta strip -->
+      <div class="hero-meta flex flex-wrap items-center gap-x-5 gap-y-2">
+        <span class="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-text-muted)]">
+          AI / ML Researcher
+        </span>
+        <span class="h-px w-8 bg-[var(--color-text-muted)]" aria-hidden="true"></span>
+        <span class="inline-flex items-center gap-1.5">
+          <span
+            class="availability-dot h-1.5 w-1.5 rounded-full bg-[var(--color-text-primary)]"
+            aria-hidden="true"
+          ></span>
+          <span class="font-mono text-xs uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
+            Available — 2 slots
+          </span>
+        </span>
+        <span class="font-mono text-xs uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
+          UTC+8
+        </span>
+      </div>
+
+      <!-- Name -->
+      <h1
+        id="hero-headline"
+        class="hero-headline font-display text-[clamp(2.8rem,7vw,5.5rem)] leading-[0.95] font-bold tracking-tight text-[var(--color-text-primary)]"
+      >
+        {SITE.author}
+      </h1>
+
+      <!-- Rule -->
+      <div class="hero-rule h-px w-16 bg-[var(--color-text-primary)]" aria-hidden="true"></div>
+
+      <!-- Description -->
+      <p
+        id="hero-desc"
+        class="hero-desc max-w-md text-base leading-relaxed text-[var(--color-text-secondary)]"
+      >
+        I build seismic inpainting models, anomaly detection systems, and
+        hybrid RAG pipelines at UTP. I connect missing dots — using
+        interpolation to find the best relation between sparse signals
+        and hidden insights.
+      </p>
+
+      <!-- CTAs -->
+      <div id="hero-ctas" class="hero-ctas pointer-events-auto flex flex-wrap gap-3">
+        <a
+          href="#projects"
+          data-scroll-to="projects"
+          class="cta-primary inline-flex items-center gap-2.5 border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-6 py-3 text-sm font-semibold text-[var(--color-bg)] transition-all duration-200 active:scale-[0.98] hover:bg-transparent hover:text-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
+          aria-label="View my projects"
         >
-          {SITE.author}
-        </h1>
-
-        <!-- Thin rule under name -->
-        <div class="hero-rule h-px w-16 bg-[var(--color-text-primary)]" aria-hidden="true"></div>
-
-        <!-- Description -->
-        <p
-          id="hero-desc"
-          class="hero-desc max-w-md text-base leading-relaxed text-[var(--color-text-secondary)]"
+          View Projects
+          <Icon name="lucide:arrow-right" class="h-4 w-4" aria-hidden="true" />
+        </a>
+        <a
+          href="#contact"
+          data-scroll-to="contact"
+          class="inline-flex items-center gap-2.5 border border-[var(--color-border-strong)] px-6 py-3 text-sm font-semibold text-[var(--color-text-primary)] transition-all duration-200 active:scale-[0.98] hover:border-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
+          aria-label="Get in touch"
         >
-          I build seismic inpainting models, anomaly detection systems, and
-          hybrid RAG pipelines at UTP. I consult with teams that need
-          production-ready ML infrastructure.
-        </p>
+          Get in Touch
+          <Icon name="lucide:mail" class="h-4 w-4" aria-hidden="true" />
+        </a>
+      </div>
 
-        <!-- CTAs — high contrast, square-cornered -->
-        <div id="hero-ctas" class="hero-ctas flex flex-wrap gap-3">
-          <a
-            href="#projects"
-            data-scroll-to="projects"
-            class="cta-primary inline-flex items-center gap-2.5 border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-6 py-3 text-sm font-semibold text-[var(--color-bg)] transition-all duration-200 hover:bg-transparent hover:text-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
-            aria-label="View my projects"
-          >
-            View Projects
-            <Icon name="lucide:arrow-right" class="h-4 w-4" aria-hidden="true" />
-          </a>
-          <a
-            href="#contact"
-            data-scroll-to="contact"
-            class="inline-flex items-center gap-2.5 border border-[var(--color-border-strong)] px-6 py-3 text-sm font-semibold text-[var(--color-text-primary)] transition-all duration-200 hover:border-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
-            aria-label="Get in touch"
-          >
-            Get in Touch
-            <Icon name="lucide:mail" class="h-4 w-4" aria-hidden="true" />
-          </a>
-        </div>
+      <!-- Location -->
+      <div class="flex items-center gap-2 opacity-60">
+        <Icon name="lucide:map-pin" class="h-3.5 w-3.5 text-[var(--color-text-muted)]" aria-hidden="true" />
+        <span class="font-mono text-xs text-[var(--color-text-muted)]">Seri Iskandar, Malaysia</span>
+      </div>
 
-        <!-- Location -->
-        <div class="flex items-center gap-2 opacity-60">
-          <Icon name="lucide:map-pin" class="h-3.5 w-3.5 text-[var(--color-text-muted)]" aria-hidden="true" />
-          <span class="font-mono text-xs text-[var(--color-text-muted)]">Seri Iskandar, Malaysia</span>
-        </div>
-
-      </div><!-- /left -->
-
-      <!-- RIGHT: B&W heatmap grid — data density visualization -->
-      <div aria-hidden="true">
-        <div class="heatmap-wrapper">
-          <p class="heatmap-label">model output distribution</p>
-          <div
-            class="heatmap-grid"
-            style={`grid-template-columns: repeat(${COLS}, 1fr);`}
-          >
-            {heatCells.map((opacity, i) => (
-              <div
-                class="heatmap-cell"
-                style={`opacity: ${opacity}; animation-delay: ${(i % COLS) * 35}ms`}
-              ></div>
-            ))}
-          </div>
-          <div class="heatmap-axis">
-            <span>low density</span>
-            <div class="heatmap-scale" aria-hidden="true"></div>
-            <span>high density</span>
-          </div>
-        </div>
-      </div><!-- /right -->
-
-    </div><!-- /hero-grid -->
+    </div>
 
     <!-- Scroll indicator -->
     <div
@@ -145,7 +103,7 @@ const heatCells = Array.from({ length: COLS * ROWS }, (_, i) => {
     >
       <Icon
         name="lucide:chevrons-down"
-        class="h-5 w-5 animate-bounce text-[var(--color-text-muted)]"
+        class="scroll-cue h-5 w-5 text-[var(--color-text-secondary)]"
         aria-hidden="true"
       />
     </div>
@@ -154,116 +112,330 @@ const heatCells = Array.from({ length: COLS * ROWS }, (_, i) => {
 </section>
 
 <style>
-  /* ===== Two-column grid: 60/40 on lg+ ===== */
-  .hero-grid {
-    grid-template-columns: 1fr;
+  /* The field paints itself; it fades up once the engine has drawn a frame so
+     there is no flash of an empty black rectangle before paint. */
+  .hero-field {
+    opacity: 0;
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  @media (min-width: 1024px) {
-    .hero-grid {
-      grid-template-columns: 3fr 2fr;
-    }
+  .hero-field.is-painted { opacity: 1; }
+
+  /*
+   * Gradient veil — adapts to the active theme so the headline stays legible
+   * over the left of the field.
+   * Light mode (default): white veil so dark text stays legible.
+   * Dark mode: black veil so white text stays legible.
+   */
+  .hero-overlay {
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.92) 0%,
+      rgba(255, 255, 255, 0.65) 42%,
+      rgba(255, 255, 255, 0.18) 72%,
+      rgba(255, 255, 255, 0.00) 100%
+    );
   }
 
-  /* ===== Availability pulse dot ===== */
-  .availability-dot {
-    animation: pulse-dot 3s ease-in-out infinite;
+  :global(html[data-theme="dark"]) .hero-overlay {
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.92) 0%,
+      rgba(0, 0, 0, 0.65) 42%,
+      rgba(0, 0, 0, 0.18) 72%,
+      rgba(0, 0, 0, 0.00) 100%
+    );
   }
+
+  /* Availability pulse */
+  .availability-dot { animation: pulse-dot 3s ease-in-out infinite; }
   @keyframes pulse-dot {
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.2; }
   }
 
-  /* ===== Heatmap panel ===== */
-  .heatmap-wrapper {
-    width: 100%;
-    max-width: 380px;
-    margin: 0 auto;
-    padding: 1.25rem;
-    border: 1px solid var(--color-border);
-    border-top: 2px solid var(--color-text-primary);
+  /* Scroll indicator — slow ease pulse, no bounce */
+  .scroll-indicator { position: absolute; }
+  .scroll-cue {
+    animation: scroll-cue 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  @keyframes scroll-cue {
+    0%, 100% { transform: translateY(0); opacity: 0.5; }
+    50%      { transform: translateY(6px); opacity: 1; }
   }
 
-  .heatmap-label {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-text-muted);
-    margin-bottom: 0.75rem;
-  }
-
-  .heatmap-grid {
-    display: grid;
-    gap: 3px;
-    width: 100%;
-  }
-
-  .heatmap-cell {
-    aspect-ratio: 1;
-    background-color: var(--color-text-primary);
-    border-radius: 1px;
-    animation: cell-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-    transform-origin: center;
-  }
-
-  @keyframes cell-reveal {
-    from {
-      transform: scale(0);
-      opacity: 0;
-    }
-    to {
-      transform: scale(1);
-      /* opacity: as set by inline style */
-    }
-  }
-
-  /* Scale to full opacity on reveal, then settle to cell's value */
-  /* We animate opacity separately with a second pass */
-  .heatmap-cell {
-    animation:
-      cell-reveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) both,
-      cell-settle 0.6s ease-out both;
-  }
-  /* cell-settle: opacity flashes to 1 then settles to inline value */
-  @keyframes cell-settle {
-    0%   { filter: brightness(2); }
-    100% { filter: brightness(1); }
-  }
-
-  .heatmap-axis {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.6rem;
-    font-family: var(--font-mono);
-    font-size: 0.55rem;
-    color: var(--color-text-muted);
-    letter-spacing: 0.08em;
-  }
-
-  .heatmap-scale {
-    flex: 1;
-    height: 2px;
-    background: linear-gradient(
-      to right,
-      rgba(128, 128, 128, 0.15),
-      var(--color-text-primary)
-    );
-  }
-
-  /* ===== Scroll indicator ===== */
+  /* Reduced motion: the field renders a single static frame (handled in the
+     script) and the cursor reactivity is disabled; stop decorative animations. */
   @media (prefers-reduced-motion: reduce) {
-    .availability-dot,
-    .heatmap-cell {
-      animation: none;
-    }
-    .scroll-indicator {
-      display: none;
-    }
+    .hero-field { transition: none; }
+    .availability-dot { animation: none; }
+    .scroll-indicator { display: none; }
   }
 </style>
 
 <script>
+  // ── Agent Loop ────────────────────────────────────────────────────────────
+  // A central agent core runs a perpetual plan→act→observe cycle, dispatching
+  // animated tool-calls out to a ring of tool nodes and receiving returns. The
+  // cursor is attended to: the core draws a line to it and the nearest tool
+  // lights up. Pure canvas, monochrome, reads the live theme. Pauses off-screen
+  // and when the tab is hidden; renders one static frame under reduced motion.
+
+  type Tool = { angle: number; radius: number; label: string; phase: number };
+
+  function setupHeroField(): (() => void) | void {
+    const canvas = document.getElementById("hero-field") as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const TOOL_COUNT = 6;
+    const LABELS = ["plan", "search", "call", "read", "write", "observe"];
+
+    let w = 0;
+    let h = 0;
+    let cx = 0; // agent core position
+    let cy = 0;
+    let ringR = 0;
+    let tools: Tool[] = [];
+    let raf = 0;
+    let running = false;
+    let painted = false;
+    const pointer = { x: -9999, y: -9999, active: false };
+
+    const ink = (alpha: number) =>
+      document.documentElement.dataset.theme === "light"
+        ? `rgba(0,0,0,${alpha})`
+        : `rgba(255,255,255,${alpha})`;
+
+    function dot(x: number, y: number, r: number, color: string, fill = false) {
+      ctx!.beginPath();
+      ctx!.arc(x, y, r, 0, Math.PI * 2);
+      if (fill) {
+        ctx!.fillStyle = color;
+        ctx!.fill();
+      } else {
+        ctx!.strokeStyle = color;
+        ctx!.lineWidth = 1;
+        ctx!.stroke();
+      }
+    }
+
+    function build() {
+      const rect = canvas!.getBoundingClientRect();
+      w = rect.width;
+      h = rect.height;
+      if (w === 0 || h === 0) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas!.width = Math.round(w * dpr);
+      canvas!.height = Math.round(h * dpr);
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Core sits near the right edge on wide viewports so the loop clears the
+      // headline on the left entirely (it was being overlapped at 0.64).
+      cx = w * (w < 640 ? 0.5 : 0.8);
+      cy = h * 0.46;
+      ringR = Math.max(92, Math.min(w, h) * 0.24);
+      // Keep the whole loop on-canvas: never let the context ring cross the right
+      // edge by more than a hair.
+      cx = Math.min(cx, w - ringR * 1.18 - 8);
+
+      tools = Array.from({ length: TOOL_COUNT }, (_, i) => ({
+        angle: (i / TOOL_COUNT) * Math.PI * 2 - Math.PI / 2,
+        // Vary radius slightly so the ring reads organic, not mechanical.
+        radius: ringR * (0.82 + (((i * 37) % 30) / 100)),
+        label: LABELS[i % LABELS.length],
+        phase: (i * 0.137) % 1,
+      }));
+    }
+
+    function frame(now?: number) {
+      const t = now ?? performance.now();
+      ctx!.clearRect(0, 0, w, h);
+
+      const toolPos = tools.map(tl => ({
+        x: cx + Math.cos(tl.angle) * tl.radius,
+        y: cy + Math.sin(tl.angle) * tl.radius,
+        tl,
+      }));
+
+      // Spokes from the core to each tool.
+      ctx!.lineWidth = 1;
+      ctx!.strokeStyle = ink(0.12);
+      for (const tp of toolPos) {
+        ctx!.beginPath();
+        ctx!.moveTo(cx, cy);
+        ctx!.lineTo(tp.x, tp.y);
+        ctx!.stroke();
+      }
+
+      // Slowly rotating dashed "context" ring around the core.
+      ctx!.save();
+      ctx!.translate(cx, cy);
+      ctx!.rotate(reduce ? 0 : (t / 9000) % (Math.PI * 2));
+      ctx!.strokeStyle = ink(0.4);
+      ctx!.setLineDash([2, 8]);
+      ctx!.beginPath();
+      ctx!.arc(0, 0, ringR * 1.18, 0, Math.PI * 2);
+      ctx!.stroke();
+      ctx!.setLineDash([]);
+      ctx!.restore();
+
+      // Expanding "act" pulse rings emitted by the core.
+      const PULSE = 2600;
+      for (let k = 0; k < 2; k++) {
+        const p = reduce ? 0.45 : ((t + k * (PULSE / 2)) % PULSE) / PULSE;
+        dot(cx, cy, 10 + p * (ringR * 0.95), ink((1 - p) * 0.3));
+      }
+
+      // Tool-call packets travelling each spoke: out (call) then back (return).
+      ctx!.font = "9px 'JetBrains Mono', ui-monospace, monospace";
+      ctx!.textAlign = "center";
+      for (const tp of toolPos) {
+        const near =
+          pointer.active &&
+          (tp.x - pointer.x) ** 2 + (tp.y - pointer.y) ** 2 < 140 * 140;
+        const cycle = reduce ? tp.tl.phase : (t / 1600 + tp.tl.phase) % 1;
+        const out = cycle < 0.5;
+        const f = out ? cycle * 2 : (cycle - 0.5) * 2;
+        const frac = out ? f : 1 - f;
+        const px = cx + (tp.x - cx) * frac;
+        const py = cy + (tp.y - cy) * frac;
+        dot(px, py, out ? 2.2 : 1.6, ink(out ? 0.85 : 0.5), true);
+
+        // Tool node; a return packet arriving briefly fills it.
+        dot(tp.x, tp.y, near ? 5 : 3.5, ink(near ? 0.9 : 0.4));
+        if (near || (!reduce && !out && f > 0.94)) {
+          dot(tp.x, tp.y, near ? 5 : 3.5, ink(near ? 0.5 : 0.28), true);
+        }
+        ctx!.fillStyle = ink(near ? 0.6 : 0.26);
+        ctx!.fillText(tp.tl.label, tp.x, tp.y - 9);
+      }
+
+      // The agent attends to the cursor.
+      if (pointer.active) {
+        ctx!.strokeStyle = ink(0.4);
+        ctx!.lineWidth = 1;
+        ctx!.beginPath();
+        ctx!.moveTo(cx, cy);
+        ctx!.lineTo(pointer.x, pointer.y);
+        ctx!.stroke();
+        dot(pointer.x, pointer.y, 3, ink(0.85), true);
+      }
+
+      // The agent core.
+      dot(cx, cy, 9, ink(0.16), true);
+      dot(cx, cy, 5.5, ink(1), true);
+
+      if (!painted) {
+        painted = true;
+        canvas!.classList.add("is-painted");
+      }
+      if (running && !reduce) raf = window.requestAnimationFrame(frame);
+    }
+
+    function start() {
+      if (running) return;
+      running = true;
+      if (reduce) {
+        frame(); // single static frame
+        running = false;
+      } else {
+        raf = window.requestAnimationFrame(frame);
+      }
+    }
+
+    function stop() {
+      running = false;
+      window.cancelAnimationFrame(raf);
+    }
+
+    // ── Listeners ────────────────────────────────────────────────────────────
+    const onMove = (e: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      pointer.active = x >= 0 && x <= rect.width && y >= 0 && y <= rect.height;
+      pointer.x = x;
+      pointer.y = y;
+    };
+    const onLeave = () => {
+      pointer.active = false;
+      pointer.x = pointer.y = -9999;
+    };
+
+    let resizeTimer = 0;
+    const onResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        build();
+        if (reduce) frame();
+      }, 150);
+    };
+
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else if (!reduce) start();
+    };
+
+    // Redraw the static frame on theme change when motion is reduced (the live
+    // loop already picks up the new colour on its own).
+    const themeObserver = new MutationObserver(() => {
+      if (reduce) frame();
+    });
+
+    const io = new IntersectionObserver(
+      entries => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            if (!reduce) start();
+            else if (!painted) frame();
+          } else {
+            stop();
+          }
+        }
+      },
+      { threshold: 0 }
+    );
+
+    build();
+    if (!reduce) {
+      window.addEventListener("pointermove", onMove, { passive: true });
+      window.addEventListener("pointerout", onLeave, { passive: true });
+      document.addEventListener("visibilitychange", onVisibility);
+    }
+    window.addEventListener("resize", onResize);
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    io.observe(canvas);
+
+    // Cleanup so View Transitions don't stack loops or listeners.
+    return () => {
+      stop();
+      io.disconnect();
+      themeObserver.disconnect();
+      window.clearTimeout(resizeTimer);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerout", onLeave);
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let teardownHeroField: (() => void) | void = (window as any).__heroFieldCleanup;
+  function bootHeroField() {
+    if (typeof teardownHeroField === "function") teardownHeroField();
+    teardownHeroField = setupHeroField();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).__heroFieldCleanup = teardownHeroField;
+  }
+  bootHeroField();
+  document.addEventListener("astro:after-swap", bootHeroField);
+
   function setupHeroScrollLinks() {
     document.querySelectorAll("#hero [data-scroll-to]").forEach(el => {
       el.addEventListener("click", e => {
@@ -275,9 +447,11 @@ const heatCells = Array.from({ length: COLS * ROWS }, (_, i) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const lenis = (window as any).__lenis;
         if (lenis) {
-          lenis.scrollTo(target, { offset: -64, duration: 1.2 });
+          // Lenis honours the target's scroll-margin-top; no manual offset.
+          lenis.scrollTo(target, { duration: 1.2 });
         } else {
-          target.scrollIntoView({ behavior: "smooth" });
+          // Reduced motion: scroll-margin-top keeps the target clear of the nav.
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       });
     });

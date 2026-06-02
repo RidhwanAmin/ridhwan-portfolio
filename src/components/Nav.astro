@@ -108,7 +108,7 @@ function isActive(link: (typeof NAV_LINKS)[number]): boolean {
         <!-- Hire me CTA -->
         <a
           href={isHome ? "#contact" : "/#contact"}
-          class="border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-4 py-2 text-sm font-semibold text-[var(--color-bg)] transition-all duration-150 hover:bg-transparent hover:text-[var(--color-text-primary)]"
+          class="border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-4 py-2 text-sm font-semibold text-[var(--color-bg)] transition-all duration-150 active:scale-[0.98] hover:bg-transparent hover:text-[var(--color-text-primary)]"
         >
           Hire me
         </a>
@@ -157,16 +157,17 @@ function isActive(link: (typeof NAV_LINKS)[number]): boolean {
     </div>
   </div>
 
-  <!-- Mobile menu drawer -->
+  <!-- Mobile menu drawer (animated open/close; see <style> below) -->
   <div
     id="mobile-menu"
-    class="hidden border-b border-[var(--color-border)] glass md:hidden"
+    class="border-b border-[var(--color-border)] glass md:hidden"
     aria-hidden="true"
   >
-    <nav
-      class="app-layout flex flex-col gap-1 py-4"
-      aria-label="Mobile navigation"
-    >
+    <div class="mm-inner">
+      <nav
+        class="app-layout flex flex-col gap-1 py-4"
+        aria-label="Mobile navigation"
+      >
       {
         NAV_LINKS.map(link => (
           <a
@@ -192,9 +193,39 @@ function isActive(link: (typeof NAV_LINKS)[number]): boolean {
           Hire me
         </a>
       </div>
-    </nav>
+      </nav>
+    </div>
   </div>
 </header>
+
+<style>
+  /* Mobile menu drawer: animated open/close via grid-template-rows + fade. We
+     use visibility (not display:none) so the open/close can transition, and the
+     0.32s-delayed visibility on close keeps it out of the tab order when shut. */
+  #mobile-menu {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      grid-template-rows 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s linear 0.32s;
+  }
+  #mobile-menu[data-open="true"] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    transition:
+      grid-template-rows 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s;
+  }
+  #mobile-menu > .mm-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+</style>
 
 <script>
   // ---- Hamburger toggle ----
@@ -213,7 +244,7 @@ function isActive(link: (typeof NAV_LINKS)[number]): boolean {
         "aria-label",
         isOpen ? "Open navigation menu" : "Close navigation menu"
       );
-      mobileMenu.classList.toggle("hidden");
+      mobileMenu.setAttribute("data-open", isOpen ? "false" : "true");
       mobileMenu.setAttribute("aria-hidden", isOpen ? "true" : "false");
       openIcon?.classList.toggle("hidden");
       closeIcon?.classList.toggle("hidden");
@@ -224,7 +255,7 @@ function isActive(link: (typeof NAV_LINKS)[number]): boolean {
       link.addEventListener("click", () => {
         hamburger.setAttribute("aria-expanded", "false");
         hamburger.setAttribute("aria-label", "Open navigation menu");
-        mobileMenu.classList.add("hidden");
+        mobileMenu.setAttribute("data-open", "false");
         mobileMenu.setAttribute("aria-hidden", "true");
         openIcon?.classList.remove("hidden");
         closeIcon?.classList.add("hidden");
@@ -263,8 +294,12 @@ function isActive(link: (typeof NAV_LINKS)[number]): boolean {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const lenis = (window as any).__lenis;
         if (lenis) {
-          lenis.scrollTo(target, { offset: -64, duration: 1.2 });
+          // Lenis honours the section's scroll-margin-top, so no manual offset
+          // is needed — the section lands just below the fixed nav, the same as
+          // the native-hash and reduced-motion paths.
+          lenis.scrollTo(target, { duration: 1.2 });
         } else {
+          // Reduced motion (no Lenis): native scroll honours scroll-margin-top.
           target.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       });

@@ -19,34 +19,39 @@ import { SOCIAL_LINKS } from "@/config";
 
 <section
   id="contact"
-  class="relative overflow-hidden py-24"
+  class="py-24"
   aria-labelledby="contact-heading"
   data-reveal="section"
 >
-  <!-- Subtle ambient glow -->
-  <div
-    class="pointer-events-none absolute inset-0"
-    style="background: radial-gradient(ellipse 60% 50% at 80% 80%, rgba(29,158,117,0.06) 0%, transparent 60%);"
-    aria-hidden="true"
-  >
-  </div>
-
-  <div class="relative z-10 app-layout">
+  <div class="app-layout">
     <!-- Section header -->
-    <div class="mb-12 text-center" data-reveal="fade-up">
-      <p class="mb-2 font-mono text-sm text-[var(--color-teal)]">
-        05 / Contact
-      </p>
+    <div class="mb-12 flex flex-col gap-2" data-reveal="fade-up">
+      <span class="font-mono text-sm text-[var(--color-text-secondary)]">
+        <span class="opacity-50">//</span> contact
+      </span>
       <h2
         id="contact-heading"
-        class="text-3xl font-bold text-[var(--color-text-primary)] sm:text-4xl"
+        class="font-display text-3xl font-bold tracking-tight text-[var(--color-text-primary)] text-balance sm:text-4xl"
       >
         Let's work together
       </h2>
-      <p class="mx-auto mt-4 max-w-xl text-[var(--color-text-secondary)]">
+      <p class="mt-2 max-w-xl text-[var(--color-text-secondary)]">
         Whether you need ML infrastructure, a research collaboration, or just
-        want to talk about seismic imaging — I'm reachable.
+        want to talk about seismic imaging, I'm reachable.
       </p>
+      <div class="mt-4">
+        <a
+          href="/services"
+          class="group inline-flex items-center gap-2 border border-[var(--color-border-strong)] px-5 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] transition-all duration-200 active:scale-[0.98] hover:border-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
+        >
+          View services and pricing
+          <Icon
+            name="lucide:arrow-right"
+            class="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5"
+            aria-hidden="true"
+          />
+        </a>
+      </div>
     </div>
 
     <div class="grid gap-12 md:grid-cols-2" data-reveal="fade-up">
@@ -70,7 +75,7 @@ import { SOCIAL_LINKS } from "@/config";
                 href={SOCIAL_LINKS.email}
                 class="text-sm text-[var(--color-text-primary)] transition-colors duration-150 hover:text-[var(--color-teal)]"
               >
-                ridhwan@ridhwan.dev
+                ridhwanamin97@gmail.com
               </a>
             </div>
           </li>
@@ -140,10 +145,10 @@ import { SOCIAL_LINKS } from "@/config";
             Schedule a call
           </p>
           <p class="mt-1 text-xs text-[var(--color-text-muted)]">
-            Cal.com booking widget — coming soon.
+            Cal.com booking widget, coming soon.
           </p>
           <a
-            href="mailto:ridhwan@ridhwan.dev?subject=Consulting%20Enquiry"
+            href="mailto:ridhwanamin97@gmail.com?subject=Consulting%20Enquiry"
             class="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-teal)] hover:underline"
             aria-label="Email to schedule a call"
           >
@@ -181,9 +186,16 @@ import { SOCIAL_LINKS } from "@/config";
               type="text"
               required
               autocomplete="name"
+              aria-invalid="false"
+              aria-describedby="contact-name-error"
               placeholder="Your full name"
-              class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] transition-colors duration-150 outline-none focus:border-[var(--color-teal)] focus:ring-1 focus:ring-[var(--color-teal)]"
+              class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] transition-colors duration-150 outline-none focus:border-[var(--color-teal)] focus:ring-1 focus:ring-[var(--color-teal)] aria-[invalid=true]:border-[var(--color-text-primary)] aria-[invalid=true]:ring-1 aria-[invalid=true]:ring-[var(--color-text-primary)]"
             />
+            <p
+              id="contact-name-error"
+              class="hidden text-xs font-medium text-[var(--color-text-primary)]"
+            >
+            </p>
           </div>
 
           <!-- Email -->
@@ -202,9 +214,16 @@ import { SOCIAL_LINKS } from "@/config";
               type="email"
               required
               autocomplete="email"
+              aria-invalid="false"
+              aria-describedby="contact-email-error"
               placeholder="you@company.com"
-              class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] transition-colors duration-150 outline-none focus:border-[var(--color-teal)] focus:ring-1 focus:ring-[var(--color-teal)]"
+              class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] transition-colors duration-150 outline-none focus:border-[var(--color-teal)] focus:ring-1 focus:ring-[var(--color-teal)] aria-[invalid=true]:border-[var(--color-text-primary)] aria-[invalid=true]:ring-1 aria-[invalid=true]:ring-[var(--color-text-primary)]"
             />
+            <p
+              id="contact-email-error"
+              class="hidden text-xs font-medium text-[var(--color-text-primary)]"
+            >
+            </p>
           </div>
 
           <!-- Message -->
@@ -222,9 +241,16 @@ import { SOCIAL_LINKS } from "@/config";
               name="message"
               required
               rows={5}
+              aria-invalid="false"
+              aria-describedby="contact-message-error"
               placeholder="Tell me about your project or question…"
-              class="resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] transition-colors duration-150 outline-none focus:border-[var(--color-teal)] focus:ring-1 focus:ring-[var(--color-teal)]"
+              class="resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] transition-colors duration-150 outline-none focus:border-[var(--color-teal)] focus:ring-1 focus:ring-[var(--color-teal)] aria-[invalid=true]:border-[var(--color-text-primary)] aria-[invalid=true]:ring-1 aria-[invalid=true]:ring-[var(--color-text-primary)]"
             ></textarea>
+            <p
+              id="contact-message-error"
+              class="hidden text-xs font-medium text-[var(--color-text-primary)]"
+            >
+            </p>
           </div>
 
           <!-- Status message (hidden until submit) -->
@@ -240,7 +266,7 @@ import { SOCIAL_LINKS } from "@/config";
           <button
             id="contact-submit"
             type="submit"
-            class="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--color-teal)] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-500/20 transition-all duration-200 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)] disabled:cursor-not-allowed disabled:opacity-50"
+            class="inline-flex items-center justify-center gap-2 border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-6 py-3 text-sm font-semibold text-[var(--color-bg)] transition-all duration-200 active:scale-[0.98] hover:bg-transparent hover:text-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
           >
             <Icon name="lucide:send" class="h-4 w-4" aria-hidden="true" />
             Send message
@@ -253,10 +279,27 @@ import { SOCIAL_LINKS } from "@/config";
 
 <script>
   /**
-   * Contact form — POSTs to /api/contact per cross-agent contract.
-   * Agent B (B7) implements the endpoint.
-   * Expected response: { success: boolean, error?: string }
+   * Contact form — sends via EmailJS (client-side, no server).
+   *
+   * Env vars (all PUBLIC_* so they’re inlined into the client bundle):
+   *   PUBLIC_EMAILJS_SERVICE_ID    (default: service_7can0am)
+   *   PUBLIC_EMAILJS_TEMPLATE_ID   — from EmailJS dashboard
+   *   PUBLIC_EMAILJS_PUBLIC_KEY    — from EmailJS → Account → API Keys
+   *
+   * Template variables sent (must match template_v9lpz0q in the EmailJS dashboard):
+   *   {{first_name}}, {{last_name}}, {{user_email}}, {{message}}
+   *   The template's "To Email" field is bound to {{user_email}}, so that param
+   *   must always be supplied or EmailJS returns "The recipient's address is empty".
    */
+  import emailjs from "@emailjs/browser";
+
+  const SERVICE_ID =
+    import.meta.env.PUBLIC_EMAILJS_SERVICE_ID || "service_7can0am";
+  const TEMPLATE_ID = import.meta.env.PUBLIC_EMAILJS_TEMPLATE_ID;
+  const PUBLIC_KEY = import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY;
+
+  type FieldName = "name" | "email" | "message";
+
   function setupContactForm() {
     const form = document.getElementById(
       "contact-form"
@@ -270,59 +313,154 @@ import { SOCIAL_LINKS } from "@/config";
       "contact-status"
     ) as HTMLParagraphElement;
 
+    // Field-level validation: each field validates on blur and on submit, marks
+    // itself with aria-invalid + an inline message, and clears as soon as it's
+    // valid again. Entered values are never wiped on a validation failure.
+    const fields: Record<
+      FieldName,
+      {
+        input: HTMLInputElement | HTMLTextAreaElement;
+        error: HTMLElement;
+        validate: (v: string) => string | null;
+      }
+    > = {
+      name: {
+        input: document.getElementById("contact-name") as HTMLInputElement,
+        error: document.getElementById("contact-name-error") as HTMLElement,
+        validate: v => (v.trim() ? null : "Enter your name."),
+      },
+      email: {
+        input: document.getElementById("contact-email") as HTMLInputElement,
+        error: document.getElementById("contact-email-error") as HTMLElement,
+        validate: v =>
+          !v.trim()
+            ? "Enter your email."
+            : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())
+              ? null
+              : "Enter a valid email, e.g. you@company.com.",
+      },
+      message: {
+        input: document.getElementById(
+          "contact-message"
+        ) as HTMLTextAreaElement,
+        error: document.getElementById("contact-message-error") as HTMLElement,
+        validate: v => (v.trim().length >= 2 ? null : "Add a short message."),
+      },
+    };
+
+    function setFieldError(name: FieldName, msg: string | null) {
+      const f = fields[name];
+      if (msg) {
+        f.input.setAttribute("aria-invalid", "true");
+        f.error.textContent = `! ${msg}`;
+        f.error.classList.remove("hidden");
+      } else {
+        f.input.setAttribute("aria-invalid", "false");
+        f.error.textContent = "";
+        f.error.classList.add("hidden");
+      }
+    }
+
+    function validateField(name: FieldName): boolean {
+      const msg = fields[name].validate(fields[name].input.value);
+      setFieldError(name, msg);
+      return !msg;
+    }
+
+    const order: FieldName[] = ["name", "email", "message"];
+    order.forEach(name => {
+      const input = fields[name].input;
+      input.addEventListener("blur", () => validateField(name));
+      input.addEventListener("input", () => {
+        if (input.getAttribute("aria-invalid") === "true") validateField(name);
+      });
+    });
+
     function showStatus(message: string, isError: boolean) {
-      statusEl.textContent = message;
-      statusEl.className = `text-sm ${isError ? "text-red-400" : "text-[var(--color-teal)]"}`;
+      // Zero-Hue: monochrome status. Meaning is carried by the wording, the
+      // leading marker, and the aria-live announcement, never by color alone.
+      statusEl.textContent = `${isError ? "!" : "→"}  ${message}`;
+      statusEl.className =
+        "text-sm font-medium text-[var(--color-text-primary)]";
       statusEl.classList.remove("hidden");
     }
 
     form.addEventListener("submit", async e => {
       e.preventDefault();
 
-      const data = new FormData(form);
-      const name = (data.get("name") as string).trim();
-      const email = (data.get("email") as string).trim();
-      const message = (data.get("message") as string).trim();
-
-      // Client-side validation
-      if (!name || !email || !message) {
-        showStatus("Please fill in all required fields.", true);
+      // Validate every field; focus the first invalid one and stop.
+      let firstInvalid: FieldName | null = null;
+      for (const name of order) {
+        if (!validateField(name) && !firstInvalid) firstInvalid = name;
+      }
+      if (firstInvalid) {
+        statusEl.classList.add("hidden");
+        fields[firstInvalid].input.focus();
         return;
       }
 
+      // Config sanity check — keys must be present at build time
+      if (!TEMPLATE_ID || !PUBLIC_KEY) {
+        // eslint-disable-next-line no-console
+        console.error(
+          "[contact] EmailJS is not configured. Set PUBLIC_EMAILJS_TEMPLATE_ID and PUBLIC_EMAILJS_PUBLIC_KEY in .env."
+        );
+        showStatus(
+          "Email service is not configured. Please email me directly.",
+          true
+        );
+        return;
+      }
+
+      const sendIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+      const spinnerIcon = `<svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`;
+      const checkIcon = `<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>`;
+
       submitBtn.disabled = true;
-      submitBtn.textContent = "Sending…";
+      submitBtn.innerHTML = `${spinnerIcon} Sending…`;
       statusEl.classList.add("hidden");
 
       try {
-        const res = await fetch("/api/contact", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, message }),
-        });
+        // Map the form's single "name" field to the template's first/last_name,
+        // and supply user_email — the template binds its "To Email" to {{user_email}}.
+        const fullName = fields.name.input.value.trim();
+        const [firstName, ...rest] = fullName.split(/\s+/);
+        const lastName = rest.join(" ");
 
-        const json = (await res.json()) as { success: boolean; error?: string };
-
-        if (json.success) {
-          showStatus(
-            "Message sent! I'll get back to you within 24 hours.",
-            false
-          );
-          form.reset();
-        } else {
-          showStatus(
-            json.error ?? "Something went wrong. Please try again.",
-            true
-          );
-        }
-      } catch {
-        showStatus(
-          "Network error — please try again or email me directly.",
-          true
+        await emailjs.send(
+          SERVICE_ID,
+          TEMPLATE_ID,
+          {
+            first_name: firstName,
+            last_name: lastName,
+            user_email: fields.email.input.value.trim(),
+            message: fields.message.input.value.trim(),
+          },
+          { publicKey: PUBLIC_KEY }
         );
+
+        showStatus(
+          "Message sent! I'll get back to you within 24 hours.",
+          false
+        );
+        form.reset();
+        order.forEach(name => setFieldError(name, null));
+        // Brief success state on the button, then restore.
+        submitBtn.innerHTML = `${checkIcon} Sent`;
+        window.setTimeout(() => {
+          submitBtn.innerHTML = `${sendIcon} Send message`;
+        }, 1800);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error("[contact] EmailJS error:", err);
+        const msg =
+          (err as { text?: string; message?: string })?.text ||
+          (err as { text?: string; message?: string })?.message ||
+          "Failed to send. Please try again or email me directly.";
+        showStatus(msg, true);
+        submitBtn.innerHTML = `${sendIcon} Send message`;
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send message`;
       }
     });
   }

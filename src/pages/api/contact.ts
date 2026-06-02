@@ -125,7 +125,7 @@ export const POST: APIRoute = async ({ request }) => {
       },
       body: JSON.stringify({
         from: "ridhwan.dev contact form <contact@ridhwan.dev>",
-        to: ["ridhwan@ridhwan.dev"],
+        to: ["ridhwanamin97@gmail.com"],
         reply_to: email,
         subject: `New contact message from ${name}`,
         html: `

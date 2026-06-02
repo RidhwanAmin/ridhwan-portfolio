@@ -4,7 +4,7 @@
  *
  * Accessible accordion FAQ.
  * - Vanilla JS expand/collapse (no React)
- * - Smooth height animation via CSS max-height transition
+ * - Smooth height animation via CSS grid-template-rows (0fr to 1fr)
  * - Only one item open at a time
  * - Proper aria-expanded / aria-controls attributes
  * - prefers-reduced-motion: skips transition, opens instantly
@@ -67,11 +67,12 @@ const { items, headingId = "faq-heading" } = Astro.props;
             id={panelId}
             role="region"
             aria-labelledby={btnId}
-            class="faq-panel overflow-hidden"
-            style="max-height: 0;"
+            class="faq-panel"
           >
-            <div class="border-t border-[var(--color-border)] px-5 py-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-              {item.answer}
+            <div class="faq-panel-inner">
+              <div class="border-t border-[var(--color-border)] px-5 py-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                {item.answer}
+              </div>
             </div>
           </div>
         </div>
@@ -81,8 +82,18 @@ const { items, headingId = "faq-heading" } = Astro.props;
 </div>
 
 <style>
+  /* Composited height animation via grid-template-rows — no layout-property thrash. */
   .faq-panel {
-    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .faq-item[data-open="true"] .faq-panel {
+    grid-template-rows: 1fr;
+  }
+  .faq-panel-inner {
+    overflow: hidden;
+    min-height: 0;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -105,9 +116,6 @@ const { items, headingId = "faq-heading" } = Astro.props;
 <script>
   function setupFaqAccordion() {
     const accordions = document.querySelectorAll<HTMLElement>(".faq-accordion");
-    const prefersReduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
 
     accordions.forEach(accordion => {
       const triggers =
@@ -115,38 +123,22 @@ const { items, headingId = "faq-heading" } = Astro.props;
 
       triggers.forEach(trigger => {
         trigger.addEventListener("click", () => {
-          const panelId = trigger.getAttribute("aria-controls")!;
-          const panel = document.getElementById(panelId)!;
           const item = trigger.closest(".faq-item") as HTMLElement;
           const isOpen = trigger.getAttribute("aria-expanded") === "true";
 
-          // Close all siblings first
+          // Close all siblings first. Height is handled entirely in CSS via
+          // grid-template-rows reacting to [data-open]; no measuring needed.
           triggers.forEach(otherTrigger => {
             if (otherTrigger === trigger) return;
-            const otherId = otherTrigger.getAttribute("aria-controls")!;
-            const otherPanel = document.getElementById(otherId)!;
-            const otherItem = otherTrigger.closest(".faq-item") as HTMLElement;
             otherTrigger.setAttribute("aria-expanded", "false");
-            otherItem.removeAttribute("data-open");
-            otherPanel.style.maxHeight = "0";
+            (otherTrigger.closest(".faq-item") as HTMLElement).removeAttribute(
+              "data-open"
+            );
           });
 
-          if (isOpen) {
-            // Close this one
-            trigger.setAttribute("aria-expanded", "false");
-            item.removeAttribute("data-open");
-            panel.style.maxHeight = "0";
-          } else {
-            // Open this one
-            trigger.setAttribute("aria-expanded", "true");
-            item.setAttribute("data-open", "true");
-            // Use scrollHeight for natural height
-            const inner = panel.querySelector("div") as HTMLElement;
-            const height = inner ? inner.scrollHeight + 1 : 200;
-            panel.style.maxHeight = prefersReduced
-              ? `${height}px`
-              : `${height + 16}px`;
-          }
+          trigger.setAttribute("aria-expanded", isOpen ? "false" : "true");
+          if (isOpen) item.removeAttribute("data-open");
+          else item.setAttribute("data-open", "true");
         });
       });
     });

@@ -219,6 +219,14 @@ const {
       // Run on first load
       initLenis();
 
+      // Track navigation direction so we only force scroll-to-top on forward
+      // navigations and leave back/forward restoration intact.
+      let navDirection: "forward" | "back" = "forward";
+      document.addEventListener("astro:before-swap", e => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        navDirection = (e as any).direction ?? "forward";
+      });
+
       // Re-initialise after Astro View Transitions navigation
       document.addEventListener("astro:after-swap", () => {
         // Destroy previous instance if it exists
@@ -226,6 +234,21 @@ const {
         const prev = (window as any).__lenis;
         if (prev?.destroy) prev.destroy();
         initLenis();
+
+        // Reset scroll explicitly. Browsers without native View Transitions
+        // (e.g. Firefox) use Astro's fallback swap, which does not reliably pin
+        // a forward navigation to the top — so a short page like /blog keeps the
+        // previous (taller) page's scroll offset and lands mid-page. Force the
+        // top on forward navs with no hash; otherwise sync Lenis to whatever
+        // position the router restored (back/forward) or scrolled to (a #hash).
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const lenis = (window as any).__lenis;
+        if (navDirection === "forward" && !location.hash) {
+          window.scrollTo(0, 0);
+          if (lenis) lenis.scrollTo(0, { immediate: true, force: true });
+        } else if (lenis) {
+          lenis.scrollTo(window.scrollY, { immediate: true, force: true });
+        }
       });
     </script>
   </body>
