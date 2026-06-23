@@ -10,7 +10,7 @@
 - [ ] B — Backend (content schemas, MDX, API endpoints, Resend, SEO, RSS)
 - [ ] C — Deployment (Vercel, DNS, env vars, vercel.json crons/framework keys)
 - [ ] D — Payment (Stripe Checkout, webhooks, legal pages)
-- [ ] E — CI/CD (vercel.json headers/routes, Lighthouse CI, bundle check, smoke tests)
+- [ ] E — CI/CD (vercel.json headers/routes, Lighthouse CI, bundle check)
 
 ## Checklist
 
@@ -31,7 +31,7 @@
 
 ## Test evidence
 
-<!-- Screenshot, `astro check` output, or smoke test result -->
+<!-- Screenshot, `astro check` output, or other verification result -->
 
 ## Related task(s)
 

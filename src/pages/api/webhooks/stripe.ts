@@ -8,7 +8,7 @@
  *   - payment_intent.succeeded   → logged only (can duplicate checkout events)
  *
  * Cross-agent contract:
- *   - GET → 405 (enforced by Agent E smoke tests)
+ *   - GET → 405
  *   - POST → processes webhook, returns { received: true } or error response
  *   - Raw body must not be parsed before stripe.webhooks.constructEvent()
  */

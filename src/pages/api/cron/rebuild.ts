@@ -23,6 +23,6 @@ export const GET: APIRoute = async () => {
   );
 };
 
-// Return 405 on non-GET methods (required by Agent E smoke tests)
+// Return 405 on non-GET methods.
 export const POST: APIRoute = async () =>
   new Response(null, { status: 405, headers: { Allow: "GET" } });

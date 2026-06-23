@@ -17,7 +17,7 @@
  *     STRIPE_SIGNING_SECRET=whsec_...     (webhook secret — see /api/webhooks/stripe.ts)
  *
  * Cross-agent contract:
- *   - GET → 405 (enforced by Agent E smoke tests)
+ *   - GET → 405
  *   - POST → { priceId: string } → { url: string } | { error: string }
  *   - success_url: /checkout/return?session_id={CHECKOUT_SESSION_ID}
  *   - cancel_url: /services

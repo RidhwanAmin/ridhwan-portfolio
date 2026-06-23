@@ -2,14 +2,13 @@
 /**
  * index.astro — home page.
  *
- * Sections (Timeline + Publications removed by request):
+ * Sections (About removed by request):
  *   1. Hero          : Interpolation Field canvas + intro
- *   2. About         : two-column photo/bio + credential pills
- *   3. Capabilities  : animated monochrome capability cards
- *   4. Featured work : ProjectCard grid
- *   5. Writing       : recent local + Substack posts (hairline list)
- *   6. FAQ           : accordion
- *   7. Contact       : form + scheduling + services CTA (page closer)
+ *   2. Capabilities  : animated monochrome capability cards
+ *   3. Featured work : auto-marquee project deck
+ *   4. Writing       : recent local + Substack posts (hairline list)
+ *   5. FAQ           : accordion
+ *   6. Contact       : form + scheduling + services CTA (page closer)
  *
  * Section headers use the "// label" mono cadence (the engineer's-annotation
  * brand voice), not numbered eyebrows. ScrollReveal is wired in the script
@@ -21,14 +20,11 @@ import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Hero from "@/components/Hero.astro";
-import ProjectCard from "@/components/ProjectCard.astro";
+import FeaturedWorkDeck from "@/components/FeaturedWorkDeck.astro";
 import CapabilityCard from "@/components/CapabilityCard.astro";
-import CredentialPill from "@/components/CredentialPill.astro";
 
 import FaqAccordion from "@/components/FaqAccordion.astro";
 import ContactSection from "@/components/ContactSection.astro";
-import { Image } from "astro:assets";
-import profilePhoto from "../assets/ridhwan.jpg";
 
 // ── Featured projects data ──
 // First two are live products with screenshot previews.
@@ -114,10 +110,6 @@ const capabilities = [
     tags: ["AWS", "Azure", "Docker", "Kubernetes", "Terraform", "CI/CD"],
   },
 ];
-
-
-
-
 
 // ── FAQ data ──
 const faqItems = [
@@ -215,119 +207,7 @@ const cleanExcerpt = (s: string, max = 160) => {
   <!-- 1. Hero (A6) -->
   <Hero />
 
-  <!-- 2. About Me -->
-  <section
-    id="about"
-    class="py-24"
-    aria-labelledby="about-heading"
-    data-reveal="section"
-  >
-    <div class="app-layout">
-      <div class="mb-10 flex flex-col gap-2" data-reveal="fade-up">
-        <span class="font-mono text-sm text-[var(--color-text-secondary)]">
-          <span class="opacity-50">//</span> about
-        </span>
-        <h2
-          id="about-heading"
-          class="font-display text-3xl font-bold tracking-tight text-[var(--color-text-primary)] text-balance sm:text-4xl"
-        >
-          About me
-        </h2>
-      </div>
-
-      <div class="grid gap-12 md:grid-cols-2 md:gap-16">
-        <!-- Left: photo + credentials -->
-        <div class="flex flex-col gap-6" data-reveal="fade-up">
-          <div
-            class="relative aspect-square max-w-xs overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
-          >
-            <Image
-              src={profilePhoto}
-              alt="Ridhwan Amin, AI and ML researcher, portrait"
-              width={300}
-              height={300}
-              class="h-full w-full object-cover"
-            />
-          </div>
-
-          <div
-            class="flex flex-wrap gap-2"
-            role="list"
-            aria-label="Credentials and affiliations"
-          >
-            <div role="listitem">
-              <CredentialPill label="MEXT Scholar 2022" icon="lucide:award" />
-            </div>
-            <div role="listitem">
-              <CredentialPill label="IEEE Member" icon="lucide:cpu" />
-            </div>
-            <div role="listitem">
-              <CredentialPill label="UTP Researcher" icon="lucide:flask-conical" />
-            </div>
-            <div role="listitem">
-              <CredentialPill label="M.Sc. EEE" icon="lucide:graduation-cap" />
-            </div>
-            <div role="listitem">
-              <CredentialPill label="PETRONAS Digital Alumni" icon="lucide:building-2" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Right: bio text -->
-        <div class="flex flex-col justify-center gap-5" data-reveal="fade-up">
-          <div class="max-w-[65ch] space-y-4 leading-relaxed text-[var(--color-text-secondary)]">
-            <p>
-              I'm Ridhwan Amin, an AI/ML researcher at Universiti Teknologi
-              PETRONAS (UTP) in Malaysia. My research sits at the intersection
-              of <strong class="text-[var(--color-text-primary)]">deep learning</strong>
-              and
-              <strong class="text-[var(--color-text-primary)]">geophysical signal processing</strong>,
-              specifically using implicit neural representations and generative
-              priors to reconstruct missing seismic data.
-            </p>
-            <p>
-              Beyond research, I consult with teams that need <strong
-                class="text-[var(--color-text-primary)]">production-ready ML infrastructure</strong
-              >: RAG pipelines that actually retrieve the right things, anomaly detection
-              systems that don't cry wolf, and MLOps setups that let your team iterate
-              without fear.
-            </p>
-            <p>
-              I received a <strong class="text-[var(--color-text-primary)]">MEXT scholarship</strong>
-              from the Japanese government and am a member of IEEE. I also write
-              about ML, research craft, and working in energy-domain AI on my
-              <a
-                href="https://ridhwanamin.substack.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-[var(--color-substack)] underline decoration-dashed underline-offset-2 hover:decoration-solid"
-                aria-label="Ridhwan's Substack (opens in new tab)"
-              >Substack</a>.
-            </p>
-          </div>
-
-          <div class="flex flex-wrap gap-3 pt-2">
-            <a
-              href="#contact"
-              data-scroll-to="contact"
-              class="inline-flex items-center gap-2 border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-5 py-2.5 text-sm font-semibold text-[var(--color-bg)] transition-all duration-200 active:scale-[0.98] hover:bg-transparent hover:text-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
-              aria-label="Get in touch"
-            >
-              Get in touch
-            </a>
-            <a
-              href="/services"
-              class="inline-flex items-center gap-2 border border-[var(--color-border-strong)] px-5 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] transition-all duration-200 active:scale-[0.98] hover:border-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
-            >
-              View services
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 3. Capabilities -->
+  <!-- 2. Capabilities -->
   <section
     id="capabilities"
     class="py-24"
@@ -341,7 +221,7 @@ const cleanExcerpt = (s: string, max = 160) => {
         </span>
         <h2
           id="capabilities-heading"
-          class="font-display text-3xl font-bold tracking-tight text-[var(--color-text-primary)] text-balance sm:text-4xl"
+          class="font-display text-3xl font-bold tracking-tight text-balance text-[var(--color-text-primary)] sm:text-4xl"
         >
           What I build
         </h2>
@@ -362,7 +242,7 @@ const cleanExcerpt = (s: string, max = 160) => {
     </div>
   </section>
 
-  <!-- 4. Featured Projects -->
+  <!-- 3. Featured Projects -->
   <section
     id="projects"
     class="py-24"
@@ -380,37 +260,18 @@ const cleanExcerpt = (s: string, max = 160) => {
           </span>
           <h2
             id="projects-heading"
-            class="font-display text-3xl font-bold tracking-tight text-[var(--color-text-primary)] text-balance sm:text-4xl"
+            class="font-display text-3xl font-bold tracking-tight text-balance text-[var(--color-text-primary)] sm:text-4xl"
           >
             Featured work
           </h2>
         </div>
       </div>
 
-      <!-- Project grid: CSS-animated entrance (no GSAP stagger) -->
-      <div class="grid gap-5 sm:grid-cols-2">
-        {
-          featuredProjects.map((p, i) => (
-            <ProjectCard
-              slug={p.slug}
-              title={p.title}
-              tagline={p.tagline}
-              tags={p.tags}
-              thumbnail={'thumbnail' in p ? p.thumbnail : undefined}
-              thumbnailAlt={'thumbnailAlt' in p ? p.thumbnailAlt : undefined}
-              externalUrl={'externalUrl' in p ? p.externalUrl : undefined}
-              role={'role' in p ? p.role : undefined}
-              featured={p.featured}
-              index={i + 1}
-              enterDelay={i * 0.1}
-            />
-          ))
-        }
-      </div>
+      <FeaturedWorkDeck projects={featuredProjects} />
     </div>
   </section>
 
-  <!-- 5. Writing -->
+  <!-- 4. Writing -->
   <section
     id="writing"
     class="py-24"
@@ -428,7 +289,7 @@ const cleanExcerpt = (s: string, max = 160) => {
           </span>
           <h2
             id="writing-heading"
-            class="font-display text-3xl font-bold tracking-tight text-[var(--color-text-primary)] text-balance sm:text-4xl"
+            class="font-display text-3xl font-bold tracking-tight text-balance text-[var(--color-text-primary)] sm:text-4xl"
           >
             Writing
           </h2>
@@ -466,7 +327,7 @@ const cleanExcerpt = (s: string, max = 160) => {
                     <span class="opacity-40 sm:hidden" aria-hidden="true">
                       ·
                     </span>
-                    <span class="uppercase tracking-[0.18em]">
+                    <span class="tracking-[0.18em] uppercase">
                       {item.source}
                     </span>
                   </div>
@@ -528,7 +389,7 @@ const cleanExcerpt = (s: string, max = 160) => {
     </div>
   </section>
 
-  <!-- 6. FAQ -->
+  <!-- 5. FAQ -->
   <section
     id="faq"
     class="py-24"
@@ -542,7 +403,7 @@ const cleanExcerpt = (s: string, max = 160) => {
         </span>
         <h2
           id="faq-heading"
-          class="font-display text-3xl font-bold tracking-tight text-[var(--color-text-primary)] text-balance sm:text-4xl"
+          class="font-display text-3xl font-bold tracking-tight text-balance text-[var(--color-text-primary)] sm:text-4xl"
         >
           Frequently asked
         </h2>
@@ -554,7 +415,7 @@ const cleanExcerpt = (s: string, max = 160) => {
     </div>
   </section>
 
-  <!-- 7. Contact — page closer (the conversion moment ends the page) -->
+  <!-- 6. Contact — page closer (the conversion moment ends the page) -->
   <ContactSection />
 </BaseLayout>
 

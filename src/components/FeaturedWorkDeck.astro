@@ -1,0 +1,481 @@
+---
+import { Icon } from "astro-icon/components";
+
+export interface FeaturedWork {
+  slug: string;
+  title: string;
+  tagline: string;
+  tags?: string[];
+  thumbnail?: string;
+  thumbnailAlt?: string;
+  featured?: boolean;
+  externalUrl?: string;
+  role?: string;
+}
+
+export interface Props {
+  projects: FeaturedWork[];
+}
+
+const { projects } = Astro.props;
+const deckItems = [...projects, ...projects];
+
+function hrefFor(project: FeaturedWork): string {
+  return project.externalUrl ?? `/projects/${project.slug}`;
+}
+
+function urlLabelFor(project: FeaturedWork): string {
+  if (project.externalUrl) {
+    return project.externalUrl.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  }
+  return `ridhwan.dev/projects/${project.slug}`;
+}
+
+function displayIndex(index: number): string {
+  return String((index % projects.length) + 1).padStart(2, "0");
+}
+---
+
+<div class="work-deck" data-work-deck data-reveal="fade-up">
+  <div
+    class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+  >
+    <p
+      class="max-w-[60ch] text-sm leading-relaxed text-[var(--color-text-secondary)]"
+    >
+      A moving deck of shipped products, healthcare platforms, and research
+      infrastructure. Hover or focus the deck to inspect a card.
+    </p>
+
+    <button
+      type="button"
+      class="deck-toggle inline-flex w-fit items-center gap-2 border border-[var(--color-border-strong)] px-3 py-2 font-mono text-xs text-[var(--color-text-secondary)] transition-colors duration-150 hover:border-[var(--color-text-primary)] hover:text-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
+      data-deck-toggle
+      aria-pressed="false"
+      aria-label="Pause featured work deck"
+    >
+      <Icon
+        name="lucide:pause"
+        class="h-3.5 w-3.5"
+        data-deck-pause-icon
+        aria-hidden="true"
+      />
+      <Icon
+        name="lucide:play"
+        class="hidden h-3.5 w-3.5"
+        data-deck-play-icon
+        aria-hidden="true"
+      />
+      <span data-deck-toggle-label>Pause deck</span>
+    </button>
+  </div>
+
+  <div class="deck-viewport" aria-label="Featured work deck" tabindex="0">
+    <div class="deck-track">
+      {
+        deckItems.map((project, i) => {
+          const duplicate = i >= projects.length;
+          const isExternal = Boolean(project.externalUrl);
+          const href = hrefFor(project);
+
+          return (
+            <article
+              class="work-card group"
+              aria-hidden={duplicate ? "true" : undefined}
+            >
+              <a
+                href={duplicate ? undefined : href}
+                tabindex={duplicate ? "-1" : undefined}
+                {...(!duplicate && isExternal
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+                class="flex h-full flex-col focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
+                aria-label={`${isExternal ? "Visit" : "View case study"}: ${project.title}`}
+              >
+                {project.thumbnail ? (
+                  <div class="browser-preview">
+                    <div class="browser-chrome" aria-hidden="true">
+                      <div class="traffic-lights">
+                        <span class="bg-[#ff5f57]" />
+                        <span class="bg-[#febc2e]" />
+                        <span class="bg-[#28c840]" />
+                      </div>
+                      <div class="url-bar">{urlLabelFor(project)}</div>
+                      {isExternal && (
+                        <Icon
+                          name="lucide:external-link"
+                          class="h-3 w-3 shrink-0 text-[var(--color-text-muted)]"
+                          aria-hidden="true"
+                        />
+                      )}
+                    </div>
+                    <div class="screenshot-wrap">
+                      <img
+                        src={project.thumbnail}
+                        alt={project.thumbnailAlt ?? project.title}
+                        width="720"
+                        height="405"
+                        class="screenshot"
+                        loading={i < projects.length ? "eager" : "lazy"}
+                        decoding="async"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div class="research-preview" aria-hidden="true">
+                    <div class="research-topline">
+                      <span>retrieval.log</span>
+                      <span>{displayIndex(i)}</span>
+                    </div>
+                    <div class="query-box">
+                      <span class="prompt">$</span>
+                      <span>hybrid_search(query, bm25=True, dense=True)</span>
+                    </div>
+                    <div class="signal-lines">
+                      <span style="--w: 74%" />
+                      <span style="--w: 54%" />
+                      <span style="--w: 86%" />
+                      <span style="--w: 42%" />
+                    </div>
+                    <div class="ranker">
+                      <span>BM25</span>
+                      <span>+</span>
+                      <span>VECTOR</span>
+                      <span>→</span>
+                      <span>RERANK</span>
+                    </div>
+                  </div>
+                )}
+
+                <div class="flex flex-1 flex-col gap-3 p-5">
+                  <div class="flex items-start justify-between gap-4">
+                    <span class="font-mono text-xl font-bold text-[var(--color-text-primary)] opacity-45 transition-opacity duration-150 group-hover:opacity-100">
+                      {displayIndex(i)}
+                    </span>
+                    <div class="flex flex-wrap justify-end gap-2">
+                      {project.featured && (
+                        <span class="inline-flex items-center gap-1 rounded-full bg-[var(--color-teal-muted)] px-2.5 py-0.5 text-xs font-medium text-[var(--color-text-primary)]">
+                          <Icon
+                            name="lucide:star"
+                            class="h-3 w-3"
+                            aria-hidden="true"
+                          />
+                          Featured
+                        </span>
+                      )}
+                      {project.role && (
+                        <span class="rounded-full border border-[var(--color-border-strong)] px-2.5 py-0.5 text-xs font-medium text-[var(--color-text-secondary)]">
+                          {project.role}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col gap-2">
+                    <h3 class="text-lg leading-snug font-semibold tracking-tight text-balance text-[var(--color-text-primary)]">
+                      {project.title}
+                    </h3>
+                    <p class="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                      {project.tagline}
+                    </p>
+                  </div>
+
+                  {project.tags && project.tags.length > 0 && (
+                    <div
+                      class="mt-auto flex flex-wrap gap-1.5 pt-1"
+                      role="list"
+                      aria-label={`Technologies used for ${project.title}`}
+                    >
+                      {project.tags.slice(0, 5).map(tag => (
+                        <span
+                          role="listitem"
+                          class="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-0.5 font-mono text-[0.6rem] text-[var(--color-text-muted)]"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </a>
+            </article>
+          );
+        })
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .work-deck {
+    --deck-gap: 1.25rem;
+    --deck-card-width: clamp(19rem, 38vw, 28rem);
+    --deck-distance: calc((var(--deck-card-width) + var(--deck-gap)) * 4);
+  }
+
+  .deck-viewport {
+    position: relative;
+    overflow: hidden;
+    margin-inline: calc(var(--deck-gap) * -0.5);
+    padding: 0.25rem calc(var(--deck-gap) * 0.5) 0.75rem;
+  }
+
+  .deck-viewport::before,
+  .deck-viewport::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    bottom: 0;
+    width: clamp(2rem, 8vw, 6rem);
+    pointer-events: none;
+  }
+
+  .deck-viewport::before {
+    left: 0;
+    background: linear-gradient(to right, var(--color-bg), transparent);
+  }
+
+  .deck-viewport::after {
+    right: 0;
+    background: linear-gradient(to left, var(--color-bg), transparent);
+  }
+
+  .deck-track {
+    display: flex;
+    width: max-content;
+    gap: var(--deck-gap);
+    will-change: transform;
+  }
+
+  .work-card {
+    width: var(--deck-card-width);
+    min-height: 34rem;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    transition:
+      border-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .work-card:hover,
+  .work-card:focus-within {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface-hover);
+  }
+
+  .browser-preview,
+  .research-preview {
+    min-height: 15.5rem;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg);
+  }
+
+  .browser-chrome {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .traffic-lights {
+    display: flex;
+    flex-shrink: 0;
+    gap: 0.25rem;
+  }
+
+  .traffic-lights span {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 9999px;
+  }
+
+  .url-bar {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 0.375rem;
+    background: var(--color-bg);
+    padding: 0.25rem 0.625rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .screenshot-wrap {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  .screenshot {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .work-card:hover .screenshot,
+  .work-card:focus-within .screenshot {
+    transform: scale(1.035);
+  }
+
+  .research-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+  }
+
+  .research-topline,
+  .ranker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    color: var(--color-text-muted);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .query-box {
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    padding: 0.875rem;
+    color: var(--color-text-primary);
+    font-size: 0.72rem;
+    line-height: 1.5;
+  }
+
+  .prompt {
+    margin-right: 0.5rem;
+    color: var(--color-text-muted);
+  }
+
+  .signal-lines {
+    display: grid;
+    gap: 0.625rem;
+    padding-block: 0.25rem;
+  }
+
+  .signal-lines span {
+    width: var(--w);
+    height: 1px;
+    background: var(--color-border-strong);
+  }
+
+  .ranker {
+    margin-top: auto;
+    justify-content: flex-start;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .deck-track {
+      animation: deck-marquee 34s linear infinite;
+    }
+
+    .work-deck:hover .deck-track,
+    .work-deck:focus-within .deck-track,
+    .work-deck[data-paused="true"] .deck-track {
+      animation-play-state: paused;
+    }
+
+    @keyframes deck-marquee {
+      from {
+        transform: translate3d(0, 0, 0);
+      }
+      to {
+        transform: translate3d(calc(var(--deck-distance) * -1), 0, 0);
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .deck-viewport {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: thin;
+    }
+
+    .deck-viewport::before,
+    .deck-viewport::after {
+      display: none;
+    }
+
+    .deck-track {
+      width: auto;
+    }
+
+    .work-card {
+      scroll-snap-align: start;
+    }
+
+    .work-card[aria-hidden="true"] {
+      display: none;
+    }
+
+    .screenshot {
+      transition: none;
+    }
+
+    .deck-toggle {
+      display: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .work-deck {
+      --deck-card-width: min(82vw, 22rem);
+    }
+
+    .work-card {
+      min-height: 32rem;
+    }
+  }
+</style>
+
+<script>
+  function initFeaturedWorkDeck() {
+    document.querySelectorAll<HTMLElement>("[data-work-deck]").forEach(deck => {
+      const button =
+        deck.querySelector<HTMLButtonElement>("[data-deck-toggle]");
+      const label = deck.querySelector<HTMLElement>("[data-deck-toggle-label]");
+      const pauseIcon = deck.querySelector<SVGElement>(
+        "[data-deck-pause-icon]"
+      );
+      const playIcon = deck.querySelector<SVGElement>("[data-deck-play-icon]");
+      if (!button || !label) return;
+
+      const setPaused = (paused: boolean) => {
+        deck.dataset.paused = String(paused);
+        button.setAttribute("aria-pressed", String(paused));
+        button.setAttribute(
+          "aria-label",
+          paused ? "Play featured work deck" : "Pause featured work deck"
+        );
+        label.textContent = paused ? "Play deck" : "Pause deck";
+        pauseIcon?.classList.toggle("hidden", paused);
+        playIcon?.classList.toggle("hidden", !paused);
+      };
+
+      if (button.dataset.bound === "true") return;
+      button.dataset.bound = "true";
+      button.addEventListener("click", () => {
+        setPaused(deck.dataset.paused !== "true");
+      });
+    });
+  }
+
+  initFeaturedWorkDeck();
+  document.addEventListener("astro:after-swap", initFeaturedWorkDeck);
+</script>

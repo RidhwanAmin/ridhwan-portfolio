@@ -5,12 +5,12 @@
  * Sticky frosted-glass navigation bar.
  *
  * Hybrid scroll/route model (from CLAUDE.md):
- * - On the home page (/): section links (#projects, #about, etc.) scroll in-page via Lenis.
+ * - On the home page (/): section links (#projects, #contact, etc.) scroll in-page via Lenis.
  * - On any other page: section links navigate to /#section (full route change).
  * - Non-section links (/blog, /services) always navigate normally.
  *
  * Mobile: hamburger menu with vanilla JS toggle.
- * CTA button: "Hire me" → #contact section.
+ * CTA button: "Contact me" → #contact section.
  */
 import { Icon } from "astro-icon/components";
 import { SITE, NAV_LINKS } from "@/config";
@@ -45,9 +45,10 @@ function isActive(link: (typeof NAV_LINKS)[number]): boolean {
     <!-- Teal scan-line — appears on scroll -->
     <div
       id="nav-scan-line"
-      class="absolute bottom-0 left-0 right-0 h-px bg-[var(--color-teal)] opacity-0 transition-opacity duration-300"
+      class="absolute right-0 bottom-0 left-0 h-px bg-[var(--color-teal)] opacity-0 transition-opacity duration-300"
       aria-hidden="true"
-    ></div>
+    >
+    </div>
     <div class="app-layout flex h-16 items-center justify-between">
       <!-- Logo / wordmark -->
       <a
@@ -105,12 +106,12 @@ function isActive(link: (typeof NAV_LINKS)[number]): boolean {
           />
         </button>
 
-        <!-- Hire me CTA -->
+        <!-- Contact CTA -->
         <a
           href={isHome ? "#contact" : "/#contact"}
-          class="border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-4 py-2 text-sm font-semibold text-[var(--color-bg)] transition-all duration-150 active:scale-[0.98] hover:bg-transparent hover:text-[var(--color-text-primary)]"
+          class="border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-4 py-2 text-sm font-semibold text-[var(--color-bg)] transition-all duration-150 hover:bg-transparent hover:text-[var(--color-text-primary)] active:scale-[0.98]"
         >
-          Hire me
+          Contact me
         </a>
       </div>
 
@@ -168,31 +169,31 @@ function isActive(link: (typeof NAV_LINKS)[number]): boolean {
         class="app-layout flex flex-col gap-1 py-4"
         aria-label="Mobile navigation"
       >
-      {
-        NAV_LINKS.map(link => (
+        {
+          NAV_LINKS.map(link => (
+            <a
+              href={resolveHref(link)}
+              class:list={[
+                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                isActive(link)
+                  ? "bg-[var(--color-teal-muted)] text-[var(--color-teal)]"
+                  : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text-primary)]",
+              ]}
+              data-mobile-link
+            >
+              {link.label}
+            </a>
+          ))
+        }
+        <div class="mt-3 border-t border-[var(--color-border)] pt-3">
           <a
-            href={resolveHref(link)}
-            class:list={[
-              "rounded-md px-3 py-2 text-sm font-medium transition-colors",
-              isActive(link)
-                ? "bg-[var(--color-teal-muted)] text-[var(--color-teal)]"
-                : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text-primary)]",
-            ]}
+            href={isHome ? "#contact" : "/#contact"}
+            class="block w-full border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-4 py-2.5 text-center text-sm font-semibold text-[var(--color-bg)]"
             data-mobile-link
           >
-            {link.label}
+            Contact me
           </a>
-        ))
-      }
-      <div class="mt-3 border-t border-[var(--color-border)] pt-3">
-        <a
-          href={isHome ? "#contact" : "/#contact"}
-          class="block w-full border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-4 py-2.5 text-center text-sm font-semibold text-[var(--color-bg)]"
-          data-mobile-link
-        >
-          Hire me
-        </a>
-      </div>
+        </div>
       </nav>
     </div>
   </div>

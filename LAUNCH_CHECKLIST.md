@@ -60,7 +60,7 @@ After updating all environment variables, trigger a new deployment:
 - Push a commit, or
 - Go to Vercel Dashboard > Deployments > Redeploy latest.
 
-### Step 6 — End-to-end smoke test in live mode
+### Step 6 — Manual live checkout verification
 
 1. Navigate to https://ridhwan.dev/services.
 2. Click "Book a call" — you should be redirected to a real Stripe Checkout page in live mode.
@@ -80,9 +80,7 @@ The Lighthouse CI workflow (`.github/workflows/lighthouse-ci.yml`) must be added
 2. Under **Branch protection rules**, click **Edit** next to `main`.
 3. Check **Require status checks to pass before merging**.
 4. In the search box, type `lighthouse` and select: **Lighthouse CI / lighthouse**
-5. Also confirm these checks are required (set in Wave 3/4):
-   - `Bundle size check` (from `bundle-size.yml`)
-   - `Smoke tests` (from `smoke-tests.yml` — triggers on deploy)
+5. Also confirm `Bundle size check` (from `bundle-size.yml`) is required.
 6. Click **Save changes**.
 
 Note: The `Lighthouse CI / lighthouse` check only appears in the search box after the workflow has run at least once on a PR. Merge one PR first if the check doesn't appear.

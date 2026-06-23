@@ -7,7 +7,7 @@
  * Cross-agent contract (CLAUDE.md):
  *   - Request body: { name: string, email: string, message: string }
  *   - Response:     { success: boolean, error?: string }
- *   - GET requests must return HTTP 405 (required by Agent E smoke tests)
+ *   - GET requests must return HTTP 405
  *
  * Runs as a Vercel serverless function (hybrid mode — B6).
  */

@@ -13,32 +13,40 @@ import { SITE } from "@/config";
   <canvas
     id="hero-field"
     class="hero-field absolute inset-0 z-0 h-full w-full"
-    aria-hidden="true"
-  ></canvas>
+    aria-hidden="true"></canvas>
 
   <!-- Gradient veil — left-heavy so text stays legible over the field -->
-  <div class="hero-overlay pointer-events-none absolute inset-0 z-[1]" aria-hidden="true"></div>
+  <div
+    class="hero-overlay pointer-events-none absolute inset-0 z-[1]"
+    aria-hidden="true"
+  >
+  </div>
 
   <!-- Text content layered on top; pointer-events-none so the cursor reaches the field -->
   <div class="pointer-events-none relative z-[2] app-layout w-full py-24">
     <div class="flex max-w-xl flex-col gap-7">
-
       <!-- Meta strip -->
       <div class="hero-meta flex flex-wrap items-center gap-x-5 gap-y-2">
-        <span class="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-text-muted)]">
+        <span
+          class="font-mono text-xs tracking-[0.2em] text-[var(--color-text-muted)] uppercase"
+        >
           AI / ML Researcher
         </span>
-        <span class="h-px w-8 bg-[var(--color-text-muted)]" aria-hidden="true"></span>
+        <span class="h-px w-8 bg-[var(--color-text-muted)]" aria-hidden="true"
+        ></span>
         <span class="inline-flex items-center gap-1.5">
           <span
             class="availability-dot h-1.5 w-1.5 rounded-full bg-[var(--color-text-primary)]"
-            aria-hidden="true"
-          ></span>
-          <span class="font-mono text-xs uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
+            aria-hidden="true"></span>
+          <span
+            class="font-mono text-xs tracking-[0.12em] text-[var(--color-text-secondary)] uppercase"
+          >
             Available — 2 slots
           </span>
         </span>
-        <span class="font-mono text-xs uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
+        <span
+          class="font-mono text-xs tracking-[0.12em] text-[var(--color-text-muted)] uppercase"
+        >
           UTC+8
         </span>
       </div>
@@ -52,47 +60,58 @@ import { SITE } from "@/config";
       </h1>
 
       <!-- Rule -->
-      <div class="hero-rule h-px w-16 bg-[var(--color-text-primary)]" aria-hidden="true"></div>
+      <div
+        class="hero-rule h-px w-16 bg-[var(--color-text-primary)]"
+        aria-hidden="true"
+      >
+      </div>
 
       <!-- Description -->
       <p
         id="hero-desc"
         class="hero-desc max-w-md text-base leading-relaxed text-[var(--color-text-secondary)]"
       >
-        I build seismic inpainting models, anomaly detection systems, and
-        hybrid RAG pipelines at UTP. I connect missing dots — using
-        interpolation to find the best relation between sparse signals
-        and hidden insights.
+        I build seismic inpainting models, anomaly detection systems, and hybrid
+        RAG pipelines at UTP. I connect missing dots — using interpolation to
+        find the best relation between sparse signals and hidden insights.
       </p>
 
       <!-- CTAs -->
-      <div id="hero-ctas" class="hero-ctas pointer-events-auto flex flex-wrap gap-3">
+      <div
+        id="hero-ctas"
+        class="hero-ctas pointer-events-auto flex flex-wrap gap-3"
+      >
         <a
           href="#projects"
           data-scroll-to="projects"
-          class="cta-primary inline-flex items-center gap-2.5 border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-6 py-3 text-sm font-semibold text-[var(--color-bg)] transition-all duration-200 active:scale-[0.98] hover:bg-transparent hover:text-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
-          aria-label="View my projects"
+          class="cta-primary inline-flex items-center gap-2.5 border border-[var(--color-text-primary)] bg-[var(--color-text-primary)] px-6 py-3 text-sm font-semibold text-[var(--color-bg)] transition-all duration-200 hover:bg-transparent hover:text-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)] active:scale-[0.98]"
+          aria-label="View featured work"
         >
-          View Projects
+          View work
           <Icon name="lucide:arrow-right" class="h-4 w-4" aria-hidden="true" />
         </a>
         <a
           href="#contact"
           data-scroll-to="contact"
-          class="inline-flex items-center gap-2.5 border border-[var(--color-border-strong)] px-6 py-3 text-sm font-semibold text-[var(--color-text-primary)] transition-all duration-200 active:scale-[0.98] hover:border-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
-          aria-label="Get in touch"
+          class="inline-flex items-center gap-2.5 border border-[var(--color-border-strong)] px-6 py-3 text-sm font-semibold text-[var(--color-text-primary)] transition-all duration-200 hover:border-[var(--color-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)] active:scale-[0.98]"
+          aria-label="Contact me"
         >
-          Get in Touch
+          Contact me
           <Icon name="lucide:mail" class="h-4 w-4" aria-hidden="true" />
         </a>
       </div>
 
       <!-- Location -->
       <div class="flex items-center gap-2 opacity-60">
-        <Icon name="lucide:map-pin" class="h-3.5 w-3.5 text-[var(--color-text-muted)]" aria-hidden="true" />
-        <span class="font-mono text-xs text-[var(--color-text-muted)]">Seri Iskandar, Malaysia</span>
+        <Icon
+          name="lucide:map-pin"
+          class="h-3.5 w-3.5 text-[var(--color-text-muted)]"
+          aria-hidden="true"
+        />
+        <span class="font-mono text-xs text-[var(--color-text-muted)]"
+          >Seri Iskandar, Malaysia</span
+        >
       </div>
-
     </div>
 
     <!-- Scroll indicator -->
@@ -107,7 +126,6 @@ import { SITE } from "@/config";
         aria-hidden="true"
       />
     </div>
-
   </div>
 </section>
 
@@ -118,7 +136,9 @@ import { SITE } from "@/config";
     opacity: 0;
     transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .hero-field.is-painted { opacity: 1; }
+  .hero-field.is-painted {
+    opacity: 1;
+  }
 
   /*
    * Gradient veil — adapts to the active theme so the headline stays legible
@@ -132,7 +152,7 @@ import { SITE } from "@/config";
       rgba(255, 255, 255, 0.92) 0%,
       rgba(255, 255, 255, 0.65) 42%,
       rgba(255, 255, 255, 0.18) 72%,
-      rgba(255, 255, 255, 0.00) 100%
+      rgba(255, 255, 255, 0) 100%
     );
   }
 
@@ -142,33 +162,55 @@ import { SITE } from "@/config";
       rgba(0, 0, 0, 0.92) 0%,
       rgba(0, 0, 0, 0.65) 42%,
       rgba(0, 0, 0, 0.18) 72%,
-      rgba(0, 0, 0, 0.00) 100%
+      rgba(0, 0, 0, 0) 100%
     );
   }
 
   /* Availability pulse */
-  .availability-dot { animation: pulse-dot 3s ease-in-out infinite; }
+  .availability-dot {
+    animation: pulse-dot 3s ease-in-out infinite;
+  }
   @keyframes pulse-dot {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.2; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.2;
+    }
   }
 
   /* Scroll indicator — slow ease pulse, no bounce */
-  .scroll-indicator { position: absolute; }
+  .scroll-indicator {
+    position: absolute;
+  }
   .scroll-cue {
     animation: scroll-cue 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
   @keyframes scroll-cue {
-    0%, 100% { transform: translateY(0); opacity: 0.5; }
-    50%      { transform: translateY(6px); opacity: 1; }
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translateY(6px);
+      opacity: 1;
+    }
   }
 
   /* Reduced motion: the field renders a single static frame (handled in the
      script) and the cursor reactivity is disabled; stop decorative animations. */
   @media (prefers-reduced-motion: reduce) {
-    .hero-field { transition: none; }
-    .availability-dot { animation: none; }
-    .scroll-indicator { display: none; }
+    .hero-field {
+      transition: none;
+    }
+    .availability-dot {
+      animation: none;
+    }
+    .scroll-indicator {
+      display: none;
+    }
   }
 </style>
 
@@ -183,12 +225,16 @@ import { SITE } from "@/config";
   type Tool = { angle: number; radius: number; label: string; phase: number };
 
   function setupHeroField(): (() => void) | void {
-    const canvas = document.getElementById("hero-field") as HTMLCanvasElement | null;
+    const canvas = document.getElementById(
+      "hero-field"
+    ) as HTMLCanvasElement | null;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
 
     const TOOL_COUNT = 6;
     const LABELS = ["plan", "search", "call", "read", "write", "observe"];
@@ -244,7 +290,7 @@ import { SITE } from "@/config";
       tools = Array.from({ length: TOOL_COUNT }, (_, i) => ({
         angle: (i / TOOL_COUNT) * Math.PI * 2 - Math.PI / 2,
         // Vary radius slightly so the ring reads organic, not mechanical.
-        radius: ringR * (0.82 + (((i * 37) % 30) / 100)),
+        radius: ringR * (0.82 + ((i * 37) % 30) / 100),
         label: LABELS[i % LABELS.length],
         phase: (i * 0.137) % 1,
       }));
@@ -426,7 +472,8 @@ import { SITE } from "@/config";
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let teardownHeroField: (() => void) | void = (window as any).__heroFieldCleanup;
+  let teardownHeroField: (() => void) | void = (window as any)
+    .__heroFieldCleanup;
   function bootHeroField() {
     if (typeof teardownHeroField === "function") teardownHeroField();
     teardownHeroField = setupHeroField();
